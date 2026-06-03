@@ -536,9 +536,16 @@ function buildReports(){
     const studyCount={};
     perWeek.forEach(pw=>(pw.studyDiag||[]).forEach(d=>{ const l=d.label||d; studyCount[l]=(studyCount[l]||0)+1; }));
     const studyTop=Object.entries(studyCount).map(([label,cnt])=>({label,cnt})).sort((a,b)=>b.cnt-a.cnt);
+    // 학습 특징 상세(설명 포함, 최근 주차)
+    const studyDetail=(perWeek[perWeek.length-1].studyDiag||[]).filter(d=>d&&d.label);
+    // 세부 약점 유형(소분류) 누적 빈도
+    const typeAgg={};
+    perWeek.forEach(pw=>(pw.wrongDetails||[]).forEach(q=>{ if(q&&q.type){ const t=String(q.type).split(/[,\/]/)[0].trim(); if(t) typeAgg[t]=(typeAgg[t]||0)+1; } }));
+    const typeTop=Object.entries(typeAgg).map(([t,c])=>({t,c})).sort((a,b)=>b.c-a.c);
     const totalWrong=perWeek.reduce((a,pw)=>a+pw.wrongN,0);
+    const avgRate=Math.round(rates.reduce((a,b)=>a+b,0)/rates.length);
     master.push({ name:g.name, courseId:g.courseId, courseName:g.courseName, school:g.school,
-      n:seq.length, seq, rates, perWeek, areaAgg, recurring, strengths, studyTop, totalWrong, trend:repTrend(rates) });
+      n:seq.length, seq, rates, perWeek, areaAgg, recurring, strengths, studyTop, studyDetail, typeTop, totalWrong, avgRate, trend:repTrend(rates) });
   });
   master.sort((a,b)=>{ if(b.n!==a.n) return b.n-a.n; return (b.rates[b.rates.length-1]||0)-(a.rates[a.rates.length-1]||0); });
   REP.master=master;
@@ -624,21 +631,38 @@ function rWeekRows(m){
 }
 function rIntegrated(m){
   const out=[];
-  if(m.recurring.length){
-    const top=m.recurring[0];
-    if(top.cnt>=2) out.push(`<b>${esc(top.name)}</b>가 가장 고질적입니다 — ${m.n}주차 중 ${top.cnt}주차에서 반복 출현. 단발 실수가 아니라 구조적 약점입니다.`);
-    else out.push(`이번 구간 핵심 약점은 <b>${esc(top.name)}</b>입니다.`);
-    if(m.recurring[1]&&m.recurring[1].cnt>=2) out.push(`그다음은 <b>${esc(m.recurring[1].name)}</b>(${m.recurring[1].cnt}주차)로 반복됩니다.`);
+  // 영역 약점 — 오답 수 기준 상위(실제 수치)
+  const areas=Object.entries(m.areaAgg).map(([a,v])=>({a,wrong:v.wrong,total:v.total,acc:v.total?(v.total-v.wrong)/v.total:1})).filter(x=>x.wrong>0).sort((x,y)=> y.wrong-x.wrong || x.acc-y.acc);
+  if(areas.length){
+    const t=areas[0];
+    out.push(`<b>${esc(t.a)}</b>에서 오답이 가장 많습니다 — ${t.total}문제 중 ${t.wrong}개(정답률 ${Math.round(t.acc*100)}%). 이 영역이 1순위 보강 대상입니다.`);
+    if(areas[1]&&areas[1].wrong>=2) out.push(`그다음은 <b>${esc(areas[1].a)}</b>(${areas[1].total}문제 중 ${areas[1].wrong}개)입니다.`);
   }
-  // 영역 약점
-  const weakArea=Object.entries(m.areaAgg).map(([a,v])=>({a,r:v.total?v.wrong/v.total:0,v})).filter(x=>x.v.total>=2).sort((a,b)=>b.r-a.r)[0];
-  if(weakArea&&weakArea.r>0.25) out.push(`영역으로는 <b>${esc(weakArea.a)}</b>의 오답률이 ${Math.round(weakArea.r*100)}%로 가장 높습니다.`);
+  // 세부 유형(소분류)
+  if(m.typeTop&&m.typeTop.length){
+    const seen=m.typeTop.slice(0,4).map(x=>esc(x.t)+(x.c>1?`(${x.c}회)`:''));
+    out.push(`세부 유형으로는 ${seen.join(' · ')} 쪽에서 약점이 드러납니다.`);
+  }
+  // 반복 패턴(있으면)
+  if(m.recurring.length && m.recurring[0].cnt>=2) out.push(`<b>${esc(m.recurring[0].name)}</b>은(는) ${m.n}주차 중 ${m.recurring[0].cnt}주차에서 반복돼, 단발 실수가 아니라 구조적 약점입니다.`);
+  // 추이
   if(m.n>=2){
-    if(m.trend==='상승') out.push(`정답률이 우상향(${m.rates[0]}%→${m.rates[m.rates.length-1]}%)입니다. 지금 방향을 유지하세요.`);
-    else if(m.trend==='하락') out.push(`정답률 하락(${m.rates[0]}%→${m.rates[m.rates.length-1]}%)이 관찰됩니다. 난도 상승인지 학습량 저하인지 분리 진단이 필요합니다.`);
-    else out.push(`정답률이 ${Math.min(...m.rates)}~${Math.max(...m.rates)}% 구간에서 정체 중입니다. 위 약점을 직접 잡아야 다음 단계로 넘어갑니다.`);
-  } else out.push('1주차 단일 제출이라 추이는 아직 없습니다. 다음 주차부터 비교가 가능합니다.');
+    if(m.trend==='상승') out.push(`정답률이 ${m.rates[0]}%→${m.rates[m.rates.length-1]}%로 우상향입니다. 지금 학습 방향을 유지하면 됩니다.`);
+    else if(m.trend==='하락') out.push(`정답률이 ${m.rates[0]}%→${m.rates[m.rates.length-1]}%로 하락했습니다. 난도 상승인지 학습량 저하인지 함께 점검이 필요합니다.`);
+    else out.push(`정답률이 ${Math.min(...m.rates)}~${Math.max(...m.rates)}% 구간에서 정체 중입니다. 위 약점을 직접 잡아야 한 단계 올라갑니다.`);
+  } else out.push(`현재 ${m.n}개 주차 제출 — 다음 주차가 쌓이면 추이 비교도 함께 제공됩니다.`);
+  if(!out.length) out.push('이번 제출에서 두드러진 약점은 보이지 않습니다. 아주 좋은 흐름입니다.');
   return out;
+}
+// 영역별 정답률 상세 표 (학부모 리포트용)
+function rAreaTable(m){
+  const rows=Object.entries(m.areaAgg).map(([a,v])=>({a,total:v.total,correct:v.total-v.wrong,wrong:v.wrong,acc:v.total?Math.round((v.total-v.wrong)/v.total*100):0}))
+    .filter(x=>x.total>0).sort((x,y)=> x.acc-y.acc || y.wrong-x.wrong);
+  if(!rows.length) return '';
+  const tag=acc=> acc>=90?'<span style="color:#9fd0ad">강점</span>': (acc>=70?'<span style="color:var(--gold-soft)">양호</span>':'<span style="color:#e0a3a3">보강 필요</span>');
+  let h='<table class="rtbl2"><thead><tr><th>영역</th><th>맞음 / 문항</th><th>정답률</th><th>평가</th></tr></thead><tbody>';
+  rows.forEach(r=>{ h+=`<tr><td>${esc(r.a)}</td><td>${r.correct} / ${r.total}</td><td style="color:${rRateCol(r.acc)};font-weight:600">${r.acc}%</td><td>${tag(r.acc)}</td></tr>`; });
+  h+='</tbody></table>'; return h;
 }
 
 // 강점 폴백 — 누적 정답률 최고 영역
@@ -684,7 +708,11 @@ function renderReports(){
     const integ=rIntegrated(m).map(d=>'<li>'+d+'</li>').join('');
     let strengths = m.strengths.length ? m.strengths : fallbackStrengthArea(m.areaAgg);
     const strBlock = strengths.length ? '<ul class="rdlist">'+strengths.map(s=>'<li><b>'+esc(s.name)+'</b> — '+esc(s.diag||'')+'</li>').join('')+'</ul>' : '<div class="tc" style="color:var(--text-muted)">강점 영역 미검출</div>';
-    const studyBlock = m.studyTop.length ? '<div class="tc"><b>'+esc(m.studyTop[0].label)+'</b>'+(m.studyTop[0].cnt>=2?' (반복 관찰)':'')+(m.studyTop[1]?' · '+esc(m.studyTop[1].label):'')+'</div>' : '<div class="tc" style="color:var(--text-muted)">학습 진단 데이터 없음</div>';
+    const studyBlock = (m.studyDetail&&m.studyDetail.length)
+      ? m.studyDetail.map(d=>'<div style="margin-bottom:9px"><b style="color:var(--cream)">'+esc(d.label)+'</b> — <span style="color:var(--text-secondary)">'+esc(d.feedback||'')+'</span></div>').join('')
+      : (m.studyTop.length ? '<div class="tc"><b>'+esc(m.studyTop[0].label)+'</b></div>' : '<div class="tc" style="color:var(--text-muted)">학습 진단 데이터 없음</div>');
+    const areaTableBlock = rAreaTable(m);
+    const typeLine = (m.typeTop&&m.typeTop.length) ? '<div class="tc" style="margin-top:10px;color:var(--text-secondary)">자주 틀린 세부 유형: <b style="color:var(--cream)">'+m.typeTop.slice(0,6).map(x=>esc(x.t)+(x.c>1?'('+x.c+'회)':'')).join(' · ')+'</b></div>' : '';
     const sid='rep-'+i;
     // 코멘트 대상 주차 (최근 또는 선택)
     const tw=REP.week; let pw=null;
@@ -694,7 +722,7 @@ function renderReports(){
     const rk=(rankByCourse[m.courseId]||{})[m.name];
     if(rk){ ctx.rank=rk.rank; ctx.rankN=rk.n; }
     html+='<div class="repcard" id="'+sid+'" data-n="'+m.n+'" data-trend="'+m.trend+'" data-name="'+esc(m.name)+'">'
-      +'<div class="rc-head"><div><div class="rc-name">'+esc(m.name)+'</div><div class="rc-meta">'+esc(m.school||'—')+' · '+esc(m.courseName)+' · '+m.n+'주차 제출</div></div>'
+      +'<div class="rc-head"><div><div class="rc-name">'+esc(m.name)+'</div><div class="rc-meta">'+esc(m.school||'—')+' · '+esc(m.courseName)+' · '+m.n+'주차 제출 · 평균 정답률 '+m.avgRate+'%</div></div>'
       +'<div class="rc-right"><span class="rtrend rtrend-'+rTcls(m.trend)+'">'+rTlabel(m.trend)+'</span>'
       +(rk?'<span class="rc-tw" style="color:var(--gold)">정답률 '+rk.rank+'등 / '+rk.n+'명</span>':'')
       +'<span class="rc-tw">누적 오답 '+m.totalWrong+'개</span>'
@@ -703,6 +731,7 @@ function renderReports(){
       +'<div><div class="rblk-t">영역별 누적 오답 비중</div>'+rDonut(m)+'</div></div>'
       +'<div class="rc-blk"><div class="rblk-t">주차별 기록</div>'
       +'<table class="rtbl2"><thead><tr><th>주차</th><th>정답률</th><th>영역</th><th>틀린 문항</th></tr></thead><tbody>'+rWeekRows(m)+'</tbody></table></div>'
+      +(areaTableBlock?'<div class="rc-blk"><div class="rblk-t gold">영역별 정답률 <span class="rblk-sub">(약한 영역 순)</span></div>'+areaTableBlock+typeLine+'</div>':'')
       +'<div class="rc-blk rstr"><div class="rblk-t" style="color:var(--ok)">강점 진단</div>'+strBlock+'</div>'
       +'<div class="rc-blk rweak"><div class="rblk-t gold">진단 약점 <span class="rblk-sub">(주차 통합)</span></div><ul class="rdlist">'+integ+'</ul></div>'
       +'<div class="rc-blk rtime"><div class="rblk-t gold">학습 상황 · 특징</div>'+studyBlock+'</div>'
@@ -723,8 +752,14 @@ function repSearchFn(q){ q=q.trim(); document.querySelectorAll('.repcard').forEa
 // ── PDF ──
 function getJsPDF(){ if(window.jspdf&&window.jspdf.jsPDF)return window.jspdf.jsPDF; if(window.jsPDF)return window.jsPDF; return null; }
 function repLibsReady(){ return !!(window.html2canvas&&getJsPDF()); }
-async function repCapture(t){ const btn=t.querySelector('.rpdf-btn'); const pv=btn?btn.style.visibility:''; if(btn)btn.style.visibility='hidden';
-  const c=await html2canvas(t,{scale:2,backgroundColor:'#15273d',useCORS:true,logging:false,windowWidth:t.scrollWidth}); if(btn)btn.style.visibility=pv; return c; }
+async function repCapture(t){
+  // 학부모 전송 PDF에는 '조교용 코멘트 영역'과 'PDF 버튼'을 빼고 캡처
+  const hidden=[].slice.call(t.querySelectorAll('.rc-cmt, .rpdf-btn'));
+  const prev=hidden.map(e=>e.style.display); hidden.forEach(e=>e.style.display='none');
+  let c;
+  try{ c=await html2canvas(t,{scale:2,backgroundColor:'#15273d',useCORS:true,logging:false,windowWidth:t.scrollWidth}); }
+  finally{ hidden.forEach((e,i)=>e.style.display=prev[i]); }
+  return c; }
 function repA4(pdf,c,first){ const pw=210,ph=297; if(!first)pdf.addPage(); pdf.setFillColor(13,28,48); pdf.rect(0,0,pw,ph,'F');
   const ratio=c.height/c.width; let w=pw,h=w*ratio; if(h>ph){h=ph;w=h/ratio;} const x=(pw-w)/2,y=(ph-h)/2; pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',x,y,w,h); }
 async function printOneReport(id){ const t=document.getElementById(id); if(!t)return;
