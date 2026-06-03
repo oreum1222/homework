@@ -157,7 +157,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 </style>
 </head>
 <body>
-<img class="corner-logo" src="logo.png" alt="" onerror="this.style.display='none'">
+<img class="corner-logo" alt="" onerror="this.style.display='none'">
 <div class="wrap">
 <h1>방학 과제 검사 — 강사 대시보드</h1>
 <p class="sub" id="brandSub">가경T · 김가경 국어 연구소</p>
@@ -228,7 +228,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 <script src="config.js"></script>
 <script src="data/courses.js"></script>
 <script>
-let SCRIPT_URL=null, DASH_PASSWORD=null, BRAND='오름 국어 연구소', TEACHER='가경T';
+let SCRIPT_URL=null, DASH_PASSWORD=null, BRAND='오름 국어 연구소', TEACHER='가경T', LOGO_URL='';
 const COURSES = window.COURSE_LIST || [];
 const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 let ALL_DATA = [];
@@ -236,8 +236,10 @@ let ALL_DATA = [];
 function loadConfig(){
   return new Promise(resolve=>{
     const c = window.OREUM_HW_CONFIG;
-    if(c){ SCRIPT_URL=c.SCRIPT_URL||null; DASH_PASSWORD=c.DASH_PASSWORD||null; BRAND=c.BRAND||BRAND; TEACHER=c.TEACHER||TEACHER; }
+    if(c){ SCRIPT_URL=c.SCRIPT_URL||null; DASH_PASSWORD=c.DASH_PASSWORD||null; BRAND=c.BRAND||BRAND; TEACHER=c.TEACHER||TEACHER; LOGO_URL=c.LOGO_URL||''; }
     document.getElementById('brandSub').textContent = TEACHER+' · '+BRAND;
+    var _cl=document.querySelector('.corner-logo');
+    if(_cl){ if(LOGO_URL) _cl.src=LOGO_URL; else _cl.style.display='none'; }
     resolve();
   });
 }
@@ -371,6 +373,16 @@ function buildCmtCtx(m, pw, weekNo){
   if(!weak.length) (pw.patterns||[]).forEach(p=>{ const n=(p.name||'').replace(/\s*(약점|부족|패턴).*$/,'').trim(); if(n&&weak.indexOf(n)<0) weak.push(n); });
   ctx.weak=weak.slice(0,3);
   ctx.strong=(pw.strengths||[]).map(s=>(s.name||'').replace(/\s*(이|가|이에요|예요)?$/,'').trim()).filter(Boolean).slice(0,2);
+  // 강점 폴백 — 규칙 미발동 시 정답률 최고 영역을 강점으로
+  if(!ctx.strong.length && pw.areaStat){
+    const arr=Object.entries(pw.areaStat).map(([a,v])=>({a,acc:v.total?(v.total-v.wrong)/v.total:0,total:v.total})).filter(x=>x.total>=2).sort((x,y)=>y.acc-x.acc);
+    if(arr.length && arr[0].acc>=0.55) ctx.strong=[arr[0].a];
+  }
+  // 구체 수치 — 오답이 가장 많은 영역(영역명/틀린수/전체수)
+  if(pw.areaStat){
+    const arr=Object.entries(pw.areaStat).map(([a,v])=>({a,wrong:v.wrong,total:v.total})).filter(x=>x.wrong>0).sort((x,y)=>y.wrong-x.wrong);
+    if(arr.length) ctx.areaTop=arr[0];
+  }
   ctx.study=(pw.studyDiag||[]).map(d=>d.label||d).filter(Boolean);
   return ctx;
 }
@@ -402,38 +414,72 @@ function genCommentText(c){
   const callout=[J(weakList,'은','는')+' 아직 좀 헷갈려 하는 게 보여요.', weakList+' 쪽에서 비슷한 실수가 반복되더라고요.', weakList+'에서 자꾸 한 끗씩 어긋나요.', weakList+' 부분은 조금 더 단단히 다져야 할 것 같아요.'];
   const focus=['이번 주는 '+weakTop+'에 시간을 좀 더 써서 복습해 보면 좋겠어요.', '복습은 '+weakTop+' 위주로 잡고, 틀린 문항부터 다시 풀어 봐요.', weakTop+'만 한 번 제대로 정리하고 넘어가면 확실히 달라질 거예요.'];
   const importance=['이 부분은 '+area+' 전반에서 계속 엮여 나오는 자리라, 지금 잡아 두는 게 중요해요.', '여기만 단단해지면 뒤에 나오는 것들이 훨씬 수월해져요.', '시험에서도 자주 나오는 포인트라 그냥 넘기기엔 아까워요.'];
-  const habitMap={'해설 의존형':'그리고 막히는 문제는 바로 답지 보지 말고, 5분만 더 스스로 버텨 보는 연습도 같이 하면 좋겠어요.','복습 누락형':'틀린 문제는 ‘왜 틀렸는지’ 한 줄이라도 꼭 적어 두고 넘어가요.','시간 과소비형':'한 문제에 너무 오래 매달리지 말고, 표시해 두고 넘어가는 연습도 같이 해 봅시다.','집중 불안정형':'풀 때는 폰 잠깐 치워 두고 25분만 딱 집중해서 끊기지 않게 해 봐요.','자기주도 안정형':'혼자 끝까지 풀어내는 지금 습관, 정말 좋아요. 그대로 유지합시다.'};
+  const habitMap={
+    '해설 의존형':'그리고 막히는 문제는 바로 답지 보지 말고, 5분만 더 스스로 버텨 보는 연습도 같이 하면 좋겠어요.',
+    '복습 누락형':'틀린 문제는 ‘왜 틀렸는지’ 한 줄이라도 꼭 적어 두고 넘어가요.',
+    '집중 불안정형':'풀 때는 폰 잠깐 치워 두고 25분만 딱 집중해서 끊기지 않게 해 봐요.',
+    '벼락치기형':'다음엔 마감에 몰아서 하지 말고 2~3일에 나눠서 풀어 보면 정답률이 확 올라갈 거예요.',
+    '몰아치기형':'분량이 많은 주는 하루에 몰지 말고 며칠로 쪼개서 풀어 봅시다.',
+    '산발형':'하루 30분씩 며칠, 작은 루틴을 정해서 흐름이 안 끊기게 해 봐요.',
+    '개념 생략형':'문제부터 풀기 전에 개념을 5분만 정리하고 시작하면 실수가 줄어요.',
+    '꾸준 분산형':'며칠에 걸쳐 꾸준히 푸는 습관, 정말 좋아요. 그대로 유지합시다.',
+    '자기주도형':'개념부터 오답까지 스스로 끌고 가는 습관, 계속 가져가요.',
+    '시간 과다형':'한 문제에 너무 오래 매달리지 말고, 표시해 두고 넘어가는 연습도 같이 해 봅시다.',
+    '시간 과소비형':'한 문제에 너무 오래 매달리지 말고, 표시해 두고 넘어가는 연습도 같이 해 봅시다.',
+    '속도 과속형':'빨리 푸는 건 좋은데, 근거를 한 번 더 확인하는 습관을 들이면 정답률이 더 올라가요.',
+    '자기주도 안정형':'혼자 끝까지 풀어내는 지금 습관, 정말 좋아요. 그대로 유지합시다.'};
   const closers={
     high:['다음 주도 딱 이 페이스로 가 봅시다.','지금처럼만 꾸준히 하면 금방 늘어요. 다음 주도 잘 부탁해요.','다음 주 과제도 기대하고 있을게요.'],
     midlow:['다음 주에도 과제 빠짐없이 해 오기로 약속해요.','다음 주엔 오늘 짚은 부분 한 번 더 보고 와요.','이번에 짚은 것만 보완하면 충분히 좋아질 거예요. 다음 주에 봐요.','다음 주도 같이 힘내 봅시다.']
   };
 
   const P=[];
-  P.push(pick(openers[c.mode]));
-  // 2문단: (공감) + (강점) + 약점 + (정답률 한마디)
+  let op=pick(openers[c.mode]);
+  // 순위 한마디 (반에서 몇 등) — 인원 3명 이상일 때만
+  if(c.rank && c.rankN>=3){
+    op+=' '+pick(['정답률은 '+c.rankN+'명 중 '+c.rank+'등이에요'+(c.rank<=Math.ceil(c.rankN*0.3)?', 상위권이네요.':'.'), '이번 주 반에서 '+c.rank+'등('+c.rankN+'명 중)으로 나왔어요.']);
+  }
+  P.push(op);
+  // 2문단: (공감) + (강점) + 약점 + 구체 수치 + (정답률 한마디)
   let p2='';
   if(maybe(c.mode==='low'?0.6:0.4)) p2+=pick(empathy)+' ';
-  if(strong && maybe(0.65)) p2+=pick([strong+' 쪽은 거의 안 틀리고 잘 잡고 있더라고요. ', J(strong,'은','는')+' 확실히 이해하고 있는 게 보여서 든든했어요. ', strong+' 같은 건 안정적이라 이건 믿고 가도 되겠어요. ']);
+  if(strong && maybe(0.7)) p2+=pick([strong+' 쪽은 거의 안 틀리고 잘 잡고 있더라고요. ', J(strong,'은','는')+' 확실히 이해하고 있는 게 보여서 든든했어요. ', strong+' 같은 건 안정적이라 이건 믿고 가도 되겠어요. ']);
   p2+=pick(conn)+' '+pick(callout);
+  // 구체 수치: 오답이 가장 몰린 영역 (강점 영역·사소한 오답은 제외)
+  const _sn=(c.strong&&c.strong.length)?c.strong[0]:null;
+  if(c.areaTop && c.areaTop.wrong>=3 && (c.areaTop.wrong/c.areaTop.total)>=0.12 && c.areaTop.a!==_sn) p2+=' '+pick(['특히 '+c.areaTop.a+'에서 '+c.areaTop.total+'문제 중 '+c.areaTop.wrong+'개를 놓쳤어요.', J(c.areaTop.a,'은','는')+' '+c.areaTop.total+'문제 중 '+c.areaTop.wrong+'개를 틀려서, 여기가 이번 주 핵심 보강 포인트예요.']);
   if(c.mode==='low') p2+=' '+pick(['정답률은 '+c.rate+'%인데, 점수보다 '+weakTop+'의 원리를 정확히 잡는 게 먼저예요.', c.rate+'%면 아직 끌어올릴 여지가 충분해요. '+weakTop+'부터 차근차근 잡아 봅시다.']);
   else if(c.mode==='high' && maybe(0.5)) p2+=' '+pick(['정답률 '+c.rate+'%면 디테일까지 꽤 잘 챙기고 있는 거예요.', c.rate+'%까지 맞힌 거 보면 기본기는 확실해요.']);
   P.push(p2);
   // 3문단: 처방
   let p3=pick(focus);
   if(maybe(0.6)) p3+=' '+pick(importance);
-  for(const s of study){ if(habitMap[s] && maybe(0.8)){ p3+=' '+habitMap[s]; break; } }
+  for(const s of study){ if(habitMap[s] && maybe(0.85)){ p3+=' '+habitMap[s]; break; } }
   P.push(p3);
   P.push(pick(c.mode==='high'?closers.high:closers.midlow));
   return P[0]+'\n\n'+P[1]+'\n\n'+P[2]+'\n\n'+P[3];
 }
-function copyComment(sid){
-  const ta=document.getElementById('cmt-'+sid); if(!ta) return;
-  const done=()=>{ const b=document.getElementById('cpy-'+sid); if(b){ const t=b.textContent; b.textContent='복사됨 ✓'; setTimeout(()=>b.textContent=t,1500);} };
+// 문항별 코멘트(틀린 문항 각각 한 줄) — 통합 코멘트와 별도
+function genPerQuestion(pw){
+  if(!pw || !pw.wrongDetails || !pw.wrongDetails.length) return '';
+  const shortT=t=>String(t||'').split(/[,\/]/)[0].trim();
+  const tipFor=q=>{ let t=(q.remediation||'').split(/[.。]/)[0].trim(); if(!t) t=(q.weakness1||'').split(/[.。]/)[0].trim(); return t; };
+  const lines=(pw.wrongDetails||[]).slice().sort((a,b)=>(a.no||0)-(b.no||0)).map(q=>{
+    const label=(q.label?q.label:(q.no+'번'));
+    const type=shortT(q.type)|| (q.area||'');
+    const tip=tipFor(q);
+    return '· '+label+(type?' ('+type+')':'')+(tip?' — '+tip:'');
+  });
+  return lines.join('\n');
+}
+function copyComment(elId, btn){
+  const ta=document.getElementById(elId); if(!ta) return;
+  const done=()=>{ if(btn){ const t=btn.textContent; btn.textContent='복사됨 ✓'; setTimeout(()=>btn.textContent=t,1500);} };
   if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(ta.value).then(done,()=>{ta.select();document.execCommand('copy');done();}); }
   else { ta.select(); document.execCommand('copy'); done(); }
 }
-function smsComment(sid){
-  const ta=document.getElementById('cmt-'+sid); if(!ta) return;
+function smsComment(elId){
+  const ta=document.getElementById(elId); if(!ta) return;
   window.location.href='sms:?&body='+encodeURIComponent(ta.value);
 }
 function regenComment(sid){
@@ -506,19 +552,26 @@ function buildReports(){
 }
 // 코멘트 블록 HTML
 function cmtModeLabel(mode){ return {high:'우수',mid:'양호',low:'노력 필요',none:'미제출'}[mode]||''; }
-function commentBlock(sid, ctx, weekNo){
+function commentBlock(sid, ctx, pw){
   CMT[sid]=ctx;
   const draft=genCommentText(ctx);
-  const wlabel = ctx.week ? (ctx.week+'주차') : (weekNo?weekNo+'주차':'');
-  return '<div class="rc-blk rc-cmt"><div class="rblk-t gold"><span>이번 주 개별 코멘트 <span class="rblk-sub">('+wlabel+' · 조교용 초안 — 수정 후 복사/전송)</span></span>'
+  const wlabel = ctx.week ? (ctx.week+'주차') : '';
+  const perQ = pw ? genPerQuestion(pw) : '';
+  let h='<div class="rc-blk rc-cmt"><div class="rblk-t gold"><span>통합 코멘트 <span class="rblk-sub">('+wlabel+' · 조교용 초안 — 수정 후 복사/전송)</span></span>'
     +'<span class="cmt-mode mode-'+ctx.mode+'">'+cmtModeLabel(ctx.mode)+'</span></div>'
     +'<textarea class="cmt-area" id="cmt-'+sid+'">'+esc(draft)+'</textarea>'
     +'<div class="cmt-btns no-print">'
-    +'<button class="cmt-btn prim" id="cpy-'+sid+'" onclick="copyComment(\''+sid+'\')">복사</button>'
-    +'<button class="cmt-btn" onclick="smsComment(\''+sid+'\')">문자로 보내기</button>'
+    +'<button class="cmt-btn prim" onclick="copyComment(\'cmt-'+sid+'\',this)">통합 코멘트 복사</button>'
+    +'<button class="cmt-btn" onclick="smsComment(\'cmt-'+sid+'\')">문자로 보내기</button>'
     +'<button class="cmt-btn" onclick="regenComment(\''+sid+'\')">다른 표현으로</button>'
-    +'</div>'
-    +'<div class="cmt-hint no-print">학생 오답·정답률·학습성향을 반영한 자동 초안입니다. 한두 군데 손봐서 더 생생하게 만들어 보내세요. ‘다른 표현으로’를 누르면 문장이 바뀝니다.</div></div>';
+    +'</div>';
+  if(perQ){
+    h+='<div class="rblk-t gold" style="margin-top:20px">문항별 코멘트 <span class="rblk-sub">(틀린 문항 한 줄씩 — 필요한 것만 골라 쓰세요)</span></div>'
+      +'<textarea class="cmt-area" id="pq-'+sid+'" style="min-height:120px">'+esc(perQ)+'</textarea>'
+      +'<div class="cmt-btns no-print"><button class="cmt-btn prim" onclick="copyComment(\'pq-'+sid+'\',this)">문항별 코멘트 복사</button></div>';
+  }
+  h+='<div class="cmt-hint no-print">자동 초안입니다. 한두 군데 손봐서 보내세요. ‘다른 표현으로’를 누르면 통합 코멘트 문장이 바뀝니다.</div></div>';
+  return h;
 }
 
 function renderCourseBar(){
@@ -588,6 +641,14 @@ function rIntegrated(m){
   return out;
 }
 
+// 강점 폴백 — 누적 정답률 최고 영역
+function fallbackStrengthArea(areaAgg){
+  const arr=Object.entries(areaAgg||{}).map(([a,v])=>({a,acc:v.total?(v.total-v.wrong)/v.total:0,total:v.total,wrong:v.wrong})).filter(x=>x.total>=2).sort((x,y)=>y.acc-x.acc);
+  const out=[];
+  for(const x of arr){ if(out.length>=2)break; if(x.acc>=0.6) out.push({name:x.a+' 영역', diag: x.wrong===0?(x.a+' 영역은 누적 오답이 없습니다. 확실한 강점입니다.'):(x.a+' 누적 정답률 '+Math.round(x.acc*100)+'%로 가장 안정적입니다.')}); }
+  if(!out.length&&arr.length){ const x=arr[0]; out.push({name:x.a+' 영역', diag:x.a+' 영역이 그나마 가장 안정적입니다(정답률 '+Math.round(x.acc*100)+'%). 여기를 발판으로 약점을 끌어올리면 됩니다.'}); }
+  return out;
+}
 function renderReports(){
   const root=document.getElementById('reportRoot'), note=document.getElementById('repNote');
   let master=REP.master;
@@ -612,10 +673,17 @@ function renderReports(){
       missHtml+='<div class="miss-panel"><div class="miss-title">⚠ '+esc(COURSE_NAME[cid]||cid)+' · '+wk+'주차 미제출 '+missing.length+'명 (독려 코멘트)</div>'+rows+'</div>';
     });
   }
+  // ── 순위 계산: 수업별, 코멘트 대상 주차의 정답률 기준 ──
+  const trate=m=>{ const tw=REP.week; if(tw==='latest') return m.rates[m.rates.length-1]; const idx=m.seq.indexOf(+tw); return idx>=0?m.rates[idx]:null; };
+  const rankByCourse={};
+  (function(){ const byC={}; master.forEach(m=>{ const r=trate(m); if(r==null) return; (byC[m.courseId]=byC[m.courseId]||[]).push({name:m.name,r}); });
+    Object.entries(byC).forEach(([cid,arr])=>{ arr.sort((a,b)=>b.r-a.r); const map={}; arr.forEach((x,idx)=>{ let rank=idx+1; if(idx>0 && arr[idx-1].r===x.r) rank=map[arr[idx-1].name].rank; map[x.name]={rank,n:arr.length}; }); rankByCourse[cid]=map; }); })();
+
   let html='';
   master.forEach((m,i)=>{
     const integ=rIntegrated(m).map(d=>'<li>'+d+'</li>').join('');
-    const strBlock = m.strengths.length ? '<ul class="rdlist">'+m.strengths.map(s=>'<li><b>'+esc(s.name)+'</b> — '+esc(s.diag||'')+'</li>').join('')+'</ul>' : '<div class="tc" style="color:var(--text-muted)">최근 주차 기준 또렷한 강점 영역 미검출</div>';
+    let strengths = m.strengths.length ? m.strengths : fallbackStrengthArea(m.areaAgg);
+    const strBlock = strengths.length ? '<ul class="rdlist">'+strengths.map(s=>'<li><b>'+esc(s.name)+'</b> — '+esc(s.diag||'')+'</li>').join('')+'</ul>' : '<div class="tc" style="color:var(--text-muted)">강점 영역 미검출</div>';
     const studyBlock = m.studyTop.length ? '<div class="tc"><b>'+esc(m.studyTop[0].label)+'</b>'+(m.studyTop[0].cnt>=2?' (반복 관찰)':'')+(m.studyTop[1]?' · '+esc(m.studyTop[1].label):'')+'</div>' : '<div class="tc" style="color:var(--text-muted)">학습 진단 데이터 없음</div>';
     const sid='rep-'+i;
     // 코멘트 대상 주차 (최근 또는 선택)
@@ -623,9 +691,13 @@ function renderReports(){
     if(tw==='latest') pw=m.perWeek[m.perWeek.length-1];
     else { const idx=m.seq.indexOf(+tw); pw=idx>=0?m.perWeek[idx]:null; }
     const ctx=buildCmtCtx(m, pw, (tw==='latest'?m.seq[m.seq.length-1]:+tw));
+    const rk=(rankByCourse[m.courseId]||{})[m.name];
+    if(rk){ ctx.rank=rk.rank; ctx.rankN=rk.n; }
     html+='<div class="repcard" id="'+sid+'" data-n="'+m.n+'" data-trend="'+m.trend+'" data-name="'+esc(m.name)+'">'
       +'<div class="rc-head"><div><div class="rc-name">'+esc(m.name)+'</div><div class="rc-meta">'+esc(m.school||'—')+' · '+esc(m.courseName)+' · '+m.n+'주차 제출</div></div>'
-      +'<div class="rc-right"><span class="rtrend rtrend-'+rTcls(m.trend)+'">'+rTlabel(m.trend)+'</span><span class="rc-tw">누적 오답 '+m.totalWrong+'개</span>'
+      +'<div class="rc-right"><span class="rtrend rtrend-'+rTcls(m.trend)+'">'+rTlabel(m.trend)+'</span>'
+      +(rk?'<span class="rc-tw" style="color:var(--gold)">정답률 '+rk.rank+'등 / '+rk.n+'명</span>':'')
+      +'<span class="rc-tw">누적 오답 '+m.totalWrong+'개</span>'
       +'<button class="rpdf-btn no-print" onclick="printOneReport(\''+sid+'\')">이 학생 PDF</button></div></div>'
       +'<div class="rc-row1"><div><div class="rblk-t">주차별 정답률</div>'+rSpark(m)+'</div>'
       +'<div><div class="rblk-t">영역별 누적 오답 비중</div>'+rDonut(m)+'</div></div>'
@@ -634,7 +706,7 @@ function renderReports(){
       +'<div class="rc-blk rstr"><div class="rblk-t" style="color:var(--ok)">강점 진단</div>'+strBlock+'</div>'
       +'<div class="rc-blk rweak"><div class="rblk-t gold">진단 약점 <span class="rblk-sub">(주차 통합)</span></div><ul class="rdlist">'+integ+'</ul></div>'
       +'<div class="rc-blk rtime"><div class="rblk-t gold">학습 상황 · 특징</div>'+studyBlock+'</div>'
-      +commentBlock(sid, ctx)
+      +commentBlock(sid, ctx, pw)
       +'<div class="rc-foot"><span class="m">'+esc(TEACHER)+' · '+esc(BRAND)+'</span><span class="n">'+(i+1)+' / '+master.length+'</span></div></div>';
   });
   root.innerHTML=missHtml+html;
