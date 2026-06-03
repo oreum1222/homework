@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<title>김가경 국어 · 방학 과제 검사 시스템</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* ── NAVY 테마 (MEXX 네이비 톤) · 그린→네이비, 골드 액센트 유지 ── */
+  --green-deep:#33527d; --green-darker:#243d61;
+  --gold:#c9a84c; --gold-soft:#d8bd6e; --cream:#f1ece1;
+  --bg-dark:#0d1c30; --bg-card:#15273d; --bg-card-hover:#1d3150;
+  --text-primary:#eef1f5; --text-secondary:#a7b2c1; --text-muted:#6f7d8f;
+  --border-soft:rgba(201,168,76,0.22); --border-line:rgba(238,241,245,0.09);
+  --danger:#d98a8a; --warn:#d8bd6e; --ok:#7fae8c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg-dark);color:var(--text-primary);min-height:100vh;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding:60px 24px 80px}
+
+/* ─── Loading ─── */
+.loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg-dark);z-index:1000}
+.loading-mark{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:1.5rem;letter-spacing:3px;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
+.error-box{padding:28px;background:rgba(198,102,102,0.1);border:1px solid var(--danger);border-radius:6px;color:var(--danger);text-align:center;margin:60px 0}
+
+/* ─── Header ─── */
+.header{position:relative;text-align:center;margin-bottom:64px;padding-bottom:48px;border-bottom:1px solid var(--border-line)}
+.header-watermark{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:480px;max-width:95%;opacity:0.18;pointer-events:none;z-index:0}
+.header-watermark img{width:100%;height:auto;display:block}
+.header .brand-row,.header .title,.header .lead{position:relative;z-index:1}
+.brand-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:28px}
+.brand-name{font-family:'Noto Serif KR',serif;font-weight:700;font-size:1.05rem;color:var(--gold);letter-spacing:1px}
+/* 김가경 국어 연구소 — 필기체 로고 (보내주신 오른쪽 라인 버전) */
+.brand-logo{display:block;margin:0 auto;width:300px;max-width:78%;height:auto;
+  opacity:0.92;filter:drop-shadow(0 2px 10px rgba(0,0,0,0.35));}
+/* 모든 화면 오른쪽 상단 고정 로고 (첫 화면=큰 중앙 로고 있을 땐 숨김) */
+.corner-logo{position:fixed;top:14px;right:18px;width:128px;max-width:32vw;height:auto;opacity:0.85;z-index:60;pointer-events:none;filter:drop-shadow(0 1px 6px rgba(0,0,0,0.4))}
+body.landing .corner-logo{display:none}
+@media (max-width:640px){.corner-logo{width:90px;top:10px;right:12px;opacity:0.8}}
+@media print{.corner-logo{display:none!important}}
+.title{font-family:'Noto Serif KR',serif;font-weight:700;font-size:2.1rem;letter-spacing:-0.5px;margin-bottom:18px;color:var(--cream)}
+.title-accent{color:var(--gold)}
+.lead{color:var(--text-secondary);font-size:1.02rem;max-width:560px;margin:0 auto;line-height:1.85}
+
+/* ─── Section label ─── */
+.section-label{display:flex;align-items:center;gap:14px;margin:0 0 28px;font-family:'Noto Serif KR',serif;font-weight:500;color:var(--gold);font-size:0.92rem;letter-spacing:2px}
+.section-label::before,.section-label::after{content:'';height:1px;background:var(--border-soft);flex:1}
+.section-label::before{flex:0 0 32px}
+
+/* ─── Cards (수업·주차 선택) ─── */
+.exam-list{display:grid;gap:20px;grid-template-columns:1fr}
+.exam-card{display:block;background:var(--bg-card);border:1px solid var(--border-line);border-radius:6px;padding:32px 36px;text-decoration:none;color:inherit;transition:border-color 0.2s,background 0.2s,transform 0.2s;position:relative;overflow:hidden;cursor:pointer;width:100%;text-align:left;font-family:inherit}
+.exam-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);opacity:0.6;transition:opacity 0.2s,width 0.2s}
+.exam-card:hover{background:var(--bg-card-hover);border-color:var(--border-soft);transform:translateY(-2px)}
+.exam-card:hover::before{opacity:1;width:4px}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:14px;flex-wrap:wrap}
+.card-meta-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.card-num{font-family:'Noto Serif KR',serif;font-weight:700;color:var(--gold);font-size:0.78rem;letter-spacing:3px}
+.card-grade{font-size:0.72rem;color:var(--text-muted);padding:3px 10px;border:1px solid var(--border-soft);border-radius:11px;letter-spacing:1px}
+.card-status{font-size:0.72rem;letter-spacing:0.5px;padding:3px 10px;border-radius:11px}
+.status-active{background:rgba(51,82,125,0.45);color:var(--cream);border:1px solid var(--green-deep)}
+.status-tentative{background:rgba(201,168,76,0.12);color:var(--gold-soft);border:1px solid rgba(201,168,76,0.3)}
+.status-closed{background:rgba(122,116,102,0.18);color:var(--text-muted);border:1px solid var(--border-soft)}
+.card-arrow{font-family:'Noto Serif KR',serif;font-size:1.4rem;color:var(--text-muted);transition:color 0.2s,transform 0.2s;line-height:1;align-self:center}
+.exam-card:hover .card-arrow{color:var(--gold);transform:translateX(4px)}
+.card-name{font-family:'Noto Serif KR',serif;font-weight:500;font-size:1.32rem;color:var(--cream);margin-bottom:8px;letter-spacing:-0.3px}
+.card-date{color:var(--text-muted);font-size:0.85rem;margin-bottom:22px;font-weight:300}
+.card-body{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding-top:22px;border-top:1px solid var(--border-line)}
+.card-body-block{display:flex;flex-direction:column;gap:8px}
+.body-label{font-size:0.72rem;color:var(--text-muted);letter-spacing:1.5px;font-weight:500}
+.body-value{font-size:0.88rem;color:var(--text-secondary);line-height:1.65}
+.body-value strong{color:var(--cream);font-weight:500}
+
+/* ─── Footer ─── */
+.footer{margin-top:72px;padding-top:32px;border-top:1px solid var(--border-line);text-align:center;color:var(--text-muted);font-size:0.82rem;line-height:1.9}
+.footer-mark{font-family:'Noto Serif KR',serif;color:var(--gold);font-weight:500;letter-spacing:2px;font-size:0.78rem;margin-bottom:8px;display:block}
+
+/* ─── Diagnostic flow common ─── */
+.back-bar{margin-bottom:32px}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:var(--text-muted);text-decoration:none;font-size:0.88rem;background:none;border:none;cursor:pointer;font-family:inherit;padding:8px 0;transition:color 0.2s}
+.back-link:hover{color:var(--gold)}
+.diag-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border-line)}
+.exam-tag{display:inline-block;font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.78rem;letter-spacing:3px;margin-bottom:14px}
+.diag-title{font-family:'Noto Serif KR',serif;font-weight:700;font-size:1.85rem;color:var(--cream);margin-bottom:14px;letter-spacing:-0.5px;line-height:1.3}
+.diag-sub{color:var(--text-secondary);font-size:0.95rem;line-height:1.85}
+
+/* ─── Step indicator ─── */
+.step-bar{display:flex;gap:12px;margin-bottom:48px;flex-wrap:wrap}
+.step{flex:1;min-width:120px;padding:14px 18px;background:var(--bg-card);border:1px solid var(--border-line);border-radius:5px;font-size:0.82rem;color:var(--text-muted);position:relative}
+.step.active{background:var(--bg-card-hover);border-color:var(--gold);color:var(--cream)}
+.step.done{background:rgba(74,90,58,0.3);border-color:var(--green-deep);color:var(--text-secondary)}
+.step-num{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.7rem;letter-spacing:2px;display:block;margin-bottom:4px;font-weight:500}
+.step-label{font-size:0.88rem;font-weight:400}
+.step.active .step-label{font-weight:500}
+
+/* ─── Form ─── */
+.section{background:var(--bg-card);border:1px solid var(--border-line);border-radius:6px;padding:36px;margin-bottom:24px}
+.section-title{font-family:'Noto Serif KR',serif;font-weight:500;font-size:1.15rem;color:var(--cream);margin-bottom:8px;letter-spacing:-0.3px}
+.section-desc{color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:28px}
+.form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.form-row label{font-size:0.86rem;color:var(--text-secondary);font-weight:400}
+.form-row label .req{color:var(--gold);margin-left:3px}
+.form-row input[type="text"],.form-row input[type="number"],.form-row select{background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;padding:12px 16px;color:var(--cream);font-family:inherit;font-size:0.95rem;transition:border-color 0.15s}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:var(--gold)}
+.form-row .hint{font-size:0.78rem;color:var(--text-muted);margin-top:4px}
+.radio-group{display:flex;gap:12px;flex-wrap:wrap}
+.radio-pill{flex:1;min-width:140px;padding:13px 16px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;cursor:pointer;text-align:center;transition:all 0.15s;color:var(--text-secondary);font-size:0.92rem}
+.radio-pill input{display:none}
+.radio-pill:hover{border-color:var(--border-soft);color:var(--cream)}
+.radio-pill.selected{border-color:var(--gold);background:rgba(201,168,76,0.08);color:var(--cream)}
+
+/* ─── Answer marking ─── */
+.area-block{margin-bottom:32px}
+.area-title{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border-soft)}
+.area-title .sub{color:var(--text-muted);font-size:0.78rem;margin-left:10px;letter-spacing:0;font-weight:300}
+.q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.q-item{display:flex;align-items:center;gap:10px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;padding:10px 12px;cursor:pointer;transition:all 0.15s;user-select:none}
+.q-item:hover{border-color:var(--border-soft)}
+.q-item.wrong{background:rgba(198,102,102,0.12);border-color:var(--danger);color:var(--cream)}
+.q-num{font-weight:500;font-size:0.92rem;min-width:34px;color:var(--cream)}
+.q-three{font-size:0.7rem;color:var(--gold-soft);font-weight:500;margin-left:auto}
+.q-wr{font-size:0.7rem;color:var(--text-muted);margin-left:auto}
+.q-item.wrong .q-wr{color:var(--cream);opacity:0.7}
+
+/* ─── Study survey ─── */
+.time-survey{display:flex;flex-direction:column;gap:32px}
+.tq{padding-bottom:24px;border-bottom:1px solid var(--border-line)}
+.tq:last-child{border-bottom:none;padding-bottom:0}
+.tq-num{display:inline-block;font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.78rem;letter-spacing:2px;margin-bottom:8px}
+.tq-q{font-size:0.96rem;color:var(--cream);margin-bottom:16px;line-height:1.65;font-weight:400}
+.tq-opts{display:flex;flex-direction:column;gap:8px}
+.tq-opt{padding:12px 16px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;cursor:pointer;color:var(--text-secondary);font-size:0.9rem;transition:all 0.15s}
+.tq-opt input{display:none}
+.tq-opt:hover{border-color:var(--border-soft);color:var(--cream)}
+.tq-opt.selected{border-color:var(--gold);background:rgba(201,168,76,0.08);color:var(--cream)}
+
+/* ─── Buttons ─── */
+.btn-row{display:flex;gap:12px;justify-content:space-between;margin-top:36px;flex-wrap:wrap}
+.btn{padding:14px 32px;border:1px solid var(--border-soft);background:transparent;color:var(--text-primary);border-radius:4px;font-family:inherit;font-size:0.95rem;cursor:pointer;transition:all 0.15s;font-weight:400;letter-spacing:0.5px}
+.btn-primary{background:var(--gold);color:var(--bg-dark);border-color:var(--gold);font-weight:500}
+.btn-primary:hover{background:var(--gold-soft);border-color:var(--gold-soft)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ─── Result ─── */
+.result-hero{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:6px;padding:36px;margin-bottom:24px;text-align:center}
+.result-name{font-family:'Noto Serif KR',serif;font-size:1.65rem;color:var(--cream);font-weight:500;margin-bottom:8px}
+.result-meta{color:var(--text-muted);font-size:0.85rem;letter-spacing:0.5px}
+.score-block{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin:32px 0}
+.score-card{background:var(--bg-dark);border:1px solid var(--border-line);border-radius:5px;padding:24px;text-align:center}
+.score-label{font-size:0.78rem;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px}
+.score-num{font-family:'Noto Serif KR',serif;color:var(--gold);font-weight:700;font-size:2.5rem;line-height:1;margin-bottom:8px}
+.score-num-sub{color:var(--text-secondary);font-size:0.85rem}
+.diag-section{background:var(--bg-card);border:1px solid var(--border-line);border-radius:6px;padding:32px;margin-bottom:20px}
+.diag-section-title{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.9rem;letter-spacing:2.5px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border-soft)}
+.pattern{padding:18px 0;border-bottom:1px solid var(--border-line)}
+.pattern:last-child{border-bottom:none}
+.pattern-name{font-family:'Noto Serif KR',serif;color:var(--cream);font-size:1.05rem;font-weight:500;margin-bottom:10px}
+.pattern-name .code{color:var(--gold);font-size:0.78rem;margin-right:10px;letter-spacing:1.5px}
+.pattern-name .hits{color:var(--text-muted);font-size:0.78rem;margin-left:10px;font-weight:400;letter-spacing:0}
+.pattern-diag{color:var(--text-secondary);font-size:0.9rem;line-height:1.78;margin-bottom:10px}
+.pattern-action{color:var(--cream);font-size:0.88rem;line-height:1.78;padding:14px 18px;background:rgba(201,168,76,0.05);border-left:2px solid var(--gold);border-radius:0 4px 4px 0}
+.pattern-action::before{content:'처방';font-family:'Noto Serif KR',serif;font-size:0.68rem;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:6px;font-weight:500}
+/* 강점 카드(녹색 계열) */
+.strength{padding:16px 18px;border:1px solid var(--border-line);border-left:2px solid var(--ok);border-radius:0 4px 4px 0;background:rgba(125,152,99,0.06);margin-bottom:12px}
+.strength:last-child{margin-bottom:0}
+.strength-name{font-family:'Noto Serif KR',serif;color:var(--cream);font-size:1rem;font-weight:500;margin-bottom:6px}
+.strength-name .code{color:var(--ok);font-size:0.74rem;margin-right:9px;letter-spacing:1.5px}
+.strength-name .area{color:var(--text-muted);font-size:0.74rem;margin-left:9px;font-weight:400}
+.strength-diag{color:var(--text-secondary);font-size:0.88rem;line-height:1.75}
+.q-detail{padding:16px 0;border-bottom:1px solid var(--border-line)}
+.q-detail:last-child{border-bottom:none}
+.q-detail-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;flex-wrap:wrap}
+.q-detail-num{font-family:'Noto Serif KR',serif;color:var(--gold);font-weight:500;font-size:1.1rem}
+.q-detail-area{color:var(--text-muted);font-size:0.78rem;letter-spacing:1.5px}
+.q-detail-source{color:var(--text-secondary);font-size:0.85rem;font-weight:400}
+.q-detail-three{font-size:0.7rem;color:var(--gold-soft);padding:2px 8px;border:1px solid var(--gold-soft);border-radius:8px}
+.q-detail-wr{font-size:0.78rem;color:var(--text-muted);margin-left:auto}
+.q-detail-core{color:var(--cream);font-size:0.92rem;font-weight:500;margin-bottom:8px;line-height:1.65}
+.q-detail-weak{color:var(--text-secondary);font-size:0.86rem;line-height:1.78;margin-bottom:8px}
+.q-detail-rem{color:var(--text-secondary);font-size:0.86rem;line-height:1.78;padding:10px 14px;background:rgba(244,237,224,0.03);border-radius:3px;border-left:2px solid var(--green-deep)}
+.q-detail-rem::before{content:'보완 방향';display:block;font-family:'Noto Serif KR',serif;font-size:0.68rem;color:var(--ok);letter-spacing:2px;margin-bottom:5px;font-weight:500}
+.empty-msg{text-align:center;color:var(--text-muted);padding:32px 0;font-size:0.9rem;font-style:italic}
+
+/* ─── Submit feedback ─── */
+.submit-msg{text-align:center;padding:24px;border-radius:5px;margin-top:24px;font-size:0.92rem}
+.submit-ok{background:rgba(125,152,99,0.1);border:1px solid var(--ok);color:var(--cream)}
+.submit-err{background:rgba(198,102,102,0.1);border:1px solid var(--danger);color:var(--cream)}
+
+/* ─── Mobile ─── */
+@media (max-width:640px){
+  .wrap{padding:40px 16px 60px}
+  .title{font-size:1.55rem}.lead{font-size:0.94rem}
+  .exam-card{padding:24px 22px}.card-name{font-size:1.15rem}
+  .card-body{grid-template-columns:1fr;gap:18px}.card-arrow{display:none}
+  .header{margin-bottom:48px;padding-bottom:36px}
+  .diag-title{font-size:1.45rem}.section{padding:24px 22px}
+  .step-bar{gap:6px}.step{padding:10px 12px;font-size:0.78rem;min-width:80px}.step-label{font-size:0.78rem}
+  .q-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+  .q-item{padding:8px 10px;font-size:0.85rem}
+  .btn-row{flex-direction:column-reverse}.btn{width:100%}
+  .score-block{grid-template-columns:1fr 1fr}.score-num{font-size:2rem}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .header,.back-bar,.diag-header,.btn-row,#submitFeedback,.loading,.exam-list,.section-label,.footer{display:none !important}
+  .result-hero,.score-block,.diag-section{break-inside:avoid;page-break-inside:avoid}
+  .pattern,.q-detail,.strength{break-inside:avoid;page-break-inside:avoid}
+  .score-card{border:1px solid #888 !important;background:#fff !important}
+  .pattern,.q-detail{background:#f8f8f8 !important;color:#000 !important}
+  .pattern-action,.q-detail-rem,.strength{background:#fff !important;border:1px solid #888 !important}
+  *{box-shadow:none !important;text-shadow:none !important}
+}
+</style>
+</head>
+<body>
+<div class="loading" id="loading"><div class="loading-mark">오름 국어</div></div>
+<img class="corner-logo" src="logo.png" alt="" onerror="this.style.display='none'">
+<div class="wrap" id="root" style="display:none"></div>
+
+<script src="config.js"></script>
+<script src="data/courses.js"></script>
+<script>
+// ─────────────────── Globals ───────────────────
+let SCRIPT_URL = null, DASH_PASSWORD = null;
+let BRAND = '오름 국어 연구소', TEACHER = '가경T', LOGO_URL = '';
+const COURSES = window.COURSE_LIST || [];
+const root = document.getElementById('root');
+
+const STATE = {
+  view: 'courses',     // 'courses' | 'weeks' | 'diag'
+  courseId: null,
+  week: null,
+  data: null,          // 주차 JSON
+  step: 1,
+  student: { name:'', school:'', grade:'고3' },
+  wrong: new Set(),    // 틀린 문항 번호(문자열)
+  studyAns: {},        // 학습 진단 설문 응답 {번호: 보기index}
+  result: null,
+  autoSubmitted: false,
+  teacherView: false
+};
+
+// ─────────────────── Helpers ───────────────────
+function el(tag, attrs={}, ...children){
+  const e = document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v])=>{
+    if(k==='class') e.className=v;
+    else if(k==='onclick'||k==='oninput'||k==='onchange') e[k]=v;
+    else if(k==='html') e.innerHTML=v;
+    else e.setAttribute(k,v);
+  });
+  children.flat().forEach(c=>{
+    if(c==null) return;
+    if(typeof c==='string'||typeof c==='number') e.appendChild(document.createTextNode(c));
+    else e.appendChild(c);
+  });
+  return e;
+}
+function clear(node){ while(node.firstChild) node.removeChild(node.firstChild); }
+function escapeHtml(s){ return String(s||'').replace(/[<>&"]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+function statusClass(s){ return s==='active'?'status-active':(s==='closed'?'status-closed':'status-tentative'); }
+function statusLabel(s){ return s==='active'?'진행중':(s==='closed'?'마감':'준비중'); }
+
+function loadConfig(){
+  return new Promise(resolve=>{
+    const c = window.OREUM_HW_CONFIG;
+    if(c){
+      SCRIPT_URL = c.SCRIPT_URL || null;
+      DASH_PASSWORD = c.DASH_PASSWORD || null;
+      BRAND = c.BRAND || BRAND;
+      TEACHER = c.TEACHER || TEACHER;
+      LOGO_URL = c.LOGO_URL || '';
+    }
+    resolve();
+  });
+}
+
+// ─────────────────── View 1: 수업 목록 ───────────────────
+function renderCourses(){
+  STATE.view='courses'; STATE.courseId=null; STATE.week=null; STATE.data=null;
+  document.body.classList.add('landing');
+  clear(root);
+  const brandMark = el('div',{class:'brand-row'});
+  if(LOGO_URL){
+    const logo = el('img',{class:'brand-logo', src:LOGO_URL, alt:BRAND});
+    // logo.png 가 아직 없으면 텍스트 브랜드로 자동 대체
+    logo.onerror = ()=>{ brandMark.innerHTML=''; brandMark.appendChild(el('div',{class:'brand-name'}, BRAND)); };
+    brandMark.appendChild(logo);
+  } else {
+    brandMark.appendChild(el('div',{class:'brand-name'}, BRAND));
+  }
+  const header = el('header',{class:'header'},
+    brandMark,
+    el('h1',{class:'title',html:'방학 과제 <span class="title-accent">검사 시스템</span>'}),
+    el('p',{class:'lead',html:'수강 중인 강의를 선택하세요.<br>주차별 과제는 이 시스템을 바탕으로 검사할 것이며,<br>학생의 오답을 바탕으로 국어 학습 상황 및 성향 등의 진단도 진행됩니다.'})
+  );
+  root.appendChild(header);
+  root.appendChild(el('div',{class:'section-label'},'수업 목록'));
+
+  if(!COURSES.length){
+    root.appendChild(el('div',{class:'error-box'},'등록된 수업이 없습니다. data/courses.js 를 확인해 주세요.'));
+    return;
+  }
+  const list = el('div',{class:'exam-list'});
+  COURSES.forEach((c, idx)=>{
+    const card = el('button',{class:'exam-card', onclick:()=>renderWeeks(c.id)});
+    const activeWeeks = (c.weeks||[]).filter(w=>w.status!=='tentative').length;
+    card.appendChild(el('div',{class:'card-top'},
+      el('div',{class:'card-meta-left'},
+        el('span',{class:'card-num'}, 'COURSE '+String(idx+1).padStart(2,'0')),
+        el('span',{class:'card-grade'}, c.grade||'전체'),
+        el('span',{class:'card-status '+statusClass('active')}, (c.period||'운영중'))
+      ),
+      el('span',{class:'card-arrow'},'→')
+    ));
+    card.appendChild(el('div',{class:'card-name'}, c.name));
+    if(c.desc) card.appendChild(el('div',{class:'card-date'}, c.desc));
+    card.appendChild(el('div',{class:'card-body'},
+      el('div',{class:'card-body-block'},
+        el('span',{class:'body-label'},'주차'),
+        el('span',{class:'body-value',html:`<strong>${(c.weeks||[]).length}주차</strong> 구성 · ${activeWeeks}주차 진행`})
+      ),
+      el('div',{class:'card-body-block'},
+        el('span',{class:'body-label'},'대상'),
+        el('span',{class:'body-value',html:`<strong>${escapeHtml(c.grade||'전체')}</strong>`})
+      )
+    ));
+    list.appendChild(card);
+  });
+  root.appendChild(list);
+  appendFooter();
+}
+
+// ─────────────────── View 2: 주차 목록 ───────────────────
+function renderWeeks(courseId){
+  const course = COURSES.find(c=>c.id===courseId);
+  if(!course){ renderCourses(); return; }
+  STATE.view='weeks'; STATE.courseId=courseId;
+  document.body.classList.remove('landing');
+  clear(root);
+  root.appendChild(el('div',{class:'back-bar'}, el('button',{class:'back-link',onclick:renderCourses},'← 수업 선택으로')));
+  root.appendChild(el('div',{class:'diag-header'},
+    el('span',{class:'exam-tag'},'수업 · 주차 선택'),
+    el('h1',{class:'diag-title'}, course.name),
+    el('p',{class:'diag-sub'}, (course.desc||'')+' · 진단할 주차를 선택해 주세요.')
+  ));
+
+  const weeks = (course.weeks||[]);
+  if(!weeks.length){
+    root.appendChild(el('div',{class:'error-box'},'아직 등록된 주차가 없습니다.'));
+    appendFooter(); return;
+  }
+  const list = el('div',{class:'exam-list'});
+  weeks.forEach(w=>{
+    const tentative = w.status==='tentative';
+    const card = el('button',{class:'exam-card', onclick: tentative?(()=>alert('아직 준비 중인 주차입니다.')):(()=>loadWeek(courseId, w.week))});
+    if(tentative) card.style.opacity='0.6';
+    card.appendChild(el('div',{class:'card-top'},
+      el('div',{class:'card-meta-left'},
+        el('span',{class:'card-num'}, 'WEEK '+String(w.week).padStart(2,'0')),
+        w.area ? el('span',{class:'card-grade'}, w.area) : null,
+        el('span',{class:'card-status '+statusClass(w.status)}, statusLabel(w.status))
+      ),
+      el('span',{class:'card-arrow'},'→')
+    ));
+    card.appendChild(el('div',{class:'card-name'}, w.label || (w.week+'주차')));
+    list.appendChild(card);
+  });
+  root.appendChild(list);
+  appendFooter();
+}
+
+function loadWeek(courseId, week){
+  const course = COURSES.find(c=>c.id===courseId);
+  const w = (course.weeks||[]).find(x=>x.week===week);
+  if(!w){ renderWeeks(courseId); return; }
+  document.getElementById('loading').style.display='flex';
+  fetch(w.file + '?v=' + Date.now()).then(r=>r.json()).then(d=>{
+    document.getElementById('loading').style.display='none';
+    STATE.data = d; STATE.week = week;
+    STATE.step = 1; STATE.wrong = new Set(); STATE.studyAns = {}; STATE.result = null;
+    STATE.autoSubmitted = false; STATE.teacherView = false;
+    renderDiag();
+  }).catch(err=>{
+    document.getElementById('loading').style.display='none';
+    alert('숙제 데이터를 불러오지 못했습니다: '+err.message);
+  });
+}
+
+// ─────────────────── View 3: 진단 4스텝 ───────────────────
+function renderDiag(){
+  STATE.view='diag';
+  document.body.classList.remove('landing');
+  clear(root);
+  const course = COURSES.find(c=>c.id===STATE.courseId);
+  const wm = STATE.data.weekMeta;
+  root.appendChild(el('div',{class:'back-bar'},
+    el('button',{class:'back-link',onclick:()=>renderWeeks(STATE.courseId)},'← 주차 선택으로')
+  ));
+  root.appendChild(el('div',{class:'diag-header'},
+    el('span',{class:'exam-tag'}, (course?course.name:'') + ' · 숙제 진단'),
+    el('h1',{class:'diag-title'}, wm.label),
+    el('p',{class:'diag-sub'}, '4단계 진단 — 기본 정보 → 오답 마킹 → 학습 진단 → 진단 리포트')
+  ));
+  root.appendChild(el('div',{class:'step-bar'},
+    stepEl(1,'기본 정보'), stepEl(2,'오답 마킹'), stepEl(3,'학습 진단'), stepEl(4,'진단 결과')
+  ));
+  if(STATE.step===1) renderStep1();
+  else if(STATE.step===2) renderStep2();
+  else if(STATE.step===3) renderStep3();
+  else if(STATE.step===4) renderStep4();
+  window.scrollTo(0,0);
+}
+function stepEl(n,label){
+  const cls = STATE.step===n?'step active':(STATE.step>n?'step done':'step');
+  return el('div',{class:cls}, el('span',{class:'step-num'},'STEP '+n), el('span',{class:'step-label'},label));
+}
+
+// ─── Step 1: 기본 정보 ───
+function renderStep1(){
+  const form = el('div',{class:'section'},
+    el('h2',{class:'section-title'},'학생 정보'),
+    el('p',{class:'section-desc'},'결과 리포트가 학원 시트에 누적됩니다. 정확히 입력해 주세요.'),
+    formRow('이름','text','name', STATE.student.name),
+    formRow('학교','text','school', STATE.student.school, '예: 산본고'),
+    formRow('학년','select','grade', STATE.student.grade, null, ['고1','고2','고3','N수'])
+  );
+  root.appendChild(form);
+  root.appendChild(el('div',{class:'btn-row'},
+    el('span'),
+    el('button',{class:'btn btn-primary', onclick:nextFromStep1},'다음 단계 →')
+  ));
+}
+function formRow(label, type, name, value, hint, opts){
+  const row = el('div',{class:'form-row'}, el('label',{}, label, el('span',{class:'req'},' *')));
+  let input;
+  if(type==='select'){
+    input = el('select',{name, oninput:e=>{ STATE.student[name]=e.target.value; }});
+    (opts||['']).forEach(o=>input.appendChild(el('option',{value:o},o)));
+    input.value = value || (opts?opts[0]:'');
+    if(!STATE.student[name]) STATE.student[name]=input.value;
+  } else {
+    input = el('input',{type, name, value:value||'', oninput:e=>{ STATE.student[name]=e.target.value; }});
+  }
+  row.appendChild(input);
+  if(hint) row.appendChild(el('span',{class:'hint'},hint));
+  return row;
+}
+function nextFromStep1(){
+  const s = STATE.student;
+  if(!s.name||!s.name.trim()) return alert('이름을 입력해 주세요.');
+  if(!s.school||!s.school.trim()) return alert('학교를 입력해 주세요.');
+  STATE.step=2; renderDiag();
+}
+
+// ─── Step 2: 오답 마킹 ───
+function renderStep2(){
+  root.appendChild(el('div',{class:'section'},
+    el('h2',{class:'section-title'},'오답 마킹'),
+    el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 회색 숫자는 (입력된 경우) 기준 오답률(%)입니다. <strong style="color:var(--gold-soft)">3점</strong> 표시는 변별이 큰 자리입니다.'})
+  ));
+  (STATE.data.sections||[]).forEach(sec=>{
+    const titleExtra = sec.range ? ` (${sec.range})` : '';
+    root.appendChild(areaBlock((sec.title||'문항')+titleExtra, sec.questions||[]));
+  });
+  root.appendChild(el('div',{class:'btn-row'},
+    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
+    el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=3; renderDiag();}},'다음 단계 →')
+  ));
+}
+function areaBlock(title, questions){
+  const block = el('div',{class:'section area-block'},
+    el('div',{class:'area-title'}, title, el('span',{class:'sub'}, questions.length+'문항'))
+  );
+  const grid = el('div',{class:'q-grid'});
+  questions.forEach(q=>{
+    const key = String(q.no);
+    const item = el('div',{class: STATE.wrong.has(key)?'q-item wrong':'q-item'},
+      el('span',{class:'q-num'}, q.label || (q.no+'번')),
+      q.three ? el('span',{class:'q-three'},'3점') : null,
+      (q.wr!=null) ? el('span',{class:'q-wr'}, q.wr+'%') : null
+    );
+    item.onclick = ()=>{
+      if(STATE.wrong.has(key)) STATE.wrong.delete(key); else STATE.wrong.add(key);
+      item.classList.toggle('wrong');
+    };
+    grid.appendChild(item);
+  });
+  block.appendChild(grid);
+  return block;
+}
+
+// ─── Step 3: 학습 진단 설문 ───
+function renderStep3(){
+  root.appendChild(el('div',{class:'section'},
+    el('h2',{class:'section-title'},'학습 진단'),
+    el('p',{class:'section-desc'},'이번 숙제를 ‘어떻게 풀고 복습했는지’를 진단합니다. 솔직하게 답할수록 학습 특징 분석이 정확해집니다.')
+  ));
+  const surveyBox = el('div',{class:'section'});
+  const surveyList = el('div',{class:'time-survey'});
+  (STATE.data.studyCheck||[]).forEach(tq=>{
+    const tqBlock = el('div',{class:'tq'}, el('span',{class:'tq-num'},'Q '+tq.num), el('p',{class:'tq-q'}, tq.q));
+    const opts = el('div',{class:'tq-opts'});
+    tq.opts.forEach((opt, idx)=>{
+      const selected = STATE.studyAns[String(tq.num)]===idx;
+      const item = el('label',{class: selected?'tq-opt selected':'tq-opt'}, el('input',{type:'radio',name:'tq'+tq.num,value:idx}), opt);
+      item.onclick = ()=>{
+        STATE.studyAns[String(tq.num)] = idx;
+        opts.querySelectorAll('.tq-opt').forEach(o=>o.classList.remove('selected'));
+        item.classList.add('selected');
+      };
+      opts.appendChild(item);
+    });
+    tqBlock.appendChild(opts);
+    surveyList.appendChild(tqBlock);
+  });
+  surveyBox.appendChild(surveyList);
+  root.appendChild(surveyBox);
+  root.appendChild(el('div',{class:'btn-row'},
+    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=2; renderDiag();}},'← 이전'),
+    el('button',{class:'btn btn-primary', onclick:goToResult},'진단 결과 보기 →')
+  ));
+}
+function goToResult(){
+  STATE.result = computeResult();
+  STATE.step = 4; STATE.autoSubmitted = false; STATE.teacherView = false;
+  renderDiag();
+}
+
+// ─────────────────── 진단 계산 엔진 ───────────────────
+function allQuestions(){
+  const out = [];
+  (STATE.data.sections||[]).forEach(sec=>(sec.questions||[]).forEach(q=>out.push({...q, sectionKey:sec.key, sectionTitle:sec.title})));
+  return out;
+}
+function computeResult(){
+  const qs = allQuestions();
+  let totalPts=0, rawPts=0, correct=0;
+  const wrongDetails=[];
+  qs.forEach(q=>{
+    const pts = q.points || (q.three?3:2);
+    totalPts += pts;
+    if(STATE.wrong.has(String(q.no))){ wrongDetails.push({...q, score:pts}); }
+    else { rawPts += pts; correct++; }
+  });
+  const total = qs.length;
+  const wrongN = wrongDetails.length;
+  const rate = total ? Math.round((correct/total)*100) : 0;
+
+  const patterns = matchPatterns(STATE.wrong, STATE.data.patternRules||[]);
+  const strengths = matchStrengths(STATE.wrong, STATE.data.strengthRules||[]);
+  const areaStat = computeAreaStat(qs);
+  const studyDiag = diagnoseStudy(STATE.studyAns, STATE.data.studyDiagnosticCodes||{});
+
+  return { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag };
+}
+// 영역(area)/유형(type)별 정오 집계 — 대시보드·강약점 분석용
+function computeAreaStat(qs){
+  const byArea={};
+  qs.forEach(q=>{
+    const a = q.area || '기타';
+    if(!byArea[a]) byArea[a]={total:0, wrong:0};
+    byArea[a].total++;
+    if(STATE.wrong.has(String(q.no))) byArea[a].wrong++;
+  });
+  return byArea;
+}
+function matchPatterns(wrongSet, rules){
+  const out=[];
+  for(const rule of rules){
+    const t = rule.trigger||{};
+    const hits = (t.questions||[]).filter(n=>wrongSet.has(String(n)));
+    if(hits.length >= (t.minHits||1)){
+      out.push({ code:rule.code, name:rule.name, priority:rule.priority||5, diag:rule.diag, action:rule.action,
+        evidence:hits, severe: t.severeAt && hits.length>=t.severeAt });
+    } else if(rule.fallback){
+      const f = rule.fallback;
+      const fHits = (f.questions||[]).filter(n=>wrongSet.has(String(n)));
+      if(fHits.length >= (f.minHits||1)){
+        out.push({ code:rule.code+'F', name:f.name||rule.name, priority:f.priority||(rule.priority||5)+5,
+          diag:rule.diag, action:rule.action, evidence:fHits, severe:false });
+      }
+    }
+  }
+  out.sort((a,b)=>(a.priority||5)-(b.priority||5));
+  return out.slice(0,6);
+}
+function matchStrengths(wrongSet, rules){
+  const out=[];
+  for(const rule of rules){
+    const t = rule.trigger||{};
+    const qList = t.questions||[];
+    const wrongInRule = qList.filter(n=>wrongSet.has(String(n))).length;
+    if(qList.length && wrongInRule <= (t.maxWrong||0)){
+      out.push({ code:rule.code, name:rule.name, area:rule.area||'', diag:rule.diag });
+    }
+  }
+  return out.slice(0,5);
+}
+// 학습 설문 → 학습 특징 진단(복수 가능)
+function diagnoseStudy(ans, codes){
+  const out=[];
+  const push=k=>{ if(codes[k] && !out.find(o=>o.label===codes[k].label)) out.push(codes[k]); };
+  const tag = num => { const q=(STATE.data.studyCheck||[]).find(x=>String(x.num)===String(num)); return q?q.tag:null; };
+  // tag 기반으로 응답 해석 (설문 순서가 바뀌어도 동작)
+  (STATE.data.studyCheck||[]).forEach(q=>{
+    const a = ans[String(q.num)];
+    if(a==null) return;
+    if(q.tag==='method' && a>=2) push('D_dep');
+    if(q.tag==='review' && a>=1) push('D_norev');
+    if(q.tag==='time' && a===0) push('D_rush');
+    if(q.tag==='time' && a>=4) push('D_slow');
+    if(q.tag==='focus' && a>=2) push('D_focus');
+  });
+  if(!out.length) push('D_self');
+  return out;
+}
+
+// ─── Step 4: 결과지 ───
+function renderStep4(){
+  const r = STATE.result;
+  const wm = STATE.data.weekMeta;
+  const course = COURSES.find(c=>c.id===STATE.courseId);
+
+  root.appendChild(el('div',{class:'result-hero'},
+    el('h2',{class:'result-name'}, STATE.student.name+' 학생'),
+    el('p',{class:'result-meta'}, [STATE.student.school, course?course.name:'', wm.label].filter(Boolean).join(' · '))
+  ));
+
+  root.appendChild(el('div',{class:'score-block'},
+    scoreCard('정답률', r.rate+'%', '/ 100%'),
+    scoreCard('맞은 문항', r.correct, '/ '+r.total+'문항'),
+    scoreCard('틀린 문항', r.wrongN, '문항'),
+    scoreCard('원점수', r.rawPts, '/ '+r.totalPts+'점')
+  ));
+
+  // 강점
+  const sBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'강점 진단'));
+  if(!r.strengths.length){
+    sBlock.appendChild(el('p',{class:'empty-msg'},'이번 주차에서 또렷한 강점 영역이 잡히지 않았습니다. 약점부터 보완하면 강점은 따라옵니다.'));
+  } else {
+    r.strengths.forEach(s=>{
+      sBlock.appendChild(el('div',{class:'strength'},
+        el('div',{class:'strength-name'}, el('span',{class:'code'},'['+s.code+']'), s.name, s.area?el('span',{class:'area'},s.area):null),
+        el('div',{class:'strength-diag'}, s.diag||'')
+      ));
+    });
+  }
+  root.appendChild(sBlock);
+
+  // 약점 패턴
+  const pBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'핵심 약점 패턴'));
+  if(!r.patterns.length){
+    pBlock.appendChild(el('p',{class:'empty-msg'},'발동된 약점 패턴이 없습니다. 깊이 있게 풀어낸 숙제입니다.'));
+  } else {
+    r.patterns.forEach(p=>{
+      pBlock.appendChild(el('div',{class:'pattern'},
+        el('div',{class:'pattern-name'}, el('span',{class:'code'},'['+p.code+']'), p.name, el('span',{class:'hits'},'— '+p.evidence.length+'개 해당')),
+        el('div',{class:'pattern-diag'}, p.diag||''),
+        p.action ? el('div',{class:'pattern-action'}, p.action) : null
+      ));
+    });
+  }
+  root.appendChild(pBlock);
+
+  // 학습 상황·특징
+  const stBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'학습 상황 · 특징'));
+  if(!r.studyDiag.length){
+    stBlock.appendChild(el('p',{class:'empty-msg'},'학습 진단 설문 응답이 없습니다.'));
+  } else {
+    r.studyDiag.forEach(d=>{
+      stBlock.appendChild(el('div',{class:'pattern'},
+        el('div',{class:'pattern-name'}, d.label||'학습 특징'),
+        el('div',{class:'pattern-diag'}, d.feedback||d.desc||'')
+      ));
+    });
+  }
+  root.appendChild(stBlock);
+
+  // 틀린 문항 상세
+  const wBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'}, `틀린 문항 분석 — ${r.wrongN}문항`));
+  if(!r.wrongN){
+    wBlock.appendChild(el('p',{class:'empty-msg'},'만점입니다. 다음 주차도 이 흐름으로 가시면 됩니다.'));
+  } else {
+    r.wrongDetails.forEach(q=>{
+      const head = el('div',{class:'q-detail-head'},
+        el('span',{class:'q-detail-num'}, q.label || (q.no+'번')),
+        q.type ? el('span',{class:'q-detail-area'}, q.type) : (q.area?el('span',{class:'q-detail-area'},q.area):null),
+        q.source ? el('span',{class:'q-detail-source'}, q.source) : null,
+        q.three ? el('span',{class:'q-detail-three'},'3점') : null,
+        (q.wr!=null) ? el('span',{class:'q-detail-wr'}, '오답률 '+q.wr+'%') : null
+      );
+      const block = el('div',{class:'q-detail'}, head);
+      if(q.coreElement) block.appendChild(el('div',{class:'q-detail-core'}, q.coreElement));
+      if(q.weakness1) block.appendChild(el('div',{class:'q-detail-weak'}, q.weakness1));
+      if(q.weakness2) block.appendChild(el('div',{class:'q-detail-weak'}, q.weakness2));
+      if(q.remediation) block.appendChild(el('div',{class:'q-detail-rem'}, q.remediation));
+      // parentNote(학부모 코멘트)는 학생 화면 비노출 — 시트에만 저장되어 대시보드에서 확인
+      wBlock.appendChild(block);
+    });
+  }
+  root.appendChild(wBlock);
+
+  // 제출
+  const navButtons = [
+    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=3; renderDiag();}},'← 학습 진단으로'),
+    el('button',{class:'btn btn-ghost', onclick:()=>window.print()},'PDF 저장 / 인쇄')
+  ];
+  if(!STATE.teacherView){
+    navButtons.push(el('button',{class:'btn btn-primary', id:'submitBtn', onclick:()=>submitResult(true)},'결과 다시 보내기'));
+  }
+  root.appendChild(el('div',{class:'btn-row'}, ...navButtons));
+  root.appendChild(el('div',{id:'submitFeedback'}));
+
+  if(!STATE.teacherView && !STATE.autoSubmitted){
+    setTimeout(()=>submitResult(false), 400);
+  }
+}
+function scoreCard(label, num, sub){
+  return el('div',{class:'score-card'},
+    el('div',{class:'score-label'},label), el('div',{class:'score-num'},num), el('div',{class:'score-num-sub'},sub)
+  );
+}
+
+// ─────────────────── 제출 (시트 전송) ───────────────────
+function submitResult(isManual){
+  const btn = document.getElementById('submitBtn');
+  const fb = document.getElementById('submitFeedback');
+  if(!isManual && STATE.autoSubmitted) return;
+
+  if(!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR')){
+    if(isManual && fb){
+      fb.innerHTML='';
+      fb.appendChild(el('div',{class:'submit-msg submit-err'},'config.js의 SCRIPT_URL이 설정되지 않았습니다. 학원 관리자에게 문의해 주세요.'));
+    }
+    return;
+  }
+  if(fb) fb.innerHTML='';
+
+  const r = STATE.result, s = STATE.student, wm = STATE.data.weekMeta;
+  const course = COURSES.find(c=>c.id===STATE.courseId);
+  const data = {
+    timestamp: new Date().toISOString(),
+    courseId: STATE.courseId,
+    courseLabel: course?course.name:'',
+    week: STATE.week,
+    weekLabel: wm.label,
+    area: wm.area||'',
+    name: s.name, school: s.school, grade: s.grade,
+    원점수: r.rawPts, 만점: r.totalPts,
+    정답률: r.rate, 맞은개수: r.correct, 틀린개수: r.wrongN, 총문항: r.total,
+    틀린문항: Array.from(STATE.wrong).map(Number).sort((a,b)=>a-b).join(','),
+    핵심패턴: r.patterns.map(p=>p.code+':'+p.name).join('|'),
+    강점: r.strengths.map(s2=>s2.code+':'+s2.name).join('|'),
+    학습진단: r.studyDiag.map(d=>d.label).join('|'),
+    제출방식: isManual?'재전송(수동)':'자동',
+    patternsJson: JSON.stringify(r.patterns.map(p=>({code:p.code,name:p.name,diag:p.diag||'',action:p.action||'',hits:p.evidence||[]}))),
+    strengthsJson: JSON.stringify(r.strengths),
+    areaStatJson: JSON.stringify(r.areaStat),
+    wrongDetailsJson: JSON.stringify(r.wrongDetails.map(q=>({
+      no:q.no, area:q.area||'', type:q.type||'', source:q.source||'', three:!!q.three, wr:q.wr||null,
+      coreElement:q.coreElement||'', weakness1:q.weakness1||'', weakness2:q.weakness2||'',
+      remediation:q.remediation||'', parentNote:q.parentNote||''
+    }))),
+    studyDiagJson: JSON.stringify(r.studyDiag),
+    studyAnsJson: JSON.stringify(STATE.studyAns)
+  };
+  STATE.autoSubmitted = true;
+
+  if(btn){ btn.disabled=true; btn.textContent = isManual?'전송 중...':'저장 중...'; }
+  const iframe = document.createElement('iframe');
+  iframe.name = 'submit_target_'+Date.now(); iframe.style.display='none';
+  document.body.appendChild(iframe);
+  const form = document.createElement('form');
+  form.method='POST'; form.action=SCRIPT_URL; form.target=iframe.name;
+  Object.entries(data).forEach(([k,v])=>{
+    const inp=document.createElement('input'); inp.type='hidden'; inp.name=k; inp.value=String(v); form.appendChild(inp);
+  });
+  document.body.appendChild(form); form.submit();
+
+  setTimeout(()=>{
+    if(btn){ btn.textContent='결과 다시 보내기'; btn.disabled=false; }
+    if(fb){
+      fb.innerHTML='';
+      fb.appendChild(el('div',{class:'submit-msg submit-ok'},'결과가 학원 시트에 저장되었습니다. '+TEACHER+'가 확인 후 피드백 드립니다. (전송이 안 된 것 같으면 위 버튼으로 다시 보낼 수 있어요.)'));
+    }
+    setTimeout(()=>{ try{ document.body.removeChild(form); document.body.removeChild(iframe);}catch(e){} }, 2000);
+  }, 1200);
+}
+
+function appendFooter(){
+  root.appendChild(el('div',{class:'footer'},
+    el('span',{class:'footer-mark'}, BRAND),
+    el('div',{html:TEACHER+' · 방학 과제 검사 시스템'})
+  ));
+}
+
+// ─────────────────── Init ───────────────────
+loadConfig().then(()=>{
+  document.getElementById('loading').style.display='none';
+  root.style.display='';
+  const params = new URLSearchParams(location.search);
+  // 강사용 결과 재현: ?report=courseId&week=1&name=..&school=..&wrong=1,2&study={...}
+  const repCourse = params.get('report');
+  if(repCourse){
+    teacherReplay(repCourse, params);
+    return;
+  }
+  renderCourses();
+});
+
+// 강사 대시보드에서 학생 결과를 그대로 재현(읽기 전용)
+function teacherReplay(courseId, params){
+  const week = parseInt(params.get('week')||'1',10);
+  const course = COURSES.find(c=>c.id===courseId);
+  const w = course && (course.weeks||[]).find(x=>x.week===week);
+  if(!w){ renderCourses(); return; }
+  fetch(w.file + '?v=' + Date.now()).then(r=>r.json()).then(d=>{
+    STATE.data=d; STATE.courseId=courseId; STATE.week=week;
+    STATE.student={ name:params.get('name')||'학생', school:params.get('school')||'', grade:params.get('grade')||'' };
+    STATE.wrong = new Set((params.get('wrong')||'').split(',').map(s=>s.trim()).filter(Boolean));
+    try{ STATE.studyAns = JSON.parse(params.get('study')||'{}'); }catch(e){ STATE.studyAns={}; }
+    STATE.result = computeResult();
+    STATE.step=4; STATE.teacherView=true; STATE.autoSubmitted=true;
+    renderDiag();
+  }).catch(()=>renderCourses());
+}
+</script>
+</body>
+</html>
