@@ -350,7 +350,7 @@ function switchTab(t){
 
 // ════════════════ 학생별 개별 리포트 ════════════════
 var REP={ master:[], course:'all', week:'latest', allWeeks:[] };
-var EXCLUDE={'실험용':1,'테스트':1,'클로드':1};
+var EXCLUDE={};  // 리포트에서 숨길 이름(테스트용). 비워두면 제출된 모든 학생이 표시됩니다.
 var CMT={};  // sid -> 코멘트 컨텍스트 (재생성용)
 function repWeek(v){ REP.week=v; renderReports(); }
 
