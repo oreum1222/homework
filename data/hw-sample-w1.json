@@ -1,0 +1,123 @@
+{
+  "_doc": "주차별 숙제 데이터 스키마. 실제 문항/해설을 채워 넣으면 됩니다. no는 숙제 전체에서 고유한 문항 번호(1..N), sections는 화면 분류용 묶음.",
+
+  "courseId": "sample",
+  "week": 1,
+  "weekMeta": {
+    "id": "sample-w1",
+    "label": "1주차 · 현대시 — 화자와 정서",
+    "area": "현대시",
+    "date": "2026-07-07",
+    "desc": "현대시 2세트(서정주·기형도) 기출 변형. 화자의 정서, 시상 전개, 표현법 중심."
+  },
+
+  "scoring": { "passRate": 80 },
+
+  "sections": [
+    {
+      "key": "set1", "title": "1세트 — 서정주 〈추천사〉", "range": "1-5",
+      "questions": [
+        { "no": 1, "answer": 3, "three": false, "wr": 22, "area": "현대시", "type": "화자·정서",
+          "source": "교재 p.10", "coreElement": "그네라는 소재에 투영된 화자의 모순된 욕망(상승 의지 ↔ 지상에의 결박) 파악",
+          "weakness1": "화자가 '향단'에게 명령하는 어조를 단순 호소로 오독", "weakness2": "",
+          "remediation": "명령형 종결어미가 만드는 어조의 적극성에 표시하며 읽기",
+          "parentNote": "" },
+        { "no": 2, "answer": 5, "three": true, "wr": 51, "area": "현대시", "type": "표현법",
+          "source": "교재 p.11", "coreElement": "반복과 변주를 통한 시상의 점층 구조",
+          "weakness1": "동일 구문 반복을 '운율 형성'으로만 보고 의미 강화 기능을 놓침", "weakness2": "변주 지점에서의 정서 변화를 추적하지 못함",
+          "remediation": "반복되는 행과 살짝 바뀌는 행을 나란히 놓고 차이를 적기",
+          "parentNote": "변별 문항(3점)입니다. 표현법의 '기능'까지 묻는 문항에 약합니다." },
+        { "no": 3, "answer": 2, "three": false, "wr": 18, "area": "현대시", "type": "시어·소재",
+          "source": "교재 p.11", "coreElement": "'바다'와 '하늘'의 상징적 대립", "weakness1": "", "weakness2": "",
+          "remediation": "", "parentNote": "" },
+        { "no": 4, "answer": 4, "three": false, "wr": 34, "area": "현대시", "type": "시상 전개",
+          "source": "교재 p.12", "coreElement": "연 단위의 시상 전환 흐름 정리",
+          "weakness1": "연과 연 사이의 정서 흐름을 끊어서 봄", "weakness2": "",
+          "remediation": "연별 한 줄 요약 후 화살표로 정서 흐름 잇기", "parentNote": "" },
+        { "no": 5, "answer": 1, "three": true, "wr": 47, "area": "현대시", "type": "외적 준거(보기)",
+          "source": "교재 p.12", "coreElement": "〈보기〉의 '초월 의지' 관점으로 작품 재해석",
+          "weakness1": "보기의 핵심어를 작품의 어느 시구와 연결할지 못 잡음", "weakness2": "보기에 없는 내용을 추론으로 끼워 넣음",
+          "remediation": "보기 → 시구 1:1 매칭표 만들기", "parentNote": "" }
+      ]
+    },
+    {
+      "key": "set2", "title": "2세트 — 기형도 〈엄마 걱정〉", "range": "6-10",
+      "questions": [
+        { "no": 6, "answer": 2, "three": false, "wr": 15, "area": "현대시", "type": "화자·정서",
+          "source": "교재 p.14", "coreElement": "유년 화자의 회상 구도와 외로움", "weakness1": "", "weakness2": "",
+          "remediation": "", "parentNote": "" },
+        { "no": 7, "answer": 5, "three": false, "wr": 29, "area": "현대시", "type": "감각·이미지",
+          "source": "교재 p.14", "coreElement": "공감각·촉각 이미지를 통한 정서 형상화",
+          "weakness1": "이미지의 종류는 알지만 '정서와의 연결'을 설명 못 함", "weakness2": "",
+          "remediation": "이미지마다 '어떤 감정을 위해 쓰였나' 한 줄 달기", "parentNote": "" },
+        { "no": 8, "answer": 3, "three": true, "wr": 55, "area": "현대시", "type": "표현법",
+          "source": "교재 p.15", "coreElement": "비유와 상징의 차이 구분",
+          "weakness1": "원관념-보조관념 관계를 거꾸로 잡음", "weakness2": "관습적 상징을 개인적 상징으로 오인",
+          "remediation": "비유 문장을 'A는 B다' 틀로 분해", "parentNote": "비유/상징 개념 자체 보강 필요." },
+        { "no": 9, "answer": 1, "three": false, "wr": 12, "area": "현대시", "type": "시어·소재",
+          "source": "교재 p.15", "coreElement": "'찬밥'의 객관적 상관물 기능", "weakness1": "", "weakness2": "",
+          "remediation": "", "parentNote": "" },
+        { "no": 10, "answer": 4, "three": false, "wr": 38, "area": "현대시", "type": "종합 이해",
+          "source": "교재 p.16", "coreElement": "작품 전체의 주제 의식 종합",
+          "weakness1": "부분 해석은 맞으나 전체 주제로 통합하지 못함", "weakness2": "",
+          "remediation": "마지막에 '이 시가 결국 말하려는 것' 한 문장 쓰기", "parentNote": "" }
+      ]
+    }
+  ],
+
+  "patternRules": [
+    {
+      "code": "P1", "name": "표현법의 '기능' 약점", "priority": 1,
+      "diag": "표현법(반복·비유·상징)의 종류는 알지만, 그것이 '정서·의미를 어떻게 강화하는가'라는 기능 차원에서 자주 틀립니다.",
+      "action": "표현법을 발견하면 멈추지 말고 '왜 썼는가(정서/의미)'를 한 줄로 적는 훈련을 2주간 반복하세요.",
+      "trigger": { "questions": [2, 8], "minHits": 1, "severeAt": 2 }
+    },
+    {
+      "code": "P2", "name": "외적 준거(보기) 연결력 부족", "priority": 2,
+      "diag": "〈보기〉가 제시한 해석 틀을 작품의 구체적 시구와 1:1로 연결하는 데서 실점합니다.",
+      "action": "보기의 핵심어에 번호를 매기고, 작품에서 대응하는 부분을 같은 번호로 표시하는 매칭 훈련.",
+      "trigger": { "questions": [5], "minHits": 1 }
+    },
+    {
+      "code": "P3", "name": "부분→전체 통합 약점", "priority": 3,
+      "diag": "행·연 단위의 부분 해석은 정확하나, 작품 전체의 주제로 통합하는 종합 문항에서 흔들립니다.",
+      "action": "지문을 다 읽은 뒤 '결국 이 작품이 말하려는 것' 한 문장 요약을 습관화하세요.",
+      "trigger": { "questions": [4, 10], "minHits": 1 }
+    }
+  ],
+
+  "strengthRules": [
+    {
+      "code": "S1", "name": "시어·소재 해석이 단단함", "area": "현대시",
+      "diag": "시어·소재(상징물)의 함축 의미를 묻는 문항을 안정적으로 맞혔습니다. 작품의 디테일을 놓치지 않는 강점입니다.",
+      "trigger": { "questions": [3, 9], "maxWrong": 0 }
+    },
+    {
+      "code": "S2", "name": "화자·정서 파악이 정확함", "area": "현대시",
+      "diag": "화자의 처지와 정서를 잡는 기본기가 탄탄합니다. 이 강점을 표현법·종합 문항으로 확장하면 됩니다.",
+      "trigger": { "questions": [1, 6], "maxWrong": 0 }
+    }
+  ],
+
+  "studyCheck": [
+    { "num": 1, "tag": "time", "q": "이번 숙제를 푸는 데 든 시간은 어느 정도였나요?",
+      "opts": ["권장 시간보다 훨씬 빨리 끝남", "권장 시간 안에 여유 있게", "권장 시간에 거의 맞춤", "권장 시간을 조금 넘김", "권장 시간을 크게 넘김"] },
+    { "num": 2, "tag": "method", "q": "문제를 어떻게 풀었나요?",
+      "opts": ["전부 혼자, 해설 안 봄", "혼자 풀고 채점 때만 해설 확인", "막히면 바로 해설을 봄", "해설을 먼저 보고 따라 이해함"] },
+    { "num": 3, "tag": "review", "q": "틀린 문항은 어떻게 처리했나요?",
+      "opts": ["오답을 다시 풀고 이유까지 정리함", "해설만 읽고 넘어감", "체크만 하고 아직 안 봄", "틀린 줄 몰랐음"] },
+    { "num": 4, "tag": "difficulty", "q": "체감 난이도는?",
+      "opts": ["매우 쉬움", "쉬움", "적당함", "어려움", "매우 어려움"] },
+    { "num": 5, "tag": "focus", "q": "푸는 동안 집중 상태는?",
+      "opts": ["끝까지 집중 유지", "중간에 한두 번 흐트러짐", "자주 끊김", "거의 집중 못 함"] }
+  ],
+
+  "studyDiagnosticCodes": {
+    "D_self": { "label": "자기주도 안정형", "feedback": "혼자 풀고 오답까지 정리하는 이상적인 학습 루틴입니다. 지금 방식을 유지하세요." },
+    "D_dep":  { "label": "해설 의존형", "feedback": "막히면 바로 해설을 보는 습관이 보입니다. 최소 5분은 스스로 버틴 뒤 해설을 확인하도록 바꿔야 실전 사고력이 자랍니다." },
+    "D_norev":{ "label": "복습 누락형", "feedback": "푸는 것까지는 하지만 오답 정리가 약합니다. 틀린 문항을 '왜 틀렸는지' 한 줄로 적는 오답 노트를 시작하세요." },
+    "D_rush": { "label": "속도 과속형", "feedback": "권장 시간보다 너무 빨리 끝냅니다. 정답률이 낮다면 꼼꼼함 부족 신호이니 근거 확인 단계를 늘리세요." },
+    "D_slow": { "label": "시간 과소비형", "feedback": "한 문항에 시간을 과투입합니다. 막히는 문항은 표시 후 넘어가는 판단을 연습하세요." },
+    "D_focus":{ "label": "집중 불안정형", "feedback": "푸는 도중 집중이 자주 끊깁니다. 25분 집중 + 5분 휴식 단위로 환경을 정리해 보세요." }
+  }
+}
