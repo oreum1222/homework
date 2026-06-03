@@ -120,7 +120,7 @@ body.landing .corner-logo{display:none}
 .area-block{margin-bottom:32px}
 .area-title{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border-soft)}
 .area-title .sub{color:var(--text-muted);font-size:0.78rem;margin-left:10px;letter-spacing:0;font-weight:300}
-.q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
 .q-item{display:flex;align-items:center;gap:10px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;padding:10px 12px;cursor:pointer;transition:all 0.15s;user-select:none}
 .q-item:hover{border-color:var(--border-soft)}
 .q-item.wrong{background:rgba(198,102,102,0.12);border-color:var(--danger);color:var(--cream)}
@@ -128,6 +128,8 @@ body.landing .corner-logo{display:none}
 .q-three{font-size:0.7rem;color:var(--gold-soft);font-weight:500;margin-left:auto}
 .q-wr{font-size:0.7rem;color:var(--text-muted);margin-left:auto}
 .q-item.wrong .q-wr{color:var(--cream);opacity:0.7}
+.q-cc{font-size:0.68rem;color:var(--text-muted);margin-left:auto;text-align:right;line-height:1.25;max-width:62%;word-break:keep-all}
+.q-item.wrong .q-cc{color:var(--cream);opacity:0.75}
 
 /* ─── Study survey ─── */
 .time-survey{display:flex;flex-direction:column;gap:32px}
@@ -222,7 +224,7 @@ body.landing .corner-logo{display:none}
 </head>
 <body>
 <div class="loading" id="loading"><div class="loading-mark">오름 국어</div></div>
-<img class="corner-logo" src="logo.png" alt="" onerror="this.style.display='none'">
+<img class="corner-logo" alt="" onerror="this.style.display='none'">
 <div class="wrap" id="root" style="display:none"></div>
 
 <script src="config.js"></script>
@@ -465,7 +467,7 @@ function nextFromStep1(){
 function renderStep2(){
   root.appendChild(el('div',{class:'section'},
     el('h2',{class:'section-title'},'오답 마킹'),
-    el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 회색 숫자는 (입력된 경우) 기준 오답률(%)입니다. <strong style="color:var(--gold-soft)">3점</strong> 표시는 변별이 큰 자리입니다.'})
+    el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항이 다루는 <strong>개념(영역)</strong>입니다.'})
   ));
   (STATE.data.sections||[]).forEach(sec=>{
     const titleExtra = sec.range ? ` (${sec.range})` : '';
@@ -486,7 +488,7 @@ function areaBlock(title, questions){
     const item = el('div',{class: STATE.wrong.has(key)?'q-item wrong':'q-item'},
       el('span',{class:'q-num'}, q.label || (q.no+'번')),
       q.three ? el('span',{class:'q-three'},'3점') : null,
-      (q.wr!=null) ? el('span',{class:'q-wr'}, q.wr+'%') : null
+      (q.wr!=null) ? el('span',{class:'q-wr'}, q.wr+'%') : (q.area ? el('span',{class:'q-cc'}, q.area) : null)
     );
     item.onclick = ()=>{
       if(STATE.wrong.has(key)) STATE.wrong.delete(key); else STATE.wrong.add(key);
@@ -556,9 +558,10 @@ function computeResult(){
   const rate = total ? Math.round((correct/total)*100) : 0;
 
   const patterns = matchPatterns(STATE.wrong, STATE.data.patternRules||[]);
-  const strengths = matchStrengths(STATE.wrong, STATE.data.strengthRules||[]);
   const areaStat = computeAreaStat(qs);
-  const studyDiag = diagnoseStudy(STATE.studyAns, STATE.data.studyDiagnosticCodes||{});
+  let strengths = matchStrengths(STATE.wrong, STATE.data.strengthRules||[]);
+  if(!strengths.length) strengths = fallbackStrength(areaStat);   // 강점 항상 발견
+  const studyDiag = diagnoseStudy(STATE.studyAns, STATE.data.studyDiagnosticCodes||{}, rate);
 
   return { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag };
 }
@@ -605,23 +608,41 @@ function matchStrengths(wrongSet, rules){
   }
   return out.slice(0,5);
 }
-// 학습 설문 → 학습 특징 진단(복수 가능)
-function diagnoseStudy(ans, codes){
+// 강점이 하나도 안 잡힐 때 — 상대적으로 가장 잘한 영역을 강점으로
+function fallbackStrength(areaStat){
+  const arr=Object.entries(areaStat||{}).map(([a,v])=>({area:a,total:v.total,wrong:v.wrong,acc:v.total?(v.total-v.wrong)/v.total:0})).filter(x=>x.total>=2);
+  arr.sort((a,b)=> b.acc-a.acc || b.total-a.total);
+  const out=[];
+  for(const x of arr){
+    if(out.length>=2) break;
+    if(x.acc>=0.6) out.push({code:'S+',name:x.area+' 영역',area:x.area,
+      diag: x.wrong===0 ? (x.area+' 영역은 한 문제도 틀리지 않았어요. 확실한 강점입니다.')
+        : (x.area+' 영역 정답률이 '+Math.round(x.acc*100)+'%로 가장 높아요. 상대적으로 가장 단단한 부분입니다.')});
+  }
+  if(!out.length && arr.length){ const x=arr[0]; out.push({code:'S+',name:x.area+' 영역',area:x.area,
+    diag: x.area+' 영역이 그나마 가장 안정적이에요(정답률 '+Math.round(x.acc*100)+'%). 여기를 발판 삼아 약한 영역을 끌어올려 봅시다.'}); }
+  return out;
+}
+// 학습 설문 → 학습 특징 진단(정밀, 복수 가능)
+function diagnoseStudy(ans, codes, rate){
   const out=[];
   const push=k=>{ if(codes[k] && !out.find(o=>o.label===codes[k].label)) out.push(codes[k]); };
-  const tag = num => { const q=(STATE.data.studyCheck||[]).find(x=>String(x.num)===String(num)); return q?q.tag:null; };
-  // tag 기반으로 응답 해석 (설문 순서가 바뀌어도 동작)
-  (STATE.data.studyCheck||[]).forEach(q=>{
-    const a = ans[String(q.num)];
-    if(a==null) return;
-    if(q.tag==='method' && a>=2) push('D_dep');
-    if(q.tag==='review' && a>=1) push('D_norev');
-    if(q.tag==='time' && a===0) push('D_rush');
-    if(q.tag==='time' && a>=4) push('D_slow');
-    if(q.tag==='focus' && a>=2) push('D_focus');
-  });
+  const get=tag=>{ const q=(STATE.data.studyCheck||[]).find(x=>x.tag===tag); return q?ans[String(q.num)]:undefined; };
+  const timing=get('timing'),split=get('split'),dur=get('duration'),concept=get('concept'),method=get('method'),review=get('review'),focus=get('focus'),time=get('time');
+  if(timing>=3) push('D_cram');
+  if(split===0) push('D_bulk');
+  if(split===3) push('D_scatter');
+  if(concept===2) push('D_noconcept');
+  if(method>=2) push('D_dep');
+  if(review>=1) push('D_norev');
+  if(focus>=2) push('D_focus');
+  if(dur===0 && rate!=null && rate<75) push('D_rush');
+  if(dur===3 && rate!=null && rate<75) push('D_slow');
+  if(time===0) push('D_rush'); if(time>=4) push('D_slow');   // 구버전 설문 호환
+  if(split===2) push('D_steady');
+  if(method===0 && (review===0||review==null) && (concept===0||concept===1)) push('D_self');
   if(!out.length) push('D_self');
-  return out;
+  return out.slice(0,3);
 }
 
 // ─── Step 4: 결과지 ───
@@ -807,6 +828,9 @@ function appendFooter(){
 loadConfig().then(()=>{
   document.getElementById('loading').style.display='none';
   root.style.display='';
+  // 내장 로고(config의 LOGO_URL=data URI)를 고정 코너 로고에 적용
+  var _cl=document.querySelector('.corner-logo');
+  if(_cl){ if(LOGO_URL) _cl.src=LOGO_URL; else _cl.style.display='none'; }
   const params = new URLSearchParams(location.search);
   // 강사용 결과 재현: ?report=courseId&week=1&name=..&school=..&wrong=1,2&study={...}
   const repCourse = params.get('report');
