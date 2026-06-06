@@ -6,6 +6,10 @@
  * ▣ 새 수업 추가:  COURSE_LIST 배열에 { id, name, ... weeks:[...] } 한 덩어리 추가
  * ▣ 새 주차 추가:  해당 수업의 weeks 배열에 한 줄 추가 + data/hw-<id>-w<n>.json 파일 생성
  *
+ * ▣ 월별 수업(정규반):  weeks 대신 months:[{ key, month, status, weeks:[...] }] 사용
+ *    → 화면 흐름: 반 선택 → 월 선택 → 주차 선택 → 진단
+ *    → 각 주차 JSON의 weekMeta에 month:'9월' 을 넣으면 대시보드에 월이 함께 기록됩니다.
+ *
  * status: 'active'(진행중) | 'tentative'(예정/준비중) | 'closed'(마감)
  *
  * roster: (선택) 수강생 이름 배열. 넣어두면 대시보드 '학생별 리포트'에서
@@ -14,6 +18,35 @@
  */
 
 window.COURSE_LIST = [
+
+  // ═══ 고3 정규반 (월별 → 주차) ═══
+  {
+    id: 'go3-regular',
+    name: '고3 정규반',
+    grade: '고3',
+    desc: '정규반 월별 과제 — 월을 고르고 주차를 선택하세요.',
+    period: '정규반',
+    // roster: ['학생1','학생2'],   // (선택) 수강생 명단 → 미제출자 자동 체크
+    months: [
+      {
+        key: '2026-06', month: '6월', status: 'active', desc: '6월 보충 — 수수활 + 이감 선택과목 N제',
+        weeks: [
+          { week: 1, file: 'data/hw-go3-2606-susu.json', label: '1주차 · 수수활 보충', area: '수수활', status: 'active' },
+          { week: 2, file: 'data/hw-go3-2606-w2.json', label: '2주차 · N제 1~7회', area: '선택과목', status: 'active' },
+          { week: 3, file: 'data/hw-go3-2606-w3.json', label: '3주차 · N제 8~14회', area: '선택과목', status: 'active' },
+          { week: 4, file: 'data/hw-go3-2606-w4.json', label: '4주차 · N제 15~18회', area: '선택과목', status: 'active' }
+        ]
+      },
+      {
+        key: '2026-09', month: '9월', status: 'active', desc: '9월 정규반 과제',
+        weeks: [
+          { week: 1, file: 'data/hw-go3-2609-w1.json', label: '1주차', area: '', status: 'active' },
+          // { week: 2, file: 'data/hw-go3-2609-w2.json', label: '2주차', area: '', status: 'tentative' },
+        ]
+      },
+      // { key: '2026-10', month: '10월', status: 'tentative', weeks: [] },
+    ]
+  },
 
   {
     id: 'sample',                       // 영문/숫자 식별자 (파일명·시트 키로 쓰임)

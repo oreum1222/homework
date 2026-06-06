@@ -142,6 +142,8 @@ body.landing .corner-logo{display:none}
 .tq-opt input{display:none}
 .tq-opt:hover{border-color:var(--border-soft);color:var(--cream)}
 .tq-opt.selected{border-color:var(--gold);background:rgba(201,168,76,0.08);color:var(--cream)}
+.tq-date{color-scheme:dark;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;padding:12px 16px;color:var(--cream);font-family:inherit;font-size:1rem;width:100%;max-width:240px}
+.tq-date:focus{outline:none;border-color:var(--gold)}
 
 /* ─── Buttons ─── */
 .btn-row{display:flex;gap:12px;justify-content:space-between;margin-top:36px;flex-wrap:wrap}
@@ -237,9 +239,11 @@ const COURSES = window.COURSE_LIST || [];
 const root = document.getElementById('root');
 
 const STATE = {
-  view: 'courses',     // 'courses' | 'weeks' | 'diag'
+  view: 'courses',     // 'courses' | 'months' | 'weeks' | 'diag'
   courseId: null,
-  week: null,
+  monthKey: null,      // 월별 강좌일 때 선택한 월 key (없으면 평면 강좌)
+  monthLabel: null,
+  week: null,          // 시트 전송용 고유 주차값(월별이면 합성값)
   data: null,          // 주차 JSON
   step: 1,
   student: { name:'', school:'', grade:'고3' },
@@ -287,7 +291,7 @@ function loadConfig(){
 
 // ─────────────────── View 1: 수업 목록 ───────────────────
 function renderCourses(){
-  STATE.view='courses'; STATE.courseId=null; STATE.week=null; STATE.data=null;
+  STATE.view='courses'; STATE.courseId=null; STATE.monthKey=null; STATE.monthLabel=null; STATE.week=null; STATE.data=null;
   document.body.classList.add('landing');
   clear(root);
   const brandMark = el('div',{class:'brand-row'});
@@ -313,8 +317,11 @@ function renderCourses(){
   }
   const list = el('div',{class:'exam-list'});
   COURSES.forEach((c, idx)=>{
-    const card = el('button',{class:'exam-card', onclick:()=>renderWeeks(c.id)});
-    const activeWeeks = (c.weeks||[]).filter(w=>w.status!=='tentative').length;
+    const card = el('button',{class:'exam-card', onclick:()=>openCourse(c.id)});
+    const isMonthly = !!(c.months && c.months.length);
+    const unit = isMonthly ? '개월' : '주차';
+    const total = isMonthly ? c.months.length : (c.weeks||[]).length;
+    const activeN = isMonthly ? c.months.filter(m=>m.status!=='tentative').length : (c.weeks||[]).filter(w=>w.status!=='tentative').length;
     card.appendChild(el('div',{class:'card-top'},
       el('div',{class:'card-meta-left'},
         el('span',{class:'card-num'}, 'COURSE '+String(idx+1).padStart(2,'0')),
@@ -327,8 +334,8 @@ function renderCourses(){
     if(c.desc) card.appendChild(el('div',{class:'card-date'}, c.desc));
     card.appendChild(el('div',{class:'card-body'},
       el('div',{class:'card-body-block'},
-        el('span',{class:'body-label'},'주차'),
-        el('span',{class:'body-value',html:`<strong>${(c.weeks||[]).length}주차</strong> 구성 · ${activeWeeks}주차 진행`})
+        el('span',{class:'body-label'}, isMonthly?'구성':'주차'),
+        el('span',{class:'body-value',html:`<strong>${total}${unit}</strong> 구성 · ${activeN}${unit} 진행`})
       ),
       el('div',{class:'card-body-block'},
         el('span',{class:'body-label'},'대상'),
@@ -341,29 +348,88 @@ function renderCourses(){
   appendFooter();
 }
 
-// ─────────────────── View 2: 주차 목록 ───────────────────
-function renderWeeks(courseId){
+// ─────────────────── 강좌 진입 분기 (월별 vs 평면) ───────────────────
+function openCourse(courseId){
   const course = COURSES.find(c=>c.id===courseId);
   if(!course){ renderCourses(); return; }
-  STATE.view='weeks'; STATE.courseId=courseId;
+  if(course.months && course.months.length) renderMonths(courseId);
+  else renderWeeks(courseId);
+}
+
+// ─────────────────── View: 월 목록 (월별 강좌) ───────────────────
+function renderMonths(courseId){
+  const course = COURSES.find(c=>c.id===courseId);
+  if(!course){ renderCourses(); return; }
+  STATE.view='months'; STATE.courseId=courseId; STATE.monthKey=null;
   document.body.classList.remove('landing');
   clear(root);
   root.appendChild(el('div',{class:'back-bar'}, el('button',{class:'back-link',onclick:renderCourses},'← 수업 선택으로')));
   root.appendChild(el('div',{class:'diag-header'},
-    el('span',{class:'exam-tag'},'수업 · 주차 선택'),
+    el('span',{class:'exam-tag'},'수업 · 월 선택'),
     el('h1',{class:'diag-title'}, course.name),
-    el('p',{class:'diag-sub'}, (course.desc||'')+' · 진단할 주차를 선택해 주세요.')
+    el('p',{class:'diag-sub'}, (course.desc||'')+' · 검사할 월을 선택해 주세요.')
   ));
+  const months = course.months||[];
+  if(!months.length){ root.appendChild(el('div',{class:'error-box'},'아직 등록된 월이 없습니다.')); appendFooter(); return; }
+  const list = el('div',{class:'exam-list'});
+  months.forEach((m,i)=>{
+    const tentative = m.status==='tentative';
+    const wkN = (m.weeks||[]).filter(w=>w.status!=='tentative').length;
+    const card = el('button',{class:'exam-card', onclick: tentative?(()=>alert('아직 준비 중인 월입니다.')):(()=>renderWeeks(courseId, m.key))});
+    if(tentative) card.style.opacity='0.6';
+    card.appendChild(el('div',{class:'card-top'},
+      el('div',{class:'card-meta-left'},
+        el('span',{class:'card-num'}, 'MONTH '+String(i+1).padStart(2,'0')),
+        el('span',{class:'card-status '+statusClass(m.status)}, statusLabel(m.status))
+      ),
+      el('span',{class:'card-arrow'},'→')
+    ));
+    card.appendChild(el('div',{class:'card-name'}, m.month || m.key));
+    if(m.desc) card.appendChild(el('div',{class:'card-date'}, m.desc));
+    card.appendChild(el('div',{class:'card-body'},
+      el('div',{class:'card-body-block'},
+        el('span',{class:'body-label'},'주차'),
+        el('span',{class:'body-value',html:`<strong>${(m.weeks||[]).length}주차</strong> 구성 · ${wkN}주차 진행`})
+      ),
+      el('div',{class:'card-body-block'},
+        el('span',{class:'body-label'},'대상'),
+        el('span',{class:'body-value',html:`<strong>${escapeHtml(course.grade||'전체')}</strong>`})
+      )
+    ));
+    list.appendChild(card);
+  });
+  root.appendChild(list);
+  appendFooter();
+}
 
-  const weeks = (course.weeks||[]);
-  if(!weeks.length){
-    root.appendChild(el('div',{class:'error-box'},'아직 등록된 주차가 없습니다.'));
-    appendFooter(); return;
+// ─────────────────── View 2: 주차 목록 (평면/월별 공용) ───────────────────
+function renderWeeks(courseId, monthKey){
+  const course = COURSES.find(c=>c.id===courseId);
+  if(!course){ renderCourses(); return; }
+  STATE.view='weeks'; STATE.courseId=courseId;
+  document.body.classList.remove('landing');
+  let weeks, month=null, backFn;
+  if(monthKey && course.months){
+    month = course.months.find(m=>m.key===monthKey);
+    if(!month){ renderMonths(courseId); return; }
+    STATE.monthKey = monthKey; STATE.monthLabel = month.month||monthKey;
+    weeks = month.weeks||[]; backFn = ()=>renderMonths(courseId);
+  } else {
+    STATE.monthKey = null; STATE.monthLabel = null;
+    weeks = course.weeks||[]; backFn = renderCourses;
   }
+  clear(root);
+  root.appendChild(el('div',{class:'back-bar'}, el('button',{class:'back-link',onclick:backFn}, month?'← 월 선택으로':'← 수업 선택으로')));
+  root.appendChild(el('div',{class:'diag-header'},
+    el('span',{class:'exam-tag'}, month? (course.name+' · '+month.month) : '수업 · 주차 선택'),
+    el('h1',{class:'diag-title'}, month? (month.month+' 과제') : course.name),
+    el('p',{class:'diag-sub'}, (month? (month.desc||course.name) : (course.desc||''))+' · 진단할 주차를 선택해 주세요.')
+  ));
+  if(!weeks.length){ root.appendChild(el('div',{class:'error-box'},'아직 등록된 주차가 없습니다.')); appendFooter(); return; }
   const list = el('div',{class:'exam-list'});
   weeks.forEach(w=>{
     const tentative = w.status==='tentative';
-    const card = el('button',{class:'exam-card', onclick: tentative?(()=>alert('아직 준비 중인 주차입니다.')):(()=>loadWeek(courseId, w.week))});
+    const card = el('button',{class:'exam-card', onclick: tentative?(()=>alert('아직 준비 중인 주차입니다.')):(()=>loadWeek(courseId, monthKey||null, w.week))});
     if(tentative) card.style.opacity='0.6';
     card.appendChild(el('div',{class:'card-top'},
       el('div',{class:'card-meta-left'},
@@ -380,14 +446,24 @@ function renderWeeks(courseId){
   appendFooter();
 }
 
-function loadWeek(courseId, week){
+function loadWeek(courseId, monthKey, week){
   const course = COURSES.find(c=>c.id===courseId);
-  const w = (course.weeks||[]).find(x=>x.week===week);
-  if(!w){ renderWeeks(courseId); return; }
+  let w, weekUid;
+  if(monthKey && course.months){
+    const mi = course.months.findIndex(m=>m.key===monthKey);
+    const month = course.months[mi];
+    w = month && (month.weeks||[]).find(x=>x.week===week);
+    weekUid = (mi+1)*100 + week;   // 월별 고유·정렬용 합성 주차값(예: 9월=1번째→101,102 / 10월→201)
+  } else {
+    w = (course.weeks||[]).find(x=>x.week===week);
+    weekUid = week;
+  }
+  if(!w){ openCourse(courseId); return; }
   document.getElementById('loading').style.display='flex';
   fetch(w.file + '?v=' + Date.now()).then(r=>r.json()).then(d=>{
     document.getElementById('loading').style.display='none';
-    STATE.data = d; STATE.week = week;
+    STATE.data = d;
+    STATE.week = monthKey ? weekUid : (d.week!=null ? d.week : week);
     STATE.step = 1; STATE.wrong = new Set(); STATE.studyAns = {}; STATE.result = null;
     STATE.autoSubmitted = false; STATE.teacherView = false;
     renderDiag();
@@ -405,15 +481,15 @@ function renderDiag(){
   const course = COURSES.find(c=>c.id===STATE.courseId);
   const wm = STATE.data.weekMeta;
   root.appendChild(el('div',{class:'back-bar'},
-    el('button',{class:'back-link',onclick:()=>renderWeeks(STATE.courseId)},'← 주차 선택으로')
+    el('button',{class:'back-link',onclick:()=>renderWeeks(STATE.courseId, STATE.monthKey)},'← 주차 선택으로')
   ));
   root.appendChild(el('div',{class:'diag-header'},
     el('span',{class:'exam-tag'}, (course?course.name:'') + ' · 숙제 진단'),
     el('h1',{class:'diag-title'}, wm.label),
-    el('p',{class:'diag-sub'}, '4단계 진단 — 기본 정보 → 오답 마킹 → 학습 진단 → 진단 리포트')
+    el('p',{class:'diag-sub'}, '4단계 진단 — 기본 정보 → 오답 마킹 → 과제 점검 → 진단 리포트')
   ));
   root.appendChild(el('div',{class:'step-bar'},
-    stepEl(1,'기본 정보'), stepEl(2,'오답 마킹'), stepEl(3,'학습 진단'), stepEl(4,'진단 결과')
+    stepEl(1,'기본 정보'), stepEl(2,'오답 마킹'), stepEl(3,'과제 점검'), stepEl(4,'진단 결과')
   ));
   if(STATE.step===1) renderStep1();
   else if(STATE.step===2) renderStep2();
@@ -465,11 +541,24 @@ function nextFromStep1(){
 
 // ─── Step 2: 오답 마킹 ───
 function renderStep2(){
+  const secs = STATE.data.sections||[];
+  const noItems = STATE.data.completionOnly || !secs.some(s=>(s.questions||[]).length);
+  if(noItems){
+    root.appendChild(el('div',{class:'section'},
+      el('h2',{class:'section-title'},'완료 점검 과제'),
+      el('p',{class:'section-desc', html:'이 과제는 <strong>완료 여부</strong>만 점검합니다. 틀린 문항 입력 없이 바로 다음 단계로 진행해 주세요.'})
+    ));
+    root.appendChild(el('div',{class:'btn-row'},
+      el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
+      el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=3; renderDiag();}},'다음 단계 →')
+    ));
+    return;
+  }
   root.appendChild(el('div',{class:'section'},
     el('h2',{class:'section-title'},'오답 마킹'),
     el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항이 다루는 <strong>개념(영역)</strong>입니다.'})
   ));
-  (STATE.data.sections||[]).forEach(sec=>{
+  secs.forEach(sec=>{
     const titleExtra = sec.range ? ` (${sec.range})` : '';
     root.appendChild(areaBlock((sec.title||'문항')+titleExtra, sec.questions||[]));
   });
@@ -503,25 +592,37 @@ function areaBlock(title, questions){
 // ─── Step 3: 학습 진단 설문 ───
 function renderStep3(){
   root.appendChild(el('div',{class:'section'},
-    el('h2',{class:'section-title'},'학습 진단'),
-    el('p',{class:'section-desc'},'이번 숙제를 ‘어떻게 풀고 복습했는지’를 진단합니다. 솔직하게 답할수록 학습 특징 분석이 정확해집니다.')
+    el('h2',{class:'section-title'},'과제 점검'),
+    el('p',{class:'section-desc'},'이번 과제를 어떻게 했는지 점검합니다. 다 못 했어도 솔직하게 — 대신 언제까지 끝낼지 약속해 주세요.')
   ));
   const surveyBox = el('div',{class:'section'});
   const surveyList = el('div',{class:'time-survey'});
-  (STATE.data.studyCheck||[]).forEach(tq=>{
-    const tqBlock = el('div',{class:'tq'}, el('span',{class:'tq-num'},'Q '+tq.num), el('p',{class:'tq-q'}, tq.q));
-    const opts = el('div',{class:'tq-opts'});
-    tq.opts.forEach((opt, idx)=>{
-      const selected = STATE.studyAns[String(tq.num)]===idx;
-      const item = el('label',{class: selected?'tq-opt selected':'tq-opt'}, el('input',{type:'radio',name:'tq'+tq.num,value:idx}), opt);
-      item.onclick = ()=>{
-        STATE.studyAns[String(tq.num)] = idx;
-        opts.querySelectorAll('.tq-opt').forEach(o=>o.classList.remove('selected'));
-        item.classList.add('selected');
-      };
-      opts.appendChild(item);
-    });
-    tqBlock.appendChild(opts);
+  const items = STATE.data.studyCheck||[];
+  const controllers = new Set(items.filter(t=>t.showIf).map(t=>t.showIf.q));
+  let qno=0;
+  items.forEach(tq=>{
+    if(tq.showIf){ const av=STATE.studyAns[String(tq.showIf.q)]; if(av==null || av < (tq.showIf.minIndex||1)) return; }
+    qno++;
+    const tqBlock = el('div',{class:'tq'}, el('span',{class:'tq-num'},'Q '+qno), el('p',{class:'tq-q'}, tq.q));
+    if(tq.type==='date'){
+      const inp = el('input',{type:'date', class:'tq-date', value:(STATE.studyAns[String(tq.num)]||'')});
+      inp.onchange = ()=>{ STATE.studyAns[String(tq.num)] = inp.value; };
+      tqBlock.appendChild(el('div',{class:'tq-opts'}, inp));
+    } else {
+      const opts = el('div',{class:'tq-opts'});
+      (tq.opts||[]).forEach((opt, idx)=>{
+        const selected = STATE.studyAns[String(tq.num)]===idx;
+        const item = el('label',{class: selected?'tq-opt selected':'tq-opt'}, el('input',{type:'radio',name:'tq'+tq.num,value:idx}), opt);
+        item.onclick = ()=>{
+          STATE.studyAns[String(tq.num)] = idx;
+          opts.querySelectorAll('.tq-opt').forEach(o=>o.classList.remove('selected'));
+          item.classList.add('selected');
+          if(controllers.has(tq.num)) renderDiag();  // 완수 상태에 따라 조건부 문항 갱신
+        };
+        opts.appendChild(item);
+      });
+      tqBlock.appendChild(opts);
+    }
     surveyList.appendChild(tqBlock);
   });
   surveyBox.appendChild(surveyList);
@@ -561,9 +662,19 @@ function computeResult(){
   const areaStat = computeAreaStat(qs);
   let strengths = matchStrengths(STATE.wrong, STATE.data.strengthRules||[]);
   if(!strengths.length) strengths = fallbackStrength(areaStat);   // 강점 항상 발견
-  const studyDiag = diagnoseStudy(STATE.studyAns, STATE.data.studyDiagnosticCodes||{}, rate);
+  const studyDiag = diagnoseStudy(STATE.studyAns, STATE.data.studyDiagnosticCodes||{});
+  const diligence = diligenceScore(STATE.studyAns);
+  const dIdx = studyGet(STATE.studyAns,'done');
+  const completion = {
+    doneIdx: dIdx, doneLabel: studyOpt('done', dIdx), completed: dIdx===0,
+    doneRate: (dIdx!=null ? [100,85,50,25,0][dIdx] : null),
+    dueDate: STATE.studyAns[String((STATE.data.studyCheck.find(x=>x.tag==='dueDate')||{}).num)]||'',
+    pledge: studyOpt('duePledge', studyGet(STATE.studyAns,'duePledge')),
+    timeliness: studyOpt('timeliness', studyGet(STATE.studyAns,'timeliness')),
+    reason: studyOpt('reason', studyGet(STATE.studyAns,'reason'))
+  };
 
-  return { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag };
+  return { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag, diligence, completion };
 }
 // 영역(area)/유형(type)별 정오 집계 — 대시보드·강약점 분석용
 function computeAreaStat(qs){
@@ -623,26 +734,45 @@ function fallbackStrength(areaStat){
     diag: x.area+' 영역이 그나마 가장 안정적이에요(정답률 '+Math.round(x.acc*100)+'%). 여기를 발판 삼아 약한 영역을 끌어올려 봅시다.'}); }
   return out;
 }
-// 학습 설문 → 학습 특징 진단(정밀, 복수 가능)
-function diagnoseStudy(ans, codes, rate){
+// 과제 점검 설문 → 성실도·완수 진단
+function studyGet(ans, tag){ const q=(STATE.data.studyCheck||[]).find(x=>x.tag===tag); return q?ans[String(q.num)]:undefined; }
+function studyOpt(tag, idx){ const q=(STATE.data.studyCheck||[]).find(x=>x.tag===tag); return (q&&q.opts&&idx!=null)?q.opts[idx]:''; }
+function fmtDate(s){ if(!s) return ''; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s); return m? (parseInt(m[2],10)+'/'+parseInt(m[3],10)) : s; }
+// 성실도 점수(0~100): 완수 + 제출시점 + 오답정리 + 최근추세
+function diligenceScore(ans){
+  const done=studyGet(ans,'done'), tl=studyGet(ans,'timeliness'), rv=studyGet(ans,'review'), tr=studyGet(ans,'trend');
+  const sd=[40,30,20,10,0], st=[20,14,6,0], sr=[25,12,0], sg=[15,10,4,0];
+  let s=0;
+  s += (done!=null?sd[done]:0);
+  s += (tl!=null?st[tl]:0);
+  s += (rv!=null?sr[rv]:0);
+  s += (tr!=null?sg[tr]:0);
+  return Math.round(s);
+}
+function diagnoseStudy(ans, codes){
   const out=[];
-  const push=k=>{ if(codes[k] && !out.find(o=>o.label===codes[k].label)) out.push(codes[k]); };
-  const get=tag=>{ const q=(STATE.data.studyCheck||[]).find(x=>x.tag===tag); return q?ans[String(q.num)]:undefined; };
-  const timing=get('timing'),split=get('split'),dur=get('duration'),concept=get('concept'),method=get('method'),review=get('review'),focus=get('focus'),time=get('time');
-  if(timing>=3) push('D_cram');
-  if(split===0) push('D_bulk');
-  if(split===3) push('D_scatter');
-  if(concept===2) push('D_noconcept');
-  if(method>=2) push('D_dep');
-  if(review>=1) push('D_norev');
-  if(focus>=2) push('D_focus');
-  if(dur===0 && rate!=null && rate<75) push('D_rush');
-  if(dur===3 && rate!=null && rate<75) push('D_slow');
-  if(time===0) push('D_rush'); if(time>=4) push('D_slow');   // 구버전 설문 호환
-  if(split===2) push('D_steady');
-  if(method===0 && (review===0||review==null) && (concept===0||concept===1)) push('D_self');
-  if(!out.length) push('D_self');
-  return out.slice(0,3);
+  const push=(k,extra)=>{ if(codes[k]){ const o={label:codes[k].label, feedback:(extra?extra:codes[k].feedback)}; if(!out.find(x=>x.label===o.label)) out.push(o); } };
+  const done=studyGet(ans,'done'), pledge=studyGet(ans,'duePledge'), due=ans[String((STATE.data.studyCheck.find(x=>x.tag==='dueDate')||{}).num)];
+  const tl=studyGet(ans,'timeliness'), rv=studyGet(ans,'review'), tr=studyGet(ans,'trend'), reason=studyGet(ans,'reason');
+  // 1) 완수 상태
+  if(done===0) push('D_done');
+  else if(done!=null){
+    const dueTxt = due ? (fmtDate(due)+'까지 ') : '';
+    const pleTxt = (pledge!=null)? ('('+studyOpt('duePledge',pledge)+') ') : '';
+    const rsTxt = (reason!=null)? (' · 사유: '+studyOpt('reason',reason).split('(')[0].trim()) : '';
+    const base = (done>=3) ? codes['D_undone'].feedback : codes['D_partial'].feedback;
+    push(done>=3?'D_undone':'D_partial', dueTxt+pleTxt+base+rsTxt);
+  }
+  // 2) 제출 시점
+  if(tl===2||tl===3) push('D_late');
+  else if(tl===1) push('D_rush');
+  else if(tl===0 && done===0) push('D_ontime');
+  // 3) 오답 정리
+  if(rv===0 && done===0) push('D_revfull');
+  else if(rv===1||rv===2) push('D_norev');
+  // 4) 최근 추세
+  if(tr===2||tr===3) push('D_lagging');
+  return out.slice(0,4);
 }
 
 // ─── Step 4: 결과지 ───
@@ -651,18 +781,29 @@ function renderStep4(){
   const wm = STATE.data.weekMeta;
   const course = COURSES.find(c=>c.id===STATE.courseId);
 
+  const noItems = STATE.data.completionOnly || r.total===0;   // 완료 점검형(수수활 등)
+
   root.appendChild(el('div',{class:'result-hero'},
     el('h2',{class:'result-name'}, STATE.student.name+' 학생'),
     el('p',{class:'result-meta'}, [STATE.student.school, course?course.name:'', wm.label].filter(Boolean).join(' · '))
   ));
 
-  root.appendChild(el('div',{class:'score-block'},
-    scoreCard('정답률', r.rate+'%', '/ 100%'),
-    scoreCard('맞은 문항', r.correct, '/ '+r.total+'문항'),
-    scoreCard('틀린 문항', r.wrongN, '문항'),
-    scoreCard('원점수', r.rawPts, '/ '+r.totalPts+'점')
-  ));
+  if(noItems){
+    root.appendChild(el('div',{class:'score-block'},
+      scoreCard('완수율', (r.completion&&r.completion.doneRate!=null?r.completion.doneRate+'%':'-'), (r.completion&&r.completion.doneLabel)||''),
+      scoreCard('성실도', (r.diligence!=null?r.diligence:'-'), '/ 100')
+    ));
+  } else {
+    root.appendChild(el('div',{class:'score-block'},
+      scoreCard('정답률', r.rate+'%', '/ 100%'),
+      scoreCard('맞은 문항', r.correct, '/ '+r.total+'문항'),
+      scoreCard('틀린 문항', r.wrongN, '문항'),
+      scoreCard('성실도', (r.diligence!=null?r.diligence:'-'), '/ 100')
+    ));
+  }
 
+  // 강점·약점·틀린문항은 오답 문항이 있는 과제에서만
+  if(!noItems){
   // 강점
   const sBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'강점 진단'));
   if(!r.strengths.length){
@@ -691,11 +832,12 @@ function renderStep4(){
     });
   }
   root.appendChild(pBlock);
+  } // end if(!noItems) — 강점·약점
 
-  // 학습 상황·특징
-  const stBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'학습 상황 · 특징'));
+  // 과제 성실도 · 완수 (항상 표시)
+  const stBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'과제 성실도 · 완수'));
   if(!r.studyDiag.length){
-    stBlock.appendChild(el('p',{class:'empty-msg'},'학습 진단 설문 응답이 없습니다.'));
+    stBlock.appendChild(el('p',{class:'empty-msg'},'과제 점검 설문 응답이 없습니다.'));
   } else {
     r.studyDiag.forEach(d=>{
       stBlock.appendChild(el('div',{class:'pattern'},
@@ -706,7 +848,8 @@ function renderStep4(){
   }
   root.appendChild(stBlock);
 
-  // 틀린 문항 상세
+  // 틀린 문항 상세 (완료 점검형은 생략)
+  if(!noItems){
   const wBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'}, `틀린 문항 분석 — ${r.wrongN}문항`));
   if(!r.wrongN){
     wBlock.appendChild(el('p',{class:'empty-msg'},'만점입니다. 다음 주차도 이 흐름으로 가시면 됩니다.'));
@@ -729,10 +872,11 @@ function renderStep4(){
     });
   }
   root.appendChild(wBlock);
+  } // end if(!noItems) — 틀린 문항
 
   // 제출
   const navButtons = [
-    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=3; renderDiag();}},'← 학습 진단으로'),
+    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=3; renderDiag();}},'← 과제 점검으로'),
     el('button',{class:'btn btn-ghost', onclick:()=>window.print()},'PDF 저장 / 인쇄')
   ];
   if(!STATE.teacherView){
@@ -774,6 +918,7 @@ function submitResult(isManual){
     courseLabel: course?course.name:'',
     week: STATE.week,
     weekLabel: wm.label,
+    month: wm.month || STATE.monthLabel || '',
     area: wm.area||'',
     name: s.name, school: s.school, grade: s.grade,
     원점수: r.rawPts, 만점: r.totalPts,
@@ -782,6 +927,12 @@ function submitResult(isManual){
     핵심패턴: r.patterns.map(p=>p.code+':'+p.name).join('|'),
     강점: r.strengths.map(s2=>s2.code+':'+s2.name).join('|'),
     학습진단: r.studyDiag.map(d=>d.label).join('|'),
+    완수상태: r.completion?r.completion.doneLabel:'',
+    완수예정일: r.completion?r.completion.dueDate:'',
+    완수약속: r.completion?r.completion.pledge:'',
+    제출시점: r.completion?r.completion.timeliness:'',
+    미완사유: r.completion?r.completion.reason:'',
+    성실도: (r.diligence!=null?r.diligence:''),
     제출방식: isManual?'재전송(수동)':'자동',
     patternsJson: JSON.stringify(r.patterns.map(p=>({code:p.code,name:p.name,diag:p.diag||'',action:p.action||'',hits:p.evidence||[]}))),
     strengthsJson: JSON.stringify(r.strengths),
