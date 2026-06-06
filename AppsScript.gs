@@ -34,7 +34,22 @@ function doPost(e){
     lock.waitLock(20000);
     var sheet = getSheet_();
     var params = (e && e.parameter) ? e.parameter : {};
-    var row = HEADERS.map(function(h){ return params[h] !== undefined ? params[h] : ''; });
+
+    // ── 헤더 이름 기준 정렬 (컬럼 순서가 바뀌거나 새 컬럼이 생겨도 안 깨짐) ──
+    var lastCol = sheet.getLastColumn();
+    var header = lastCol > 0 ? sheet.getRange(1,1,1,lastCol).getValues()[0] : [];
+    header = header.filter(function(h){ return h !== '' && h !== null; });
+    // 기대 컬럼(HEADERS) + 제출에 들어온 추가 키 중, 헤더에 없는 건 뒤에 추가
+    var want = HEADERS.slice();
+    Object.keys(params).forEach(function(k){ if(want.indexOf(k) < 0) want.push(k); });
+    var changed = false;
+    want.forEach(function(h){ if(header.indexOf(h) < 0){ header.push(h); changed = true; } });
+    if(changed || lastCol === 0){
+      sheet.getRange(1,1,1,header.length).setValues([header]);
+      sheet.setFrozenRows(1);
+    }
+    // 실제 헤더 순서대로 값 채우기 (이름으로 매칭 → 절대 밀리지 않음)
+    var row = header.map(function(h){ return params[h] !== undefined ? params[h] : ''; });
     sheet.appendRow(row);
     lock.releaseLock();
     return json_({ ok:true });
