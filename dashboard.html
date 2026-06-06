@@ -551,6 +551,26 @@ function regenComment(sid){
 function jparse(s){ try{ return JSON.parse(s); }catch(e){ return null; } }
 function repWrongs(s){ return s?String(s).split(',').map(x=>x.trim()).filter(Boolean):[]; }
 function repTrend(rates){ if(rates.length<2) return '단일'; const d=rates[rates.length-1]-rates[0]; return d>=8?'상승':d<=-8?'하락':'유지'; }
+function doneRateFromLabel(l){ return {'전부 끝냄':100,'대부분(70% 이상)':85,'절반쯤':50,'조금만(30% 이하)':25,'아직 시작 못 함':0}[l]; }
+function pwDoneRate(pw){
+  if(pw && pw.doneLabel){ const v=doneRateFromLabel(pw.doneLabel); if(v!=null) return v; }
+  const sd=(pw&&pw.studyDiag)||[];
+  if(sd.some(d=>(d.label||'')==='과제 완수')) return 100;
+  if(sd.some(d=>(d.label||'')==='부분 완수')) return 60;
+  if(sd.some(d=>(d.label||'')==='미완 — 완수 필요')) return 20;
+  return null;
+}
+function dDayText(due){ // 'YYYY-MM-DD' → D-표시 (브라우저 today 기준)
+  if(!due) return '';
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(due); if(!m) return due;
+  const t=new Date(); t.setHours(0,0,0,0);
+  const d=new Date(+m[1],+m[2]-1,+m[3]); d.setHours(0,0,0,0);
+  const diff=Math.round((d-t)/86400000);
+  const md=(+m[2])+'/'+(+m[3]);
+  if(diff<0) return md+' (기한 '+(-diff)+'일 경과)';
+  if(diff===0) return md+' (오늘 마감)';
+  return md+' (D-'+diff+')';
+}
 
 function buildReports(){
   // (수업,학생) 단위로 묶고 주차 오름차순
@@ -572,6 +592,12 @@ function buildReports(){
       areaStat:jparse(val(r,'areaStatJson','areaStatJson'))||{},
       studyDiag:jparse(val(r,'studyDiagJson','studyDiagJson'))||[],
       wrongDetails:jparse(val(r,'wrongDetailsJson','wrongDetailsJson'))||[],
+      // 완수·성실 (컬럼 우선, 없으면 studyDiag 라벨로 보완)
+      doneLabel:val(r,'완수상태','완수상태'),
+      dueDate:val(r,'완수예정일','완수예정일'),
+      pledge:val(r,'완수약속','완수약속'),
+      reason:val(r,'미완사유','미완사유'),
+      diligence:(val(r,'성실도','성실도')!==''?parseInt(val(r,'성실도','성실도'),10):null),
       ts:val(r,'timestamp','제출시각')
     };
     const school=val(r,'school','학교').replace(/등학교$/,'고').trim();
@@ -605,8 +631,14 @@ function buildReports(){
     const typeTop=Object.entries(typeAgg).map(([t,c])=>({t,c})).sort((a,b)=>b.c-a.c);
     const totalWrong=perWeek.reduce((a,pw)=>a+pw.wrongN,0);
     const avgRate=Math.round(rates.reduce((a,b)=>a+b,0)/rates.length);
+    // 성실도·완수 추세
+    const dilSeq=perWeek.map(pw=>pw.diligence);          // 성실도(0~100, 없으면 null)
+    const doneSeq=perWeek.map(pw=>pwDoneRate(pw));        // 완수율(0~100, 없으면 null)
+    const dilVals=dilSeq.filter(v=>v!=null);
+    const avgDil=dilVals.length?Math.round(dilVals.reduce((a,b)=>a+b,0)/dilVals.length):null;
     master.push({ name:g.name, courseId:g.courseId, courseName:g.courseName, school:g.school,
-      n:seq.length, seq, rates, perWeek, areaAgg, recurring, strengths, studyTop, studyDetail, typeTop, totalWrong, avgRate, trend:repTrend(rates) });
+      n:seq.length, seq, rates, perWeek, areaAgg, recurring, strengths, studyTop, studyDetail, typeTop, totalWrong, avgRate,
+      dilSeq, doneSeq, avgDil, trend:repTrend(rates) });
   });
   master.sort((a,b)=>{ if(b.n!==a.n) return b.n-a.n; return (b.rates[b.rates.length-1]||0)-(a.rates[a.rates.length-1]||0); });
   REP.master=master;
@@ -666,6 +698,22 @@ function rSpark(m){
   });
   const base=H-(80/100)*(H-24)-16;
   return `<svg viewBox="0 0 ${W} ${H}" class="rspark"><line x1="${pad}" y1="${base.toFixed(1)}" x2="${W-pad}" y2="${base.toFixed(1)}" stroke="#4a5a3a" stroke-dasharray="3 3"/>${bars}</svg>`;
+}
+function dilCol(dr){ if(dr==null) return '#5a6b7a'; if(dr>=100) return '#9fd0ad'; if(dr>=70) return 'var(--gold-soft)'; if(dr>=40) return '#d6a96a'; return '#d68a8a'; }
+function rDiligenceSpark(m){
+  const W=320,H=78,pad=12,n=m.seq.length,bw=Math.min(40,(W-2*pad)/Math.max(n,1)-10),gap=n>1?(W-2*pad-bw*n)/(n-1):0;
+  let bars='', any=false;
+  m.seq.forEach((w,i)=>{
+    const dil=m.dilSeq[i], dr=m.doneSeq[i];
+    if(dil!=null||dr!=null) any=true;
+    const h=(dil!=null?dil:(dr!=null?dr:0)), bh=(h/100)*(H-24), x=pad+i*(bw+gap), y=H-bh-16;
+    bars+=`<rect x="${x.toFixed(0)}" y="${y.toFixed(1)}" width="${bw.toFixed(0)}" height="${Math.max(bh,1).toFixed(1)}" rx="2" fill="${dilCol(dr)}" opacity=".9"/>`;
+    const top = dr!=null ? dr+'%' : (dil!=null ? String(dil) : '–');
+    bars+=`<text x="${(x+bw/2).toFixed(0)}" y="${(y-3).toFixed(0)}" text-anchor="middle" class="rspk-v">${top}</text>`;
+    bars+=`<text x="${(x+bw/2).toFixed(0)}" y="${H-2}" text-anchor="middle" class="rspk-x">${esc(weekShort(w).replace('주차','주'))}</text>`;
+  });
+  if(!any) return '<div class="rdonut-empty">완수·성실도 데이터 없음 — Apps Script 재배포 후 제출분부터 표시됩니다</div>';
+  return `<svg viewBox="0 0 ${W} ${H}" class="rspark">${bars}</svg>`;
 }
 function rDonut(m){
   // 영역별 누적 오답 분포
@@ -758,6 +806,31 @@ function renderReports(){
       missHtml+='<div class="miss-panel"><div class="miss-title">⚠ '+esc(COURSE_NAME[cid]||cid)+' · '+wk+'주차 미제출 '+missing.length+'명 (독려 코멘트)</div>'+rows+'</div>';
     });
   }
+  // ── 미완자 관리판 (완수 점검 데이터 기반) ──
+  let undoneHtml='';
+  (function(){
+    const tw=REP.week;
+    const getPw = m => { if(tw==='latest') return m.perWeek[m.perWeek.length-1]; const idx=m.seq.indexOf(+tw); return idx>=0?m.perWeek[idx]:null; };
+    const rows=[]; let doneCnt=0, subCnt=0;
+    master.forEach(m=>{ const pw=getPw(m); if(!pw) return; const dr=pwDoneRate(pw); if(dr==null) return; subCnt++; if(dr>=100){ doneCnt++; return; }
+      rows.push({name:m.name, dr, due:pw.dueDate, pledge:pw.pledge, reason:pw.reason, wl:weekShort(pw.week)});
+    });
+    if(subCnt>0){
+      note.innerHTML += ' · '+(tw==='latest'?'최근 주차':weekShort(tw))+' 완수 <b style="color:#9fd0ad">'+doneCnt+'/'+subCnt+'명</b>';
+    }
+    if(rows.length){
+      const today=new Date(); today.setHours(0,0,0,0);
+      const over = r => { if(!r.due) return -1; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(r.due); if(!m) return -1; const d=new Date(+m[1],+m[2]-1,+m[3]); d.setHours(0,0,0,0); return d<today?1:0; };
+      rows.sort((a,b)=> over(b)-over(a) || a.dr-b.dr);
+      let body='';
+      rows.forEach(r=>{ const ov=over(r)===1;
+        body+='<div class="miss-row"><div class="miss-name">'+esc(r.name)+' <span style="color:#e0a3a3;font-weight:600">완수율 '+r.dr+'%</span> <span style="color:var(--text-muted);font-size:0.78rem">'+esc(r.wl)+'</span></div>'
+          +'<div class="tc" style="color:var(--text-secondary)">'+(r.due?('완수 예정 <b style="color:'+(ov?'#e0a3a3':'var(--cream)')+'">'+esc(dDayText(r.due))+'</b>'):'<span style="color:var(--text-muted)">완수 예정일 미입력</span>')+(r.pledge?' · 약속: '+esc(r.pledge):'')+(r.reason?' · 사유: '+esc(String(r.reason).split('(')[0].trim()):'')+'</div></div>';
+      });
+      undoneHtml='<div class="miss-panel"><div class="miss-title">⚠ 미완자 관리 — '+(tw==='latest'?'최근 주차':weekShort(tw))+' · '+rows.length+'명 (기한 경과 우선)</div>'+body+'</div>';
+    }
+  })();
+
   // ── 순위 계산: 수업별, 코멘트 대상 주차의 정답률 기준 ──
   const trate=m=>{ const tw=REP.week; if(tw==='latest') return m.rates[m.rates.length-1]; const idx=m.seq.indexOf(+tw); return idx>=0?m.rates[idx]:null; };
   const rankByCourse={};
@@ -791,6 +864,7 @@ function renderReports(){
       +'<button class="rpdf-btn no-print" onclick="printOneReport(\''+sid+'\')">이 학생 PDF</button></div></div>'
       +'<div class="rc-row1"><div><div class="rblk-t">주차별 정답률</div>'+rSpark(m)+'</div>'
       +'<div><div class="rblk-t">영역별 누적 오답 비중</div>'+rDonut(m)+'</div></div>'
+      +'<div class="rc-blk"><div class="rblk-t gold">성실도 · 완수 추세 <span class="rblk-sub">(막대=성실도, 위 숫자=완수율'+(m.avgDil!=null?' · 평균 성실도 '+m.avgDil:'')+')</span></div>'+rDiligenceSpark(m)+'</div>'
       +'<div class="rc-blk"><div class="rblk-t">주차별 기록</div>'
       +'<table class="rtbl2"><thead><tr><th>주차</th><th>정답률</th><th>영역</th><th>틀린 문항</th></tr></thead><tbody>'+rWeekRows(m)+'</tbody></table></div>'
       +(areaTableBlock?'<div class="rc-blk"><div class="rblk-t gold">영역별 정답률 <span class="rblk-sub">(약한 영역 순)</span></div>'+areaTableBlock+typeLine+'</div>':'')
@@ -800,7 +874,7 @@ function renderReports(){
       +commentBlock(sid, ctx, pw)
       +'<div class="rc-foot"><span class="m">'+esc(TEACHER)+' · '+esc(BRAND)+'</span><span class="n">'+(i+1)+' / '+master.length+'</span></div></div>';
   });
-  root.innerHTML=missHtml+html;
+  root.innerHTML=undoneHtml+missHtml+html;
   document.querySelectorAll('.rfbtn[data-rf]').forEach(b=>b.classList.toggle('on',b.dataset.rf==='all'));
   const rs=document.getElementById('repSearch'); if(rs) rs.value='';
 }
