@@ -20,10 +20,11 @@ var SHEET_NAME = '제출';
 
 // 시트 컬럼 순서 (index.html submitResult의 payload 키와 일치)
 var HEADERS = [
-  'timestamp','courseId','courseLabel','week','weekLabel','area',
+  'timestamp','courseId','courseLabel','week','weekLabel','month','area',
   'name','school','grade',
   '원점수','만점','정답률','맞은개수','틀린개수','총문항',
-  '틀린문항','핵심패턴','강점','학습진단','제출방식',
+  '틀린문항','핵심패턴','강점','학습진단',
+  '완수상태','완수예정일','완수약속','제출시점','미완사유','성실도','제출방식',
   'patternsJson','strengthsJson','areaStatJson','wrongDetailsJson','studyDiagJson','studyAnsJson'
 ];
 

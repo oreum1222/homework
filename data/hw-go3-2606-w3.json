@@ -1,0 +1,1208 @@
+{
+ "_doc": "고3 6월 3주차 · N제 8~14회. 회차별 선택과목 35~45번 오답 마킹(한 주치 묶음). 화작/언매 본인 선택.",
+ "courseId": "go3-regular",
+ "week": 3,
+ "weekMeta": {
+  "id": "go3-2606-w3",
+  "label": "3주차 · N제 8~14회",
+  "area": "선택과목",
+  "month": "6월",
+  "date": "2026-06-20",
+  "desc": "이감 선택과목 N제 (6/20~6/26) · 회차별 35~45번 · 화작/언매 본인 선택"
+ },
+ "scoring": {
+  "passRate": 80
+ },
+ "sections": [
+  {
+   "key": "r8",
+   "title": "N제 8회 (35~45)",
+   "range": "35-45",
+   "questions": [
+    {
+     "no": 835,
+     "label": "35번",
+     "three": false,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 836,
+     "label": "36번",
+     "three": false,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 837,
+     "label": "37번",
+     "three": false,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 838,
+     "label": "38번",
+     "three": true,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 839,
+     "label": "39번",
+     "three": false,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 840,
+     "label": "40번",
+     "three": false,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 841,
+     "label": "41번",
+     "three": false,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 842,
+     "label": "42번",
+     "three": true,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 843,
+     "label": "43번",
+     "three": false,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 844,
+     "label": "44번",
+     "three": false,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 845,
+     "label": "45번",
+     "three": true,
+     "wr": null,
+     "area": "N제 8회",
+     "type": "",
+     "source": "이감 N제 8회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    }
+   ]
+  },
+  {
+   "key": "r9",
+   "title": "N제 9회 (35~45)",
+   "range": "35-45",
+   "questions": [
+    {
+     "no": 935,
+     "label": "35번",
+     "three": false,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 936,
+     "label": "36번",
+     "three": false,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 937,
+     "label": "37번",
+     "three": false,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 938,
+     "label": "38번",
+     "three": true,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 939,
+     "label": "39번",
+     "three": false,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 940,
+     "label": "40번",
+     "three": false,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 941,
+     "label": "41번",
+     "three": false,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 942,
+     "label": "42번",
+     "three": true,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 943,
+     "label": "43번",
+     "three": false,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 944,
+     "label": "44번",
+     "three": false,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 945,
+     "label": "45번",
+     "three": true,
+     "wr": null,
+     "area": "N제 9회",
+     "type": "",
+     "source": "이감 N제 9회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    }
+   ]
+  },
+  {
+   "key": "r10",
+   "title": "N제 10회 (35~45)",
+   "range": "35-45",
+   "questions": [
+    {
+     "no": 1035,
+     "label": "35번",
+     "three": false,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1036,
+     "label": "36번",
+     "three": false,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1037,
+     "label": "37번",
+     "three": false,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1038,
+     "label": "38번",
+     "three": true,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1039,
+     "label": "39번",
+     "three": false,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1040,
+     "label": "40번",
+     "three": false,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1041,
+     "label": "41번",
+     "three": false,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1042,
+     "label": "42번",
+     "three": true,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1043,
+     "label": "43번",
+     "three": false,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1044,
+     "label": "44번",
+     "three": false,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1045,
+     "label": "45번",
+     "three": true,
+     "wr": null,
+     "area": "N제 10회",
+     "type": "",
+     "source": "이감 N제 10회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    }
+   ]
+  },
+  {
+   "key": "r11",
+   "title": "N제 11회 (35~45)",
+   "range": "35-45",
+   "questions": [
+    {
+     "no": 1135,
+     "label": "35번",
+     "three": false,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1136,
+     "label": "36번",
+     "three": false,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1137,
+     "label": "37번",
+     "three": false,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1138,
+     "label": "38번",
+     "three": true,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1139,
+     "label": "39번",
+     "three": false,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1140,
+     "label": "40번",
+     "three": false,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1141,
+     "label": "41번",
+     "three": false,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1142,
+     "label": "42번",
+     "three": true,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1143,
+     "label": "43번",
+     "three": false,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1144,
+     "label": "44번",
+     "three": false,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1145,
+     "label": "45번",
+     "three": true,
+     "wr": null,
+     "area": "N제 11회",
+     "type": "",
+     "source": "이감 N제 11회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    }
+   ]
+  },
+  {
+   "key": "r12",
+   "title": "N제 12회 (35~45)",
+   "range": "35-45",
+   "questions": [
+    {
+     "no": 1235,
+     "label": "35번",
+     "three": false,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1236,
+     "label": "36번",
+     "three": false,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1237,
+     "label": "37번",
+     "three": false,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1238,
+     "label": "38번",
+     "three": true,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1239,
+     "label": "39번",
+     "three": false,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1240,
+     "label": "40번",
+     "three": false,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1241,
+     "label": "41번",
+     "three": false,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1242,
+     "label": "42번",
+     "three": true,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1243,
+     "label": "43번",
+     "three": false,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1244,
+     "label": "44번",
+     "three": false,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1245,
+     "label": "45번",
+     "three": true,
+     "wr": null,
+     "area": "N제 12회",
+     "type": "",
+     "source": "이감 N제 12회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    }
+   ]
+  },
+  {
+   "key": "r13",
+   "title": "N제 13회 (35~45)",
+   "range": "35-45",
+   "questions": [
+    {
+     "no": 1335,
+     "label": "35번",
+     "three": false,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1336,
+     "label": "36번",
+     "three": false,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1337,
+     "label": "37번",
+     "three": false,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1338,
+     "label": "38번",
+     "three": true,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1339,
+     "label": "39번",
+     "three": false,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1340,
+     "label": "40번",
+     "three": false,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1341,
+     "label": "41번",
+     "three": false,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1342,
+     "label": "42번",
+     "three": true,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1343,
+     "label": "43번",
+     "three": false,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1344,
+     "label": "44번",
+     "three": false,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1345,
+     "label": "45번",
+     "three": true,
+     "wr": null,
+     "area": "N제 13회",
+     "type": "",
+     "source": "이감 N제 13회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    }
+   ]
+  },
+  {
+   "key": "r14",
+   "title": "N제 14회 (35~45)",
+   "range": "35-45",
+   "questions": [
+    {
+     "no": 1435,
+     "label": "35번",
+     "three": false,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1436,
+     "label": "36번",
+     "three": false,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1437,
+     "label": "37번",
+     "three": false,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1438,
+     "label": "38번",
+     "three": true,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1439,
+     "label": "39번",
+     "three": false,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1440,
+     "label": "40번",
+     "three": false,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1441,
+     "label": "41번",
+     "three": false,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1442,
+     "label": "42번",
+     "three": true,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1443,
+     "label": "43번",
+     "three": false,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1444,
+     "label": "44번",
+     "three": false,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    },
+    {
+     "no": 1445,
+     "label": "45번",
+     "three": true,
+     "wr": null,
+     "area": "N제 14회",
+     "type": "",
+     "source": "이감 N제 14회",
+     "coreElement": "",
+     "weakness1": "",
+     "remediation": ""
+    }
+   ]
+  }
+ ],
+ "patternRules": [],
+ "strengthRules": [
+  {
+   "code": "S1",
+   "name": "선택과목 안정",
+   "area": "선택과목",
+   "diag": "선택과목(35~45)을 전반적으로 안정적으로 맞혔습니다.",
+   "trigger": {
+    "questions": [
+     835,
+     836,
+     837,
+     838,
+     839,
+     840,
+     841,
+     842,
+     843,
+     844,
+     845,
+     935,
+     936,
+     937,
+     938,
+     939,
+     940,
+     941,
+     942,
+     943,
+     944,
+     945,
+     1035,
+     1036,
+     1037,
+     1038,
+     1039,
+     1040,
+     1041,
+     1042,
+     1043,
+     1044,
+     1045,
+     1135,
+     1136,
+     1137,
+     1138,
+     1139,
+     1140,
+     1141,
+     1142,
+     1143,
+     1144,
+     1145,
+     1235,
+     1236,
+     1237,
+     1238,
+     1239,
+     1240,
+     1241,
+     1242,
+     1243,
+     1244,
+     1245,
+     1335,
+     1336,
+     1337,
+     1338,
+     1339,
+     1340,
+     1341,
+     1342,
+     1343,
+     1344,
+     1345,
+     1435,
+     1436,
+     1437,
+     1438,
+     1439,
+     1440,
+     1441,
+     1442,
+     1443,
+     1444,
+     1445
+    ],
+    "maxWrong": 2
+   }
+  }
+ ],
+ "studyCheck": [
+  {
+   "num": 1,
+   "tag": "done",
+   "q": "이번 과제, 어디까지 했나요?",
+   "opts": [
+    "전부 끝냄",
+    "대부분(70% 이상)",
+    "절반쯤",
+    "조금만(30% 이하)",
+    "아직 시작 못 함"
+   ]
+  },
+  {
+   "num": 2,
+   "tag": "dueDate",
+   "type": "date",
+   "q": "남은 분량을 언제까지 끝낼 건가요? (완수 예정일)",
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  },
+  {
+   "num": 3,
+   "tag": "duePledge",
+   "q": "완수 약속",
+   "opts": [
+    "오늘 안에",
+    "내일까지",
+    "이번 주 안",
+    "다음 수업 전까지",
+    "솔직히 자신 없음"
+   ],
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  },
+  {
+   "num": 4,
+   "tag": "timeliness",
+   "q": "제출 시점은 마감 기준 어땠나요?",
+   "opts": [
+    "여유 있게 미리",
+    "마감 임박해서",
+    "마감 지나서(지각)",
+    "아직 미제출"
+   ]
+  },
+  {
+   "num": 5,
+   "tag": "review",
+   "q": "채점·오답 정리까지 했나요?",
+   "opts": [
+    "채점 + 오답 정리까지",
+    "채점만 함",
+    "풀기만 하고 채점 안 함"
+   ]
+  },
+  {
+   "num": 6,
+   "tag": "trend",
+   "q": "최근 과제들, 스스로 평가하면?",
+   "opts": [
+    "매번 빠짐없이 함",
+    "대체로 하는 편",
+    "자주 빠지거나 밀림",
+    "거의 못 따라감"
+   ]
+  },
+  {
+   "num": 7,
+   "tag": "reason",
+   "q": "(밀렸거나 못 했다면) 가장 큰 이유는?",
+   "opts": [
+    "시간이 없어서(다른 과목·학원)",
+    "너무 어려워서",
+    "깜빡/마감을 놓쳐서",
+    "의욕이 안 나서",
+    "양이 너무 많아서"
+   ],
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  }
+ ],
+ "studyDiagnosticCodes": {
+  "D_done": {
+   "label": "과제 완수",
+   "feedback": "이번 과제를 끝까지 완료했어요. 꾸준함이 실력으로 쌓이고 있습니다."
+  },
+  "D_partial": {
+   "label": "부분 완수",
+   "feedback": "아직 남은 분량이 있어요. 약속한 기한 안에 꼭 마무리합시다."
+  },
+  "D_undone": {
+   "label": "미완 — 완수 필요",
+   "feedback": "이번 과제를 거의 못 했어요. 약속한 날까지 반드시 끝내서 따라잡읍시다."
+  },
+  "D_ontime": {
+   "label": "여유 제출",
+   "feedback": "마감에 여유 있게 끝냈어요. 좋은 페이스입니다."
+  },
+  "D_rush": {
+   "label": "마감 임박형",
+   "feedback": "마감에 임박해서 끝내는 편이에요. 하루만 앞당겨도 훨씬 안정적입니다."
+  },
+  "D_late": {
+   "label": "지각 제출",
+   "feedback": "제출이 늦었어요. 다음 주엔 마감 안에 들어오는 걸 목표로 합시다."
+  },
+  "D_revfull": {
+   "label": "오답 정리까지",
+   "feedback": "채점·오답 정리까지 마쳤어요. 가장 중요한 부분을 잘 챙겼습니다."
+  },
+  "D_norev": {
+   "label": "오답 정리 부족",
+   "feedback": "채점·오답 정리가 빠졌어요. 틀린 문제를 다시 보는 게 실력 상승의 핵심이에요."
+  },
+  "D_lagging": {
+   "label": "최근 누적 부진",
+   "feedback": "최근 과제가 자주 밀리고 있어요. 분량·시간을 함께 점검해 봅시다."
+  }
+ }
+}

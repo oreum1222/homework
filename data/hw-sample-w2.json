@@ -1,109 +1,333 @@
 {
-  "_doc": "2주차 샘플. 1주차와 area가 다르면(현대소설) 대시보드 도넛에서 영역별 약점이 비교됩니다.",
-
-  "courseId": "sample",
-  "week": 2,
-  "weekMeta": {
-    "id": "sample-w2",
-    "label": "2주차 · 현대소설 — 서술상 특징과 시점",
-    "area": "현대소설",
-    "date": "2026-07-14",
-    "desc": "현대소설 1세트 기출 변형. 서술자의 태도, 시점, 인물 제시 방식 중심."
-  },
-
-  "scoring": { "passRate": 80 },
-
-  "sections": [
+ "_doc": "2주차 샘플. 1주차와 area가 다르면(현대소설) 대시보드 도넛에서 영역별 약점이 비교됩니다.",
+ "courseId": "sample",
+ "week": 2,
+ "weekMeta": {
+  "id": "sample-w2",
+  "label": "2주차 · 현대소설 — 서술상 특징과 시점",
+  "area": "현대소설",
+  "date": "2026-07-14",
+  "desc": "현대소설 1세트 기출 변형. 서술자의 태도, 시점, 인물 제시 방식 중심."
+ },
+ "scoring": {
+  "passRate": 80
+ },
+ "sections": [
+  {
+   "key": "set1",
+   "title": "1세트 — 현대소설 지문",
+   "range": "1-8",
+   "questions": [
     {
-      "key": "set1", "title": "1세트 — 현대소설 지문", "range": "1-8",
-      "questions": [
-        { "no": 1, "answer": 3, "three": false, "wr": 20, "area": "현대소설", "type": "서술상 특징",
-          "source": "교재 p.22", "coreElement": "서술자의 개입 여부와 거리 조절 파악",
-          "weakness1": "서술자의 직접 논평을 인물의 생각과 혼동", "weakness2": "",
-          "remediation": "서술자 목소리 / 인물 목소리를 다른 색으로 표시", "parentNote": "" },
-        { "no": 2, "answer": 5, "three": true, "wr": 49, "area": "현대소설", "type": "시점",
-          "source": "교재 p.22", "coreElement": "1인칭 관찰자 vs 전지적 시점의 효과 구분",
-          "weakness1": "시점 명칭은 알지만 '효과'를 묻자 흔들림", "weakness2": "초점 화자의 한계를 놓침",
-          "remediation": "시점이 바뀌면 독자가 알 수 있는 정보 범위를 적기", "parentNote": "변별 문항. 시점의 '효과' 보강." },
-        { "no": 3, "answer": 2, "three": false, "wr": 16, "area": "현대소설", "type": "인물 제시",
-          "source": "교재 p.23", "coreElement": "직접 제시 / 간접 제시 구분", "weakness1": "", "weakness2": "",
-          "remediation": "", "parentNote": "" },
-        { "no": 4, "answer": 4, "three": false, "wr": 31, "area": "현대소설", "type": "사건·구성",
-          "source": "교재 p.23", "coreElement": "장면 전환과 사건의 인과 관계",
-          "weakness1": "사건의 시간 순서와 서술 순서를 혼동", "weakness2": "",
-          "remediation": "사건을 시간순으로 다시 배열해 보기", "parentNote": "" },
-        { "no": 5, "answer": 1, "three": false, "wr": 25, "area": "현대소설", "type": "구절 의미",
-          "source": "교재 p.24", "coreElement": "맥락 속 구절의 함축", "weakness1": "", "weakness2": "",
-          "remediation": "", "parentNote": "" },
-        { "no": 6, "answer": 3, "three": true, "wr": 53, "area": "현대소설", "type": "외적 준거(보기)",
-          "source": "교재 p.24", "coreElement": "〈보기〉의 사회·역사적 맥락으로 작품 재해석",
-          "weakness1": "보기의 배경 지식을 작품 장면과 연결 못 함", "weakness2": "보기 내용을 과대 적용",
-          "remediation": "보기 키워드 → 해당 장면 1:1 매칭", "parentNote": "" },
-        { "no": 7, "answer": 5, "three": false, "wr": 28, "area": "현대소설", "type": "서술상 특징",
-          "source": "교재 p.25", "coreElement": "대화와 행동을 통한 갈등의 형상화",
-          "weakness1": "대사의 표면 의미만 읽고 이면의 긴장을 놓침", "weakness2": "",
-          "remediation": "대사 옆에 '속마음' 추정 메모 달기", "parentNote": "" },
-        { "no": 8, "answer": 2, "three": false, "wr": 36, "area": "현대소설", "type": "종합 이해",
-          "source": "교재 p.25", "coreElement": "인물의 변화와 주제의 연결",
-          "weakness1": "인물의 심리 변화 지점을 특정하지 못함", "weakness2": "",
-          "remediation": "인물 감정 곡선을 장면별로 그려보기", "parentNote": "" }
-      ]
-    }
-  ],
-
-  "patternRules": [
-    {
-      "code": "P1", "name": "서술상 특징/시점의 '효과' 약점", "priority": 1,
-      "diag": "서술 기법·시점의 명칭은 알지만, 그것이 만들어 내는 '효과'를 묻는 순간 흔들립니다. 현대소설 변별 문항의 핵심 함정입니다.",
-      "action": "기법을 찾으면 '이 기법 때문에 독자는 무엇을 더(혹은 덜) 알게 되는가'를 반드시 한 줄로 정리하세요.",
-      "trigger": { "questions": [1, 2, 7], "minHits": 1, "severeAt": 2 }
+     "no": 1,
+     "answer": 3,
+     "three": false,
+     "wr": 20,
+     "area": "현대소설",
+     "type": "서술상 특징",
+     "source": "교재 p.22",
+     "coreElement": "서술자의 개입 여부와 거리 조절 파악",
+     "weakness1": "서술자의 직접 논평을 인물의 생각과 혼동",
+     "weakness2": "",
+     "remediation": "서술자 목소리 / 인물 목소리를 다른 색으로 표시",
+     "parentNote": ""
     },
     {
-      "code": "P2", "name": "외적 준거(보기) 연결력 부족", "priority": 2,
-      "diag": "〈보기〉의 사회·역사적 맥락을 작품의 구체적 장면과 연결하는 데서 실점합니다.",
-      "action": "보기 핵심어에 번호를 매기고 작품 장면과 1:1로 짝짓는 훈련.",
-      "trigger": { "questions": [6], "minHits": 1 }
+     "no": 2,
+     "answer": 5,
+     "three": true,
+     "wr": 49,
+     "area": "현대소설",
+     "type": "시점",
+     "source": "교재 p.22",
+     "coreElement": "1인칭 관찰자 vs 전지적 시점의 효과 구분",
+     "weakness1": "시점 명칭은 알지만 '효과'를 묻자 흔들림",
+     "weakness2": "초점 화자의 한계를 놓침",
+     "remediation": "시점이 바뀌면 독자가 알 수 있는 정보 범위를 적기",
+     "parentNote": "변별 문항. 시점의 '효과' 보강."
     },
     {
-      "code": "P3", "name": "사건 구성·시간 흐름 약점", "priority": 3,
-      "diag": "서술 순서와 사건의 실제 시간 순서를 분리해서 보는 데 약합니다.",
-      "action": "지문을 읽고 사건을 시간순으로 재배열하는 연습.",
-      "trigger": { "questions": [4, 8], "minHits": 1 }
-    }
-  ],
-
-  "strengthRules": [
-    {
-      "code": "S1", "name": "인물 제시 방식 이해가 정확함", "area": "현대소설",
-      "diag": "직접·간접 제시 등 인물 형상화 방식을 안정적으로 구분합니다.",
-      "trigger": { "questions": [3], "maxWrong": 0 }
+     "no": 3,
+     "answer": 2,
+     "three": false,
+     "wr": 16,
+     "area": "현대소설",
+     "type": "인물 제시",
+     "source": "교재 p.23",
+     "coreElement": "직접 제시 / 간접 제시 구분",
+     "weakness1": "",
+     "weakness2": "",
+     "remediation": "",
+     "parentNote": ""
     },
     {
-      "code": "S2", "name": "구절 의미 파악이 단단함", "area": "현대소설",
-      "diag": "맥락 속 구절의 함축을 정확히 읽어냅니다.",
-      "trigger": { "questions": [5], "maxWrong": 0 }
+     "no": 4,
+     "answer": 4,
+     "three": false,
+     "wr": 31,
+     "area": "현대소설",
+     "type": "사건·구성",
+     "source": "교재 p.23",
+     "coreElement": "장면 전환과 사건의 인과 관계",
+     "weakness1": "사건의 시간 순서와 서술 순서를 혼동",
+     "weakness2": "",
+     "remediation": "사건을 시간순으로 다시 배열해 보기",
+     "parentNote": ""
+    },
+    {
+     "no": 5,
+     "answer": 1,
+     "three": false,
+     "wr": 25,
+     "area": "현대소설",
+     "type": "구절 의미",
+     "source": "교재 p.24",
+     "coreElement": "맥락 속 구절의 함축",
+     "weakness1": "",
+     "weakness2": "",
+     "remediation": "",
+     "parentNote": ""
+    },
+    {
+     "no": 6,
+     "answer": 3,
+     "three": true,
+     "wr": 53,
+     "area": "현대소설",
+     "type": "외적 준거(보기)",
+     "source": "교재 p.24",
+     "coreElement": "〈보기〉의 사회·역사적 맥락으로 작품 재해석",
+     "weakness1": "보기의 배경 지식을 작품 장면과 연결 못 함",
+     "weakness2": "보기 내용을 과대 적용",
+     "remediation": "보기 키워드 → 해당 장면 1:1 매칭",
+     "parentNote": ""
+    },
+    {
+     "no": 7,
+     "answer": 5,
+     "three": false,
+     "wr": 28,
+     "area": "현대소설",
+     "type": "서술상 특징",
+     "source": "교재 p.25",
+     "coreElement": "대화와 행동을 통한 갈등의 형상화",
+     "weakness1": "대사의 표면 의미만 읽고 이면의 긴장을 놓침",
+     "weakness2": "",
+     "remediation": "대사 옆에 '속마음' 추정 메모 달기",
+     "parentNote": ""
+    },
+    {
+     "no": 8,
+     "answer": 2,
+     "three": false,
+     "wr": 36,
+     "area": "현대소설",
+     "type": "종합 이해",
+     "source": "교재 p.25",
+     "coreElement": "인물의 변화와 주제의 연결",
+     "weakness1": "인물의 심리 변화 지점을 특정하지 못함",
+     "weakness2": "",
+     "remediation": "인물 감정 곡선을 장면별로 그려보기",
+     "parentNote": ""
     }
-  ],
-
-  "studyCheck": [
-    { "num": 1, "tag": "time", "q": "이번 숙제를 푸는 데 든 시간은 어느 정도였나요?",
-      "opts": ["권장 시간보다 훨씬 빨리 끝남", "권장 시간 안에 여유 있게", "권장 시간에 거의 맞춤", "권장 시간을 조금 넘김", "권장 시간을 크게 넘김"] },
-    { "num": 2, "tag": "method", "q": "문제를 어떻게 풀었나요?",
-      "opts": ["전부 혼자, 해설 안 봄", "혼자 풀고 채점 때만 해설 확인", "막히면 바로 해설을 봄", "해설을 먼저 보고 따라 이해함"] },
-    { "num": 3, "tag": "review", "q": "틀린 문항은 어떻게 처리했나요?",
-      "opts": ["오답을 다시 풀고 이유까지 정리함", "해설만 읽고 넘어감", "체크만 하고 아직 안 봄", "틀린 줄 몰랐음"] },
-    { "num": 4, "tag": "difficulty", "q": "체감 난이도는?",
-      "opts": ["매우 쉬움", "쉬움", "적당함", "어려움", "매우 어려움"] },
-    { "num": 5, "tag": "focus", "q": "푸는 동안 집중 상태는?",
-      "opts": ["끝까지 집중 유지", "중간에 한두 번 흐트러짐", "자주 끊김", "거의 집중 못 함"] }
-  ],
-
-  "studyDiagnosticCodes": {
-    "D_self": { "label": "자기주도 안정형", "feedback": "혼자 풀고 오답까지 정리하는 이상적인 학습 루틴입니다. 지금 방식을 유지하세요." },
-    "D_dep":  { "label": "해설 의존형", "feedback": "막히면 바로 해설을 보는 습관이 보입니다. 최소 5분은 스스로 버틴 뒤 해설을 확인하세요." },
-    "D_norev":{ "label": "복습 누락형", "feedback": "오답 정리가 약합니다. '왜 틀렸는지' 한 줄 오답 노트를 시작하세요." },
-    "D_rush": { "label": "속도 과속형", "feedback": "너무 빨리 끝냅니다. 정답률이 낮다면 근거 확인 단계를 늘리세요." },
-    "D_slow": { "label": "시간 과소비형", "feedback": "한 문항에 시간을 과투입합니다. 막히면 표시 후 넘어가는 판단을 연습하세요." },
-    "D_focus":{ "label": "집중 불안정형", "feedback": "집중이 자주 끊깁니다. 25분 집중 + 5분 휴식 단위로 환경을 정리하세요." }
+   ]
   }
+ ],
+ "patternRules": [
+  {
+   "code": "P1",
+   "name": "서술상 특징/시점의 '효과' 약점",
+   "priority": 1,
+   "diag": "서술 기법·시점의 명칭은 알지만, 그것이 만들어 내는 '효과'를 묻는 순간 흔들립니다. 현대소설 변별 문항의 핵심 함정입니다.",
+   "action": "기법을 찾으면 '이 기법 때문에 독자는 무엇을 더(혹은 덜) 알게 되는가'를 반드시 한 줄로 정리하세요.",
+   "trigger": {
+    "questions": [
+     1,
+     2,
+     7
+    ],
+    "minHits": 1,
+    "severeAt": 2
+   }
+  },
+  {
+   "code": "P2",
+   "name": "외적 준거(보기) 연결력 부족",
+   "priority": 2,
+   "diag": "〈보기〉의 사회·역사적 맥락을 작품의 구체적 장면과 연결하는 데서 실점합니다.",
+   "action": "보기 핵심어에 번호를 매기고 작품 장면과 1:1로 짝짓는 훈련.",
+   "trigger": {
+    "questions": [
+     6
+    ],
+    "minHits": 1
+   }
+  },
+  {
+   "code": "P3",
+   "name": "사건 구성·시간 흐름 약점",
+   "priority": 3,
+   "diag": "서술 순서와 사건의 실제 시간 순서를 분리해서 보는 데 약합니다.",
+   "action": "지문을 읽고 사건을 시간순으로 재배열하는 연습.",
+   "trigger": {
+    "questions": [
+     4,
+     8
+    ],
+    "minHits": 1
+   }
+  }
+ ],
+ "strengthRules": [
+  {
+   "code": "S1",
+   "name": "인물 제시 방식 이해가 정확함",
+   "area": "현대소설",
+   "diag": "직접·간접 제시 등 인물 형상화 방식을 안정적으로 구분합니다.",
+   "trigger": {
+    "questions": [
+     3
+    ],
+    "maxWrong": 0
+   }
+  },
+  {
+   "code": "S2",
+   "name": "구절 의미 파악이 단단함",
+   "area": "현대소설",
+   "diag": "맥락 속 구절의 함축을 정확히 읽어냅니다.",
+   "trigger": {
+    "questions": [
+     5
+    ],
+    "maxWrong": 0
+   }
+  }
+ ],
+ "studyCheck": [
+  {
+   "num": 1,
+   "tag": "done",
+   "q": "이번 과제, 어디까지 했나요?",
+   "opts": [
+    "전부 끝냄",
+    "대부분(70% 이상)",
+    "절반쯤",
+    "조금만(30% 이하)",
+    "아직 시작 못 함"
+   ]
+  },
+  {
+   "num": 2,
+   "tag": "dueDate",
+   "type": "date",
+   "q": "남은 분량을 언제까지 끝낼 건가요? (완수 예정일)",
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  },
+  {
+   "num": 3,
+   "tag": "duePledge",
+   "q": "완수 약속",
+   "opts": [
+    "오늘 안에",
+    "내일까지",
+    "이번 주 안",
+    "다음 수업 전까지",
+    "솔직히 자신 없음"
+   ],
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  },
+  {
+   "num": 4,
+   "tag": "timeliness",
+   "q": "제출 시점은 마감 기준 어땠나요?",
+   "opts": [
+    "여유 있게 미리",
+    "마감 임박해서",
+    "마감 지나서(지각)",
+    "아직 미제출"
+   ]
+  },
+  {
+   "num": 5,
+   "tag": "review",
+   "q": "채점·오답 정리까지 했나요?",
+   "opts": [
+    "채점 + 오답 정리까지",
+    "채점만 함",
+    "풀기만 하고 채점 안 함"
+   ]
+  },
+  {
+   "num": 6,
+   "tag": "trend",
+   "q": "최근 과제들, 스스로 평가하면?",
+   "opts": [
+    "매번 빠짐없이 함",
+    "대체로 하는 편",
+    "자주 빠지거나 밀림",
+    "거의 못 따라감"
+   ]
+  },
+  {
+   "num": 7,
+   "tag": "reason",
+   "q": "(밀렸거나 못 했다면) 가장 큰 이유는?",
+   "opts": [
+    "시간이 없어서(다른 과목·학원)",
+    "너무 어려워서",
+    "깜빡/마감을 놓쳐서",
+    "의욕이 안 나서",
+    "양이 너무 많아서"
+   ],
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  }
+ ],
+ "studyDiagnosticCodes": {
+  "D_done": {
+   "label": "과제 완수",
+   "feedback": "이번 과제를 끝까지 완료했어요. 꾸준함이 실력으로 쌓이고 있습니다."
+  },
+  "D_partial": {
+   "label": "부분 완수",
+   "feedback": "아직 남은 분량이 있어요. 약속한 기한 안에 꼭 마무리합시다."
+  },
+  "D_undone": {
+   "label": "미완 — 완수 필요",
+   "feedback": "이번 과제를 거의 못 했어요. 약속한 날까지 반드시 끝내서 따라잡읍시다."
+  },
+  "D_ontime": {
+   "label": "여유 제출",
+   "feedback": "마감에 여유 있게 끝냈어요. 좋은 페이스입니다."
+  },
+  "D_rush": {
+   "label": "마감 임박형",
+   "feedback": "마감에 임박해서 끝내는 편이에요. 하루만 앞당겨도 훨씬 안정적입니다."
+  },
+  "D_late": {
+   "label": "지각 제출",
+   "feedback": "제출이 늦었어요. 다음 주엔 마감 안에 들어오는 걸 목표로 합시다."
+  },
+  "D_revfull": {
+   "label": "오답 정리까지",
+   "feedback": "채점·오답 정리까지 마쳤어요. 가장 중요한 부분을 잘 챙겼습니다."
+  },
+  "D_norev": {
+   "label": "오답 정리 부족",
+   "feedback": "채점·오답 정리가 빠졌어요. 틀린 문제를 다시 보는 게 실력 상승의 핵심이에요."
+  },
+  "D_lagging": {
+   "label": "최근 누적 부진",
+   "feedback": "최근 과제가 자주 밀리고 있어요. 분량·시간을 함께 점검해 봅시다."
+  }
+ }
 }
