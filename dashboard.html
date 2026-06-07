@@ -393,6 +393,8 @@ function switchTab(t){
 var REP={ master:[], course:'all', week:'latest', allWeeks:[] };
 var EXCLUDE={};  // 리포트에서 숨길 이름(테스트용). 비워두면 제출된 모든 학생이 표시됩니다.
 var CMT={};  // sid -> 코멘트 컨텍스트 (재생성용)
+var PARENT_NOTE={};  // sid -> 가정통신문에 끼워 넣을 '선생님 개별 관찰'(변환된 학부모용 문장)
+var TRAIT_RAW={};    // sid -> 선생님이 입력한 원본 특징 키워드(입력칸 보존용 · PDF 미포함)
 function repWeek(v){ REP.week=v; renderReports(); }
 
 // ════════ 학생별 개별 코멘트 생성기 ════════
@@ -684,8 +686,25 @@ function commentBlock(sid, ctx, pw){
       +'<textarea class="cmt-area" id="pq-'+sid+'" style="min-height:120px">'+esc(perQ)+'</textarea>'
       +'<div class="cmt-btns no-print"><button class="cmt-btn prim" onclick="copyComment(\'pq-'+sid+'\',this)">문항별 코멘트 복사</button></div>';
   }
-  h+='<div class="cmt-hint no-print">자동 초안입니다. 한두 군데 손봐서 보내세요. ‘다른 표현으로’를 누르면 통합 코멘트 문장이 바뀝니다.</div></div>';
+  // ── 가경T/조교 특징 → 가정통신문 문장 변환 ──
+  h+='<div class="rblk-t gold" style="margin-top:22px">가정통신문용 한마디 <span class="rblk-sub">(특징·키워드만 입력 → 변환 → 학부모용 문장 / 가정통신문 PDF에는 변환 결과만 들어갑니다)</span></div>'
+    +'<textarea class="cmt-area no-print" id="tr-'+sid+'" style="min-height:58px" placeholder="예) 집중 좋아짐, 질문 많이 함, 지각 잦음, 어휘 부족, 자신감 붙음" oninput="TRAIT_RAW[\''+sid+'\']=this.value">'+esc(TRAIT_RAW[sid]||'')+'</textarea>'
+    +'<div class="cmt-btns no-print"><button class="cmt-btn prim" onclick="convertTraits(\''+sid+'\')">↓ 가정통신문 문장으로 변환</button>'
+    +'<button class="cmt-btn" onclick="clearParentNote(\''+sid+'\')">지우기</button></div>'
+    +'<textarea class="cmt-area" id="pn-'+sid+'" style="min-height:86px" placeholder="변환 결과가 여기에 나옵니다. 직접 수정해도 되고, 이 내용이 가정통신문 ‘선생님 종합 의견’ 끝부분에 더해집니다." oninput="PARENT_NOTE[\''+sid+'\']=this.value">'+esc(PARENT_NOTE[sid]||'')+'</textarea>';
+  h+='<div class="cmt-hint no-print">자동 초안입니다. 한두 군데 손봐서 보내세요. ‘다른 표현으로’를 누르면 통합 코멘트 문장이 바뀝니다. · 위 ‘가정통신문용 한마디’는 키워드만 적고 변환하면 학부모용 존댓말 문장으로 바뀝니다.</div></div>';
   return h;
+}
+function convertTraits(sid){
+  const tr=document.getElementById('tr-'+sid), pn=document.getElementById('pn-'+sid);
+  if(!tr||!pn) return;
+  TRAIT_RAW[sid]=tr.value;
+  const out=traitsToParent(tr.value);
+  if(!out){ alert('변환할 특징·키워드를 입력하세요.\n예) 집중 좋아짐, 질문 많이 함, 지각 잦음'); return; }
+  pn.value=out; PARENT_NOTE[sid]=out;
+}
+function clearParentNote(sid){
+  const pn=document.getElementById('pn-'+sid); if(pn) pn.value=''; PARENT_NOTE[sid]='';
 }
 
 function renderCourseBar(){
@@ -951,8 +970,75 @@ function nlGreeting(m){
   return '안녕하세요, 학부모님. '+m.name+' 학생의 이번 과제 학습 결과를 정리해 보내 드립니다. '
     +'아래 강점은 가정에서도 격려해 주시고, 보완이 필요한 부분은 함께 살펴봐 주시면 큰 힘이 됩니다. 자세한 문의는 언제든 '+TEACHER+'에게 연락 주세요.';
 }
+// ── 특징 키워드 → 학부모용 문장 변환기 (규칙 기반, 외부 AI 불필요) ──
+var TRAIT_DICT={
+  '집중':{nat:'pos',pos:'수업 중 집중력이 좋아 흐름을 잘 따라옵니다.',neg:'수업 중 집중이 흐트러질 때가 있어 함께 살피고 있습니다.'},
+  '질문':{nat:'pos',pos:'모르는 부분은 적극적으로 질문하며 배우려는 자세가 좋습니다.',neg:'아직 질문을 주저하는 편이라, 편하게 물어보도록 북돋고 있습니다.'},
+  '발표':{nat:'pos',pos:'발표와 대답에 적극적으로 참여합니다.',neg:'발표나 대답에는 다소 소극적인 편입니다.'},
+  '대답':{nat:'pos',pos:'질문에 또렷하게 대답하며 적극적입니다.',neg:'대답에 다소 소극적인 편입니다.'},
+  '참여':{nat:'pos',pos:'수업에 적극적으로 참여합니다.',neg:'수업 참여가 다소 소극적인 편입니다.'},
+  '적극':{nat:'pos',pos:'매사에 적극적인 태도를 보입니다.',neg:'조금 더 적극적으로 임하면 좋겠습니다.'},
+  '태도':{nat:'pos',pos:'학습 태도가 바르고 안정적입니다.',neg:'학습 태도를 조금 더 다잡으면 좋겠습니다.'},
+  '예의':{nat:'pos',pos:'예의 바르고 성실한 모습이 보기 좋습니다.',neg:'기본 예절을 함께 지도하고 있습니다.'},
+  '필기':{nat:'pos',pos:'필기를 꼼꼼히 정리하는 습관이 잘 잡혀 있습니다.',neg:'필기가 다소 부족해 정리 습관을 들이도록 지도하고 있습니다.'},
+  '복습':{nat:'pos',pos:'배운 내용을 스스로 복습하는 습관이 좋습니다.',neg:'복습이 다소 부족해, 그날 배운 내용을 그날 정리하도록 권하고 있습니다.'},
+  '예습':{nat:'pos',pos:'예습을 미리 해 오는 성실함이 돋보입니다.',neg:'예습을 병행하면 수업 효과가 더 클 것으로 보입니다.'},
+  '숙제':{nat:'pos',pos:'과제를 성실하게 챙겨 옵니다.',neg:'과제가 간혹 밀리는 편이라 함께 점검하고 있습니다.'},
+  '과제':{nat:'pos',pos:'과제를 성실하게 챙겨 옵니다.',neg:'과제가 간혹 밀리는 편이라 함께 점검하고 있습니다.'},
+  '이해':{nat:'pos',pos:'개념 이해가 빠르고 정확합니다.',neg:'개념 이해에 시간이 걸리는 편이라 기초부터 차근차근 다지고 있습니다.'},
+  '속도':{nat:'pos',pos:'문제 푸는 속도가 안정적입니다.',neg:'문제 푸는 속도가 다소 느린 편이라 시간 관리도 함께 연습하고 있습니다.'},
+  '실수':{nat:'neg',pos:'실수가 줄어 정확도가 높아지고 있습니다.',neg:'아는 문제에서 실수가 나오는 편이라 검토 습관을 들이도록 지도하고 있습니다.'},
+  '꼼꼼':{nat:'pos',pos:'문제를 꼼꼼하게 푸는 습관이 좋습니다.',neg:'풀이가 다소 급한 편이라 한 번 더 확인하는 습관이 필요합니다.'},
+  '자신감':{nat:'pos',pos:'학습에 자신감이 붙어 가고 있습니다.',neg:'아직 자신감이 부족한 편이라 작은 성공 경험으로 북돋고 있습니다.'},
+  '의욕':{nat:'pos',pos:'학습 의욕이 높습니다.',neg:'학습 의욕이 다소 낮은 편이라 흥미를 끌어올리려 노력하고 있습니다.'},
+  '동기':{nat:'pos',pos:'학습 동기가 뚜렷합니다.',neg:'학습 동기를 함께 찾아가고 있습니다.'},
+  '성실':{nat:'pos',pos:'전반적으로 성실하게 학습에 임합니다.',neg:'성실함을 조금 더 끌어올리면 좋겠습니다.'},
+  '지각':{nat:'neg',pos:'지각 없이 제때 잘 옵니다.',neg:'지각이 잦은 편이라 시간 약속을 지키도록 지도하고 있습니다.'},
+  '졸':{nat:'neg',pos:'수업 내내 또렷하게 집중합니다.',neg:'수업 중 졸음을 보일 때가 있어 컨디션 관리를 함께 살피고 있습니다.'},
+  '산만':{nat:'neg',pos:'차분하게 집중하는 모습이 좋아졌습니다.',neg:'다소 산만한 편이라 집중 환경을 함께 만들어 가고 있습니다.'},
+  '긴장':{nat:'neg',pos:'긴장하지 않고 침착하게 임합니다.',neg:'시험에서 긴장을 많이 하는 편이라 마인드 관리도 함께 돕고 있습니다.'},
+  '친구':{nat:'pos',pos:'친구들과 잘 어울리며 분위기를 밝게 합니다.',neg:'교우 관계를 조금 더 살펴보고 있습니다.'},
+  '암기':{nat:'pos',pos:'암기 과제를 성실히 해 옵니다.',neg:'암기가 약한 편이라 반복 학습을 권하고 있습니다.'},
+  '어휘':{nat:'pos',pos:'어휘력이 탄탄합니다.',neg:'어휘력이 다소 부족해 어휘 정리를 병행하고 있습니다.'},
+  '독해':{nat:'pos',pos:'지문 독해가 안정적입니다.',neg:'독해 속도·정확도를 끌어올리는 연습을 하고 있습니다.'},
+  '문법':{nat:'pos',pos:'문법 개념을 잘 잡고 있습니다.',neg:'문법 부분을 보강하고 있습니다.'},
+  '향상':{nat:'pos',pos:'전반적으로 실력이 향상되고 있습니다.',neg:''},
+  '발전':{nat:'pos',pos:'꾸준히 발전하는 모습이 보입니다.',neg:''}
+};
+function nounToPolite(s){ s=s.trim().replace(/[.\s]+$/,'');
+  if(/[다요]$/.test(s)) return s+'.';
+  if(/함$/.test(s)) return s.replace(/함$/,'합니다.');
+  if(/됨$/.test(s)) return s.replace(/됨$/,'됩니다.');
+  if(/음$/.test(s)) return s.replace(/음$/,'습니다.');
+  if(/임$/.test(s)) return s.replace(/임$/,'입니다.');
+  return s+' 모습을 보입니다.';
+}
+function traitPolarity(item, nat){
+  const flip=/(없|안|줄|개선|나아|드물|적어|적음|좋아|줄어)/.test(item);
+  if(nat==='neg') return flip?'pos':'neg';
+  const neg=/(안|못|부족|없|약|떨어|낮|소극|잦|밀려|밀림|느림|느려|어려|힘들|산만|미흡|약함)/.test(item);
+  return (neg && !/(없이|문제\s*없|걱정\s*없)/.test(item)) ? 'neg' : 'pos';
+}
+function traitsToParent(raw){
+  const items=(raw||'').split(/[,\n;·/、]+/).map(s=>s.trim()).filter(Boolean);
+  if(!items.length) return '';
+  const pos=[], neg=[], seen={};
+  items.forEach(it=>{
+    let key=null; for(const k in TRAIT_DICT){ if(it.indexOf(k)>=0){ key=k; break; } }
+    let sent, pol;
+    if(key){ const e=TRAIT_DICT[key]; pol=traitPolarity(it,e.nat); sent=e[pol]|| e.pos || e.neg; }
+    else { pol=traitPolarity(it,'pos'); sent=nounToPolite(it); }
+    if(!sent) return; sent=sent.replace(/([^.])$/,'$1.');
+    if(seen[sent]) return; seen[sent]=1;
+    (pol==='neg'?neg:pos).push(sent);
+  });
+  let out='';
+  if(pos.length) out+=pos.join(' ');
+  if(neg.length) out+=(out?' 다만, ':'')+neg.join(' ');
+  return out.trim();
+}
 // 누적 데이터 → 학부모 대상 통합 서술(3인칭, 존댓말, 학생에게 직접 말하지 않음)
-function buildParentLetter(m){
+function buildParentLetter(m, extra){
   const rng=mulberry32(hashSeed(m.name+'|'+m.n+'|'+m.avgRate+'|parent'));
   const pick=a=>a[Math.floor(rng()*a.length)];
   const nm=m.name, N=m.n||1;
@@ -1020,6 +1106,8 @@ function buildParentLetter(m){
   p4+=pick([' 책임지고 정성껏 지도하겠습니다.',' 남은 과정도 세심하게 살피며 함께 가겠습니다.']);
   P.push(p4);
 
+  // 선생님 개별 관찰(특징 변환 문장)이 있으면 마무리 직전에 끼워 넣기
+  if(extra && extra.trim()) P.splice(P.length-1, 0, extra.trim());
   return P.join('\n\n');
 }
 function buildNewsletterHTML(m, commentText){
@@ -1041,7 +1129,7 @@ function buildNewsletterHTML(m, commentText){
     +'<div class="nl-sec"><div class="nl-sec-t" style="color:var(--ok)">강점</div>'+strBlock+'</div>'
     +'<div class="nl-sec"><div class="nl-sec-t">보완이 필요한 부분</div><ul class="rdlist">'+integ+'</ul></div>'
     +(studyBlock?'<div class="nl-sec"><div class="nl-sec-t">학습 습관</div>'+studyBlock+'</div>':'')
-    +'<div class="nl-comment"><div class="nl-comment-t">선생님 종합 의견</div>'+esc(buildParentLetter(m))+'</div>'
+    +'<div class="nl-comment"><div class="nl-comment-t">선생님 종합 의견</div>'+esc(buildParentLetter(m, commentText))+'</div>'
     +'<div class="nl-foot">'+esc(BRAND)+'  ·  '+esc(TEACHER)+'</div>'
     +'</div></div>';
 }
@@ -1075,10 +1163,10 @@ function addCanvasPaged(pdf, canvas, startNewPage){
 async function printNewsletter(sid){
   if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
   const m=NL[sid]; if(!m){ alert('학생 데이터를 찾지 못했습니다.'); return; }
-  const cmt=((document.getElementById('cmt-'+sid)||{}).value||'').trim();
+  const note=(PARENT_NOTE[sid]||'').trim();
   repOverlay(m.name+' 가정통신문 생성 중…');
   try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
-  const host=document.getElementById('nlHost'); host.innerHTML=buildNewsletterHTML(m,cmt);
+  const host=document.getElementById('nlHost'); host.innerHTML=buildNewsletterHTML(m,note);
   await new Promise(r=>setTimeout(r,150));
   try{
     const canvas=await nlCapture(host.firstChild);
@@ -1110,8 +1198,7 @@ async function printNewsletterAll(){
     for(let i=0;i<cards.length;i++){
       const sid=cards[i].id; const m=NL[sid]; if(!m) continue;
       repOverlay('가정통신문 생성 중… ('+(i+1)+'/'+cards.length+') · '+m.name);
-      const cmt=((document.getElementById('cmt-'+sid)||{}).value||'').trim();
-      host.innerHTML=buildNewsletterHTML(m,cmt);
+      host.innerHTML=buildNewsletterHTML(m,(PARENT_NOTE[sid]||'').trim());
       await new Promise(r=>setTimeout(r,40));
       const c=await nlCapture(host.firstChild);
       addCanvasPaged(pdf, c, true);
