@@ -11,12 +11,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
-  /* ── NAVY 테마 (MEXX 네이비 톤) · 그린→네이비, 골드 액센트 유지 ── */
-  --green-deep:#33527d;--gold:#c9a84c;--gold-soft:#d8bd6e;--cream:#f1ece1;
-  --bg-dark:#0d1c30;--bg-card:#15273d;--bg-card-hover:#1d3150;
-  --text-primary:#eef1f5;--text-secondary:#a7b2c1;--text-muted:#6f7d8f;
-  --border-soft:rgba(201,168,76,0.22);--border-line:rgba(238,241,245,0.09);
-  --danger:#d98a8a;--ok:#7fae8c;
+  /* ── 슬레이트×민트 테마 · 그린→네이비, 골드 액센트 유지 ── */
+  --green-deep:#2f6b5a;--gold:#5fc6a3;--gold-soft:#86d6ba;--cream:#e8eef0;
+  --bg-dark:#13181d;--bg-card:#1d242b;--bg-card-hover:#27313a;
+  --text-primary:#e8eef0;--text-secondary:#9fb0b8;--text-muted:#6f818b;
+  --border-soft:rgba(95,198,163,0.22);--border-line:rgba(232,238,240,0.09);
+  --danger:#d98a8a;--ok:#5fc6a3;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px}
@@ -49,9 +49,9 @@ th{font-family:'Noto Serif KR',serif;color:var(--gold);text-align:left;padding:1
 td{padding:13px 12px;color:var(--text-secondary);border-bottom:1px solid var(--border-line);font-size:0.88rem}
 tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .tag{display:inline-block;padding:2px 8px;border-radius:9px;font-size:0.72rem;letter-spacing:0.5px}
-.tag-c{background:rgba(51,82,125,0.4);color:var(--cream);border:1px solid var(--green-deep)}
-.tag-w{background:rgba(201,168,76,0.12);color:var(--gold-soft);border:1px solid rgba(201,168,76,0.3)}
-.tag-rate{background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid var(--gold);font-weight:500}
+.tag-c{background:rgba(47,107,82,0.4);color:var(--cream);border:1px solid var(--green-deep)}
+.tag-w{background:rgba(95,198,163,0.12);color:var(--gold-soft);border:1px solid rgba(95,198,163,0.3)}
+.tag-rate{background:rgba(95,198,163,0.15);color:var(--gold);border:1px solid var(--gold);font-weight:500}
 .empty{text-align:center;color:var(--text-muted);padding:48px 0;font-style:italic;font-size:0.92rem}
 .hide{display:none}
 @media (max-width:640px){
@@ -84,7 +84,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .rtrend{font-size:0.74rem;font-weight:500;padding:3px 11px;border-radius:18px;letter-spacing:0.5px}
 .rtrend-up{background:rgba(74,90,58,0.4);color:#a8d088;border:1px solid var(--green-deep)}
 .rtrend-down{background:rgba(198,102,102,0.15);color:#d68a8a;border:1px solid rgba(198,102,102,0.4)}
-.rtrend-keep{background:rgba(201,168,76,0.12);color:var(--gold-soft);border:1px solid rgba(201,168,76,0.3)}
+.rtrend-keep{background:rgba(95,198,163,0.12);color:var(--gold-soft);border:1px solid rgba(95,198,163,0.3)}
 .rtrend-single{background:rgba(122,116,102,0.18);color:var(--text-muted);border:1px solid var(--border-soft)}
 .rpdf-btn{background:transparent;border:1px solid var(--gold);color:var(--gold);font-size:0.72rem;padding:5px 12px;border-radius:6px;cursor:pointer;font-weight:500}
 .rpdf-btn:hover{background:var(--gold);color:var(--bg-dark)}
@@ -127,7 +127,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .rc-cmt .rblk-t{display:flex;align-items:center;gap:10px;justify-content:space-between}
 .cmt-mode{font-size:0.7rem;padding:2px 10px;border-radius:10px;letter-spacing:0.3px;font-weight:500}
 .mode-high{background:rgba(127,174,140,0.16);color:#9fd0ad;border:1px solid rgba(127,174,140,0.45)}
-.mode-mid{background:rgba(201,168,76,0.12);color:var(--gold-soft);border:1px solid rgba(201,168,76,0.35)}
+.mode-mid{background:rgba(95,198,163,0.12);color:var(--gold-soft);border:1px solid rgba(95,198,163,0.35)}
 .mode-low{background:rgba(217,138,138,0.12);color:#e0a3a3;border:1px solid rgba(217,138,138,0.4)}
 .mode-none{background:rgba(122,134,150,0.18);color:var(--text-muted);border:1px solid var(--border-soft)}
 .cmt-area{width:100%;min-height:148px;background:var(--bg-dark);border:1px solid var(--border-soft);border-radius:8px;color:var(--cream);font-family:'Noto Sans KR',sans-serif;font-size:0.92rem;line-height:1.8;padding:16px 18px;resize:vertical;outline:none}
@@ -893,10 +893,10 @@ async function repCapture(t){
   const hidden=[].slice.call(t.querySelectorAll('.rc-cmt, .rpdf-btn'));
   const prev=hidden.map(e=>e.style.display); hidden.forEach(e=>e.style.display='none');
   let c;
-  try{ c=await html2canvas(t,{scale:2,backgroundColor:'#15273d',useCORS:true,logging:false,windowWidth:t.scrollWidth}); }
+  try{ c=await html2canvas(t,{scale:2,backgroundColor:'#1d242b',useCORS:true,logging:false,windowWidth:t.scrollWidth}); }
   finally{ hidden.forEach((e,i)=>e.style.display=prev[i]); }
   return c; }
-function repA4(pdf,c,first){ const pw=210,ph=297; if(!first)pdf.addPage(); pdf.setFillColor(13,28,48); pdf.rect(0,0,pw,ph,'F');
+function repA4(pdf,c,first){ const pw=210,ph=297; if(!first)pdf.addPage(); pdf.setFillColor(19,24,29); pdf.rect(0,0,pw,ph,'F');
   const ratio=c.height/c.width; let w=pw,h=w*ratio; if(h>ph){h=ph;w=h/ratio;} const x=(pw-w)/2,y=(ph-h)/2; pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',x,y,w,h); }
 async function printOneReport(id){ const t=document.getElementById(id); if(!t)return;
   if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
@@ -905,7 +905,7 @@ async function printOneReport(id){ const t=document.getElementById(id); if(!t)re
   await new Promise(r=>setTimeout(r,120));
   try{ const c=await repCapture(t); const jsPDF=getJsPDF(); const ratio=c.height/c.width;
     const pdf=new jsPDF({orientation:(210*ratio)>=210?'portrait':'landscape',unit:'mm',format:[210,210*ratio]});
-    pdf.setFillColor(13,28,48); pdf.rect(0,0,210,210*ratio,'F'); pdf.addImage(c.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,210*ratio);
+    pdf.setFillColor(19,24,29); pdf.rect(0,0,210,210*ratio,'F'); pdf.addImage(c.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,210*ratio);
     pdf.save('오름_숙제진단_'+name+'.pdf');
   }catch(err){ alert('PDF 생성 오류: '+(err.message||err)); }finally{ repHideOverlay(); }}
 async function printAllReports(){
@@ -958,7 +958,7 @@ function buildCoverHTML(title, sub, meta){
     +'<h1>'+esc(title)+'</h1><div class="c-sub">'+esc(sub)+'</div>'
     +'<div class="c-meta">'+meta+'</div></div>';
 }
-async function nlCapture(node){ return await html2canvas(node,{scale:2,backgroundColor:'#0d1c30',useCORS:true,logging:false,windowWidth:node.scrollWidth}); }
+async function nlCapture(node){ return await html2canvas(node,{scale:2,backgroundColor:'#13181d',useCORS:true,logging:false,windowWidth:node.scrollWidth}); }
 // 캔버스를 A4 여러 장으로 잘라 PDF에 추가
 function addCanvasPaged(pdf, canvas, startNewPage){
   const imgW=210, pageH=297, pxPerMm=canvas.width/imgW, pageHpx=Math.floor(pageH*pxPerMm);
@@ -966,10 +966,10 @@ function addCanvasPaged(pdf, canvas, startNewPage){
   while(y<canvas.height){
     const sliceH=Math.min(pageHpx, canvas.height-y);
     const c2=document.createElement('canvas'); c2.width=canvas.width; c2.height=sliceH;
-    const cx=c2.getContext('2d'); cx.fillStyle='#0d1c30'; cx.fillRect(0,0,c2.width,c2.height);
+    const cx=c2.getContext('2d'); cx.fillStyle='#13181d'; cx.fillRect(0,0,c2.width,c2.height);
     cx.drawImage(canvas,0,y,canvas.width,sliceH,0,0,canvas.width,sliceH);
     if(startNewPage || idx>0) pdf.addPage();
-    pdf.setFillColor(13,28,48); pdf.rect(0,0,imgW,pageH,'F');
+    pdf.setFillColor(19,24,29); pdf.rect(0,0,imgW,pageH,'F');
     pdf.addImage(c2.toDataURL('image/jpeg',0.92),'JPEG',0,0,imgW, sliceH/pxPerMm);
     y+=sliceH; idx++; c2.width=0; c2.height=0;
   }
@@ -1006,7 +1006,7 @@ async function printNewsletterAll(){
     host.innerHTML=buildCoverHTML('과제 리포트', courseName+(weekLabel?' · '+weekLabel:''), cards.length+'명 · '+esc(BRAND)+' · '+esc(TEACHER));
     await new Promise(r=>setTimeout(r,150));
     const cover=await nlCapture(host.firstChild);
-    pdf.setFillColor(13,28,48); pdf.rect(0,0,210,297,'F');
+    pdf.setFillColor(19,24,29); pdf.rect(0,0,210,297,'F');
     { const ratio=cover.height/cover.width; let w=210,h=210*ratio; if(h>297){h=297;w=h/ratio;} pdf.addImage(cover.toDataURL('image/jpeg',0.92),'JPEG',(210-w)/2,(297-h)/2,w,h); }
     // 학생별
     for(let i=0;i<cards.length;i++){
