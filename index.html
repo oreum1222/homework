@@ -11,13 +11,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* ── NAVY 테마 (MEXX 네이비 톤) · 그린→네이비, 골드 액센트 유지 ── */
-  --green-deep:#33527d; --green-darker:#243d61;
-  --gold:#c9a84c; --gold-soft:#d8bd6e; --cream:#f1ece1;
-  --bg-dark:#0d1c30; --bg-card:#15273d; --bg-card-hover:#1d3150;
-  --text-primary:#eef1f5; --text-secondary:#a7b2c1; --text-muted:#6f7d8f;
-  --border-soft:rgba(201,168,76,0.22); --border-line:rgba(238,241,245,0.09);
-  --danger:#d98a8a; --warn:#d8bd6e; --ok:#7fae8c;
+  /* ── 슬레이트×민트 테마 · 그린→네이비, 골드 액센트 유지 ── */
+  --green-deep:#2f6b5a; --green-darker:#244e42;
+  --gold:#5fc6a3; --gold-soft:#86d6ba; --cream:#e8eef0;
+  --bg-dark:#13181d; --bg-card:#1d242b; --bg-card-hover:#27313a;
+  --text-primary:#e8eef0; --text-secondary:#9fb0b8; --text-muted:#6f818b;
+  --border-soft:rgba(95,198,163,0.22); --border-line:rgba(232,238,240,0.09);
+  --danger:#d98a8a; --warn:#86d6ba; --ok:#5fc6a3;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px}
@@ -65,8 +65,8 @@ body.landing .corner-logo{display:none}
 .card-num{font-family:'Noto Serif KR',serif;font-weight:700;color:var(--gold);font-size:0.78rem;letter-spacing:3px}
 .card-grade{font-size:0.72rem;color:var(--text-muted);padding:3px 10px;border:1px solid var(--border-soft);border-radius:11px;letter-spacing:1px}
 .card-status{font-size:0.72rem;letter-spacing:0.5px;padding:3px 10px;border-radius:11px}
-.status-active{background:rgba(51,82,125,0.45);color:var(--cream);border:1px solid var(--green-deep)}
-.status-tentative{background:rgba(201,168,76,0.12);color:var(--gold-soft);border:1px solid rgba(201,168,76,0.3)}
+.status-active{background:rgba(47,107,82,0.45);color:var(--cream);border:1px solid var(--green-deep)}
+.status-tentative{background:rgba(95,198,163,0.12);color:var(--gold-soft);border:1px solid rgba(95,198,163,0.3)}
 .status-closed{background:rgba(122,116,102,0.18);color:var(--text-muted);border:1px solid var(--border-soft)}
 .card-arrow{font-family:'Noto Serif KR',serif;font-size:1.4rem;color:var(--text-muted);transition:color 0.2s,transform 0.2s;line-height:1;align-self:center}
 .exam-card:hover .card-arrow{color:var(--gold);transform:translateX(4px)}
@@ -114,7 +114,7 @@ body.landing .corner-logo{display:none}
 .radio-pill{flex:1;min-width:140px;padding:13px 16px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;cursor:pointer;text-align:center;transition:all 0.15s;color:var(--text-secondary);font-size:0.92rem}
 .radio-pill input{display:none}
 .radio-pill:hover{border-color:var(--border-soft);color:var(--cream)}
-.radio-pill.selected{border-color:var(--gold);background:rgba(201,168,76,0.08);color:var(--cream)}
+.radio-pill.selected{border-color:var(--gold);background:rgba(95,198,163,0.08);color:var(--cream)}
 
 /* ─── Answer marking ─── */
 .area-block{margin-bottom:32px}
@@ -141,7 +141,7 @@ body.landing .corner-logo{display:none}
 .tq-opt{padding:12px 16px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;cursor:pointer;color:var(--text-secondary);font-size:0.9rem;transition:all 0.15s}
 .tq-opt input{display:none}
 .tq-opt:hover{border-color:var(--border-soft);color:var(--cream)}
-.tq-opt.selected{border-color:var(--gold);background:rgba(201,168,76,0.08);color:var(--cream)}
+.tq-opt.selected{border-color:var(--gold);background:rgba(95,198,163,0.08);color:var(--cream)}
 .tq-date{color-scheme:dark;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;padding:12px 16px;color:var(--cream);font-family:inherit;font-size:1rem;width:100%;max-width:240px}
 .tq-date:focus{outline:none;border-color:var(--gold)}
 
@@ -170,7 +170,7 @@ body.landing .corner-logo{display:none}
 .pattern-name .code{color:var(--gold);font-size:0.78rem;margin-right:10px;letter-spacing:1.5px}
 .pattern-name .hits{color:var(--text-muted);font-size:0.78rem;margin-left:10px;font-weight:400;letter-spacing:0}
 .pattern-diag{color:var(--text-secondary);font-size:0.9rem;line-height:1.78;margin-bottom:10px}
-.pattern-action{color:var(--cream);font-size:0.88rem;line-height:1.78;padding:14px 18px;background:rgba(201,168,76,0.05);border-left:2px solid var(--gold);border-radius:0 4px 4px 0}
+.pattern-action{color:var(--cream);font-size:0.88rem;line-height:1.78;padding:14px 18px;background:rgba(95,198,163,0.05);border-left:2px solid var(--gold);border-radius:0 4px 4px 0}
 .pattern-action::before{content:'처방';font-family:'Noto Serif KR',serif;font-size:0.68rem;color:var(--gold);letter-spacing:2px;display:block;margin-bottom:6px;font-weight:500}
 /* 강점 카드(녹색 계열) */
 .strength{padding:16px 18px;border:1px solid var(--border-line);border-left:2px solid var(--ok);border-radius:0 4px 4px 0;background:rgba(125,152,99,0.06);margin-bottom:12px}
