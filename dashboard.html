@@ -1003,12 +1003,36 @@ var TRAIT_DICT={
   '독해':{nat:'pos',pos:'지문 독해가 안정적입니다.',neg:'독해 속도·정확도를 끌어올리는 연습을 하고 있습니다.'},
   '문법':{nat:'pos',pos:'문법 개념을 잘 잡고 있습니다.',neg:'문법 부분을 보강하고 있습니다.'},
   '향상':{nat:'pos',pos:'전반적으로 실력이 향상되고 있습니다.',neg:''},
-  '발전':{nat:'pos',pos:'꾸준히 발전하는 모습이 보입니다.',neg:''}
+  '발전':{nat:'pos',pos:'꾸준히 발전하는 모습이 보입니다.',neg:''},
+  '앞자리':{nat:'pos',pos:'늘 앞자리에 앉아 수업에 집중하려는 태도가 좋습니다.',neg:''},
+  '맨앞':{nat:'pos',pos:'늘 앞자리에 앉아 수업에 집중하려는 태도가 좋습니다.',neg:''},
+  '노력':{nat:'pos',pos:'성실하게 노력하는 모습이 보기 좋습니다.',neg:'조금 더 노력하면 좋겠습니다.'},
+  '열심':{nat:'pos',pos:'무엇이든 열심히 하려는 자세가 좋습니다.',neg:'조금 더 적극적으로 임하면 좋겠습니다.'},
+  '끈기':{nat:'pos',pos:'어려운 문제도 끝까지 붙드는 끈기가 좋습니다.',neg:'어려우면 쉽게 손을 놓는 편이라 끝까지 시도하도록 격려하고 있습니다.'},
+  '포기':{nat:'neg',pos:'끝까지 포기하지 않고 시도하는 끈기가 좋습니다.',neg:'어려우면 쉽게 포기하는 편이라 끝까지 시도하도록 격려하고 있습니다.'},
+  '어려':{nat:'neg',pos:'어려운 내용도 잘 소화합니다.',neg:'아직 내용을 어려워하는 부분이 있어 곁에서 차근차근 돕고 있습니다.'},
+  '힘들':{nat:'neg',pos:'힘든 과정도 잘 이겨냅니다.',neg:'아직 버거워하는 부분이 있어 곁에서 함께 돕고 있습니다.'},
+  '적용':{nat:'pos',pos:'배운 내용을 문제에 잘 적용합니다.',neg:'개념을 문제에 적용하는 연습을 함께 하고 있습니다.'},
+  '응용':{nat:'pos',pos:'응용 문제도 곧잘 풀어냅니다.',neg:'응용 단계를 보강하고 있습니다.'},
+  '나아':{nat:'pos',pos:'점점 나아지는 모습이 보입니다.',neg:''},
+  '좋아':{nat:'pos',pos:'전반적으로 좋아지고 있습니다.',neg:''},
+  '차분':{nat:'pos',pos:'차분하게 수업에 임합니다.',neg:''},
+  '밝':{nat:'pos',pos:'밝고 긍정적인 태도로 수업 분위기를 좋게 합니다.',neg:''}
 };
+// 입력을 개별 특징 단위로 분해 (마침표·쉼표 등 + 대조 연결어 '는데/지만'까지)
+function splitTraits(raw){
+  const parts=(raw||'').split(/[,\n;·/、.。!?]+/).map(s=>s.trim()).filter(Boolean);
+  const out=[];
+  parts.forEach(p=>{
+    p.split(/하지만|그러나|그런데|하는데|는데|지만/).map(s=>s.trim()).filter(Boolean).forEach(s=>out.push(s));
+  });
+  return out;
+}
 function nounToPolite(s){ s=s.trim().replace(/[.\s]+$/,'');
   if(/[다요]$/.test(s)) return s+'.';
   if(/함$/.test(s)) return s.replace(/함$/,'합니다.');
   if(/됨$/.test(s)) return s.replace(/됨$/,'됩니다.');
+  if(/짐$/.test(s)) return s.replace(/짐$/,'지고 있습니다.');
   if(/음$/.test(s)) return s.replace(/음$/,'습니다.');
   if(/임$/.test(s)) return s.replace(/임$/,'입니다.');
   return s+' 모습을 보입니다.';
@@ -1020,7 +1044,7 @@ function traitPolarity(item, nat){
   return (neg && !/(없이|문제\s*없|걱정\s*없)/.test(item)) ? 'neg' : 'pos';
 }
 function traitsToParent(raw){
-  const items=(raw||'').split(/[,\n;·/、]+/).map(s=>s.trim()).filter(Boolean);
+  const items=splitTraits(raw);
   if(!items.length) return '';
   const pos=[], neg=[], seen={};
   items.forEach(it=>{
