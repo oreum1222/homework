@@ -951,6 +951,77 @@ function nlGreeting(m){
   return '안녕하세요, 학부모님. '+m.name+' 학생의 이번 과제 학습 결과를 정리해 보내 드립니다. '
     +'아래 강점은 가정에서도 격려해 주시고, 보완이 필요한 부분은 함께 살펴봐 주시면 큰 힘이 됩니다. 자세한 문의는 언제든 '+TEACHER+'에게 연락 주세요.';
 }
+// 누적 데이터 → 학부모 대상 통합 서술(3인칭, 존댓말, 학생에게 직접 말하지 않음)
+function buildParentLetter(m){
+  const rng=mulberry32(hashSeed(m.name+'|'+m.n+'|'+m.avgRate+'|parent'));
+  const pick=a=>a[Math.floor(rng()*a.length)];
+  const nm=m.name, N=m.n||1;
+  const doneVals=(m.doneSeq||[]).filter(v=>v!=null);
+  const doneAvg=doneVals.length?Math.round(doneVals.reduce((a,b)=>a+b,0)/doneVals.length):null;
+  const dil=(m.avgDil!=null?m.avgDil:null);
+  // 강점 영역
+  let strong=null;
+  if(m.strengths&&m.strengths.length) strong=m.strengths[0].name;
+  if(!strong){ const fb=fallbackStrengthArea(m.areaAgg); if(fb.length) strong=fb[0].a; }
+  // 약점 영역(오답 많은 + 정확도 낮은)
+  const weakArr=Object.entries(m.areaAgg||{}).map(([a,v])=>({a,wrong:v.wrong,total:v.total,acc:v.total?(v.total-v.wrong)/v.total:1})).filter(x=>x.wrong>0).sort((x,y)=>y.wrong-x.wrong||x.acc-y.acc);
+  const weak=weakArr.length?weakArr[0].a:null;
+  const recur=(m.recurring&&m.recurring.length&&m.recurring[0].cnt>=2)?m.recurring[0]:null;
+  const types=(m.typeTop||[]).slice(0,2).map(x=>x.t);
+  const hasContent=weakArr.length>0 || (m.areaAgg&&Object.keys(m.areaAgg).length>0);
+  const P=[];
+
+  // 1) 참여·성실도·완수
+  let p1=nm+' 학생은 이번 '+N+'주차 과제를 ';
+  if(doneAvg==null){ p1+=pick(['성실히 제출해 왔습니다.','꾸준히 챙겨 제출했습니다.']); }
+  else if(doneAvg>=90){ p1+=pick(['거의 빠짐없이 끝까지 완수해 왔습니다.','정해진 분량을 꾸준히 완수해 왔습니다.'])
+      +pick([' 약속한 과제를 끝까지 마무리하는 성실함이 꾸준히 유지되고 있어, 학습 태도 면에서 매우 안정적입니다.',' 해야 할 분량을 미루지 않고 챙기는 태도가 잘 잡혀 있습니다.']); }
+  else if(doneAvg>=60){ p1+=pick(['대체로 잘 챙겨 제출하는 편입니다.','성실히 참여하는 편입니다.'])
+      +pick([' 다만 분량을 다 채우지 못하고 넘어가는 주차가 간혹 있어, 완수 습관이 조금 더 단단해지면 좋겠습니다.',' 간혹 과제가 일부 밀리는 주가 있는데, 끝까지 마무리하는 루틴이 자리 잡으면 효과가 더 클 것으로 보입니다.']); }
+  else { p1+=pick(['끝까지 완수하지 못하는 주차가 잦은 편입니다.','분량을 다 마치지 못하고 넘어가는 경우가 많았습니다.'])
+      +pick([' 가정에서 학습 시간을 함께 확보해 주시면 과제 완수에 큰 도움이 됩니다.',' 가정에서도 과제 진행을 한 번씩 살펴봐 주시면 학습 흐름을 잡는 데 힘이 됩니다.']); }
+  if(dil!=null && doneAvg!=null){
+    if(dil>=80) p1+=pick([' 과제를 미리 풀고 채점·오답 정리까지 챙기는 등 학습 성실도도 높은 편입니다.','']);
+    else if(dil<55) p1+=pick([' 다만 채점·오답 정리는 다소 부족해, 푼 뒤 한 번 더 점검하는 습관이 필요합니다.','']);
+  }
+  P.push(p1);
+
+  // 2) 강점 + 누적 평균 정답률
+  let p2='';
+  if(hasContent){
+    if(strong) p2+=pick(['학습 내용 면에서는 '+strong+' 영역에서 안정적인 이해를 보입니다. ', strong+' 영역은 큰 흔들림 없이 잘 소화하고 있습니다. ']);
+    if(m.avgRate!=null){
+      if(m.avgRate>=85) p2+=pick(['누적 평균 정답률은 '+m.avgRate+'%로, 전반적으로 기본기가 탄탄합니다.','평균 정답률 '+m.avgRate+'%로 세부 내용까지 꼼꼼히 챙기고 있습니다.']);
+      else if(m.avgRate>=65) p2+=pick(['누적 평균 정답률은 '+m.avgRate+'%로, 무난하지만 한 단계 더 끌어올릴 여지가 있습니다.','평균 정답률 '+m.avgRate+'% 수준으로, 보완 포인트만 잡으면 상승 여력이 충분합니다.']);
+      else p2+=pick(['누적 평균 정답률은 '+m.avgRate+'%로, 아직 끌어올릴 부분이 많습니다. 점수보다 약한 영역의 원리를 정확히 잡는 시기입니다.','평균 정답률 '+m.avgRate+'%로, 기초부터 차근차근 다지면 충분히 좋아질 수 있습니다.']);
+    }
+  } else { p2+=pick(['맡은 분량을 책임감 있게 마무리하는 모습이 인상적입니다.','꾸준한 학습 태도가 앞으로의 성장에 좋은 바탕이 됩니다.']); }
+  if(p2) P.push(p2);
+
+  // 3) 보완점(누적 반복 약점)
+  if(hasContent && (weak||recur)){
+    let p3='';
+    if(recur) p3+=pick([J(recur.name,'은','는')+' '+N+'주차 중 '+recur.cnt+'개 주차에서 반복적으로 나타나, 단발성 실수가 아니라 집중 보완이 필요한 부분입니다. ','특히 '+recur.name+' 유형의 실수가 여러 주에 걸쳐 반복되고 있어, 구조적으로 다져 둘 필요가 있습니다. ']);
+    else if(weak) p3+=pick(['다만 '+weak+' 영역에서 비슷한 유형의 실수가 모이는 편입니다. ','보완이 필요한 부분은 주로 '+weak+' 영역입니다. ']);
+    if(types.length) p3+=pick(['세부적으로는 '+types.join(' · ')+' 유형을 어려워합니다.','특히 '+types.join(' · ')+' 같은 유형에서 실점이 잦습니다.']);
+    if(p3) P.push(p3);
+  }
+
+  // 4) 추세 + 가정 협조 + 마무리
+  let p4='';
+  if(N>=2 && m.trend){
+    if(m.trend==='상승') p4+=pick(['최근 정답률이 상승세를 보여, 노력이 결과로 이어지고 있습니다. ','다행히 최근 들어 정답률이 올라가고 있어 좋은 흐름입니다. ']);
+    else if(m.trend==='하락') p4+=pick(['최근 정답률이 다소 떨어져, 한 번 점검이 필요한 시점입니다. ','근래 정답률이 주춤하고 있어, 학습 리듬을 함께 살펴보면 좋겠습니다. ']);
+    else p4+=pick(['정답률은 큰 기복 없이 꾸준히 유지되고 있습니다. ','전반적으로 안정적인 흐름을 이어가고 있습니다. ']);
+  }
+  if(hasContent && strong && weak && strong!==weak){
+    p4+=pick(['가정에서는 '+strong+' 강점은 칭찬으로 북돋아 주시고, '+weak+' 부분은 매일 짧게라도 복습할 수 있도록 지지해 주시면 큰 힘이 됩니다.','댁에서 잘하는 '+strong+'은 격려해 주시고, '+weak+'은 꾸준히 들여다볼 수 있게 응원해 주시면 더없이 좋겠습니다.']);
+  } else { p4+=pick(['가정에서 따뜻한 격려로 학습 동기를 북돋아 주시면 큰 힘이 됩니다.','가정에서의 꾸준한 응원이 좋은 학습 습관으로 이어집니다.']); }
+  p4+=pick([' 책임지고 정성껏 지도하겠습니다.',' 남은 과정도 세심하게 살피며 함께 가겠습니다.']);
+  P.push(p4);
+
+  return P.join('\n\n');
+}
 function buildNewsletterHTML(m, commentText){
   const weekLabel = m.seq.length>1 ? (weekShort(m.seq[0])+' ~ '+weekShort(m.seq[m.seq.length-1])) : weekShort(m.seq[0]);
   const integ=rIntegrated(m).map(d=>'<li>'+d+'</li>').join('');
@@ -970,7 +1041,7 @@ function buildNewsletterHTML(m, commentText){
     +'<div class="nl-sec"><div class="nl-sec-t" style="color:var(--ok)">강점</div>'+strBlock+'</div>'
     +'<div class="nl-sec"><div class="nl-sec-t">보완이 필요한 부분</div><ul class="rdlist">'+integ+'</ul></div>'
     +(studyBlock?'<div class="nl-sec"><div class="nl-sec-t">학습 습관</div>'+studyBlock+'</div>':'')
-    +(commentText?'<div class="nl-comment"><div class="nl-comment-t">선생님 한마디</div>'+esc(commentText)+'</div>':'')
+    +'<div class="nl-comment"><div class="nl-comment-t">선생님 종합 의견</div>'+esc(buildParentLetter(m))+'</div>'
     +'<div class="nl-foot">'+esc(BRAND)+'  ·  '+esc(TEACHER)+'</div>'
     +'</div></div>';
 }
