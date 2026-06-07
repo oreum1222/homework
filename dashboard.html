@@ -20,6 +20,18 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px}
+/* ── 인쇄용(라이트) PDF 테마: 아이보리 × 딥그린 — 캡처 시 카드/뉴스레터에 일시 적용 ── */
+.pdf-light{
+  --green-deep:#2f6b4f; --green-darker:#24523c;
+  --gold:#2f6b4f; --gold-soft:#3f8a66; --cream:#23291f;
+  --bg-dark:#efece4; --bg-card:#ffffff; --bg-card-hover:#f4f1ea;
+  --text-primary:#23291f; --text-secondary:#5b6152; --text-muted:#8a8676;
+  --border-soft:rgba(47,107,79,0.28); --border-line:rgba(0,0,0,0.10);
+  --danger:#c0392b; --warn:#b8893a; --ok:#2f6b4f;
+}
+.nl-brandtxt{display:none}
+.pdf-light .nl-logo{display:none}
+.pdf-light .nl-brandtxt{display:block;font-family:'Noto Serif KR',serif;color:var(--gold);font-size:1.25rem;font-weight:700;margin-bottom:6px}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg-dark);color:var(--text-primary);min-height:100vh;line-height:1.7}
 .wrap{max-width:1200px;margin:0 auto;padding:48px 24px}
 h1{font-family:'Noto Serif KR',serif;font-weight:700;font-size:1.85rem;color:var(--cream);margin-bottom:6px}
@@ -232,6 +244,8 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
         <select class="rep-week-sel" id="repWeekSel" onchange="repWeek(this.value)"><option value="latest">코멘트: 최근 주차</option></select>
         <button class="rfbtn pdf" id="repAllPdf" onclick="printAllReports()">전체 PDF 저장</button>
         <button class="rfbtn pdf" id="nlAllBtn" onclick="printNewsletterAll()" style="border-color:#9fd0ad;color:#9fd0ad">가정통신문 일괄 PDF</button>
+        <label class="rfbtn" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px" title="켜면 PDF가 밝은 아이보리×딥그린(인쇄용)으로 나옵니다">
+          <input type="checkbox" id="pdfLightChk" onchange="setPdfLight(this.checked)" style="accent-color:#5fc6a3"> 🖨 인쇄용(밝게)</label>
         <input class="rep-search" id="repSearch" placeholder="이름 검색" oninput="repSearchFn(this.value)">
       </div>
       <div id="repNote" style="color:var(--text-muted);font-size:0.8rem;margin-bottom:18px"></div>
@@ -886,17 +900,23 @@ function repFilter(f,btn){
 function repSearchFn(q){ q=q.trim(); document.querySelectorAll('.repcard').forEach(p=>{ p.style.display=(!q||(p.dataset.name||'').indexOf(q)>=0)?'':'none'; }); }
 
 // ── PDF ──
+var PDF_LIGHT=false;  // true=인쇄용(아이보리×딥그린), false=화면용(슬레이트×민트)
+function setPdfLight(v){ PDF_LIGHT=!!v; }
+function pdfCapBg(dark){ return PDF_LIGHT?'#efece4':dark; }
+function pdfPageFill(pdf){ if(PDF_LIGHT) pdf.setFillColor(239,236,228); else pdf.setFillColor(19,24,29); }
+function pdfPageFillStyle(){ return PDF_LIGHT?'#efece4':'#13181d'; }
 function getJsPDF(){ if(window.jspdf&&window.jspdf.jsPDF)return window.jspdf.jsPDF; if(window.jsPDF)return window.jsPDF; return null; }
 function repLibsReady(){ return !!(window.html2canvas&&getJsPDF()); }
 async function repCapture(t){
   // 학부모 전송 PDF에는 '조교용 코멘트 영역'과 'PDF 버튼'을 빼고 캡처
+  const light=PDF_LIGHT; if(light) t.classList.add('pdf-light');
   const hidden=[].slice.call(t.querySelectorAll('.rc-cmt, .rpdf-btn'));
   const prev=hidden.map(e=>e.style.display); hidden.forEach(e=>e.style.display='none');
   let c;
-  try{ c=await html2canvas(t,{scale:2,backgroundColor:'#1d242b',useCORS:true,logging:false,windowWidth:t.scrollWidth}); }
-  finally{ hidden.forEach((e,i)=>e.style.display=prev[i]); }
+  try{ c=await html2canvas(t,{scale:2,backgroundColor:pdfCapBg('#1d242b'),useCORS:true,logging:false,windowWidth:t.scrollWidth}); }
+  finally{ hidden.forEach((e,i)=>e.style.display=prev[i]); if(light) t.classList.remove('pdf-light'); }
   return c; }
-function repA4(pdf,c,first){ const pw=210,ph=297; if(!first)pdf.addPage(); pdf.setFillColor(19,24,29); pdf.rect(0,0,pw,ph,'F');
+function repA4(pdf,c,first){ const pw=210,ph=297; if(!first)pdf.addPage(); pdfPageFill(pdf); pdf.rect(0,0,pw,ph,'F');
   const ratio=c.height/c.width; let w=pw,h=w*ratio; if(h>ph){h=ph;w=h/ratio;} const x=(pw-w)/2,y=(ph-h)/2; pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',x,y,w,h); }
 async function printOneReport(id){ const t=document.getElementById(id); if(!t)return;
   if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
@@ -905,8 +925,8 @@ async function printOneReport(id){ const t=document.getElementById(id); if(!t)re
   await new Promise(r=>setTimeout(r,120));
   try{ const c=await repCapture(t); const jsPDF=getJsPDF(); const ratio=c.height/c.width;
     const pdf=new jsPDF({orientation:(210*ratio)>=210?'portrait':'landscape',unit:'mm',format:[210,210*ratio]});
-    pdf.setFillColor(19,24,29); pdf.rect(0,0,210,210*ratio,'F'); pdf.addImage(c.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,210*ratio);
-    pdf.save('오름_숙제진단_'+name+'.pdf');
+    pdfPageFill(pdf); pdf.rect(0,0,210,210*ratio,'F'); pdf.addImage(c.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,210*ratio);
+    pdf.save('숙제리포트_'+name+(PDF_LIGHT?'_인쇄용':'')+'.pdf');
   }catch(err){ alert('PDF 생성 오류: '+(err.message||err)); }finally{ repHideOverlay(); }}
 async function printAllReports(){
   if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
@@ -920,7 +940,7 @@ async function printAllReports(){
     for(let i=0;i<cards.length;i++){ const name=cards[i].dataset.name||('학생'+(i+1));
       repOverlay('전체 PDF 생성 중… ('+(i+1)+'/'+cards.length+') · '+name); await new Promise(r=>setTimeout(r,20));
       const c=await repCapture(cards[i]); repA4(pdf,c,i===0); c.width=0;c.height=0; }
-    repOverlay('PDF 저장 중…'); await new Promise(r=>setTimeout(r,30)); pdf.save('오름_숙제진단_전체.pdf');
+    repOverlay('PDF 저장 중…'); await new Promise(r=>setTimeout(r,30)); pdf.save('숙제리포트_전체'+(PDF_LIGHT?'_인쇄용':'')+'.pdf');
   }catch(err){ alert('전체 PDF 오류: '+(err.message||err)); }finally{ if(btn)btn.disabled=false; repHideOverlay(); }}
 function repOverlay(t){ const ov=document.getElementById('pdfOverlay'); ov.querySelector('.pdf-overlay-text').textContent=t||'PDF 생성 중…'; ov.style.display='flex'; }
 function repHideOverlay(){ document.getElementById('pdfOverlay').style.display='none'; }
@@ -940,7 +960,8 @@ function buildNewsletterHTML(m, commentText){
   const areaTable=rAreaTable(m);
   const typeLine=(m.typeTop&&m.typeTop.length)?'<div class="tc" style="margin-top:10px;color:var(--text-secondary)">자주 틀린 세부 유형: <b style="color:var(--cream)">'+m.typeTop.slice(0,6).map(x=>esc(x.t)+(x.c>1?'('+x.c+'회)':'')).join(' · ')+'</b></div>':'';
   return '<div class="nl"><div class="nl-inner">'
-    +'<div class="nl-head">'+(LOGO_URL?'<img class="nl-logo" src="'+LOGO_URL+'">':'<div class="nl-title" style="color:var(--gold)">'+esc(BRAND)+'</div>')
+    +'<div class="nl-head">'+(LOGO_URL?'<img class="nl-logo" src="'+LOGO_URL+'">':'')
+      +'<div class="nl-brandtxt">'+esc(BRAND)+'</div>'
       +'<div class="nl-title">'+esc(m.name)+' 학생 과제 리포트</div>'
       +'<div class="nl-sub">'+esc(m.courseName)+' · '+weekLabel+' · 제출 '+m.n+'회 · 평균 정답률 '+m.avgRate+'%</div></div>'
     +'<div class="nl-greet">'+esc(nlGreeting(m))+'</div>'
@@ -955,10 +976,16 @@ function buildNewsletterHTML(m, commentText){
 }
 function buildCoverHTML(title, sub, meta){
   return '<div class="nl-cover">'+(LOGO_URL?'<img class="nl-logo" src="'+LOGO_URL+'">':'')
+    +'<div class="nl-brandtxt" style="font-size:1.5rem;margin-bottom:18px">'+esc(BRAND)+'</div>'
     +'<h1>'+esc(title)+'</h1><div class="c-sub">'+esc(sub)+'</div>'
     +'<div class="c-meta">'+meta+'</div></div>';
 }
-async function nlCapture(node){ return await html2canvas(node,{scale:2,backgroundColor:'#13181d',useCORS:true,logging:false,windowWidth:node.scrollWidth}); }
+async function nlCapture(node){
+  const light=PDF_LIGHT; if(light) node.classList.add('pdf-light');
+  let c;
+  try{ c=await html2canvas(node,{scale:2,backgroundColor:pdfCapBg('#13181d'),useCORS:true,logging:false,windowWidth:node.scrollWidth}); }
+  finally{ if(light) node.classList.remove('pdf-light'); }
+  return c; }
 // 캔버스를 A4 여러 장으로 잘라 PDF에 추가
 function addCanvasPaged(pdf, canvas, startNewPage){
   const imgW=210, pageH=297, pxPerMm=canvas.width/imgW, pageHpx=Math.floor(pageH*pxPerMm);
@@ -966,10 +993,10 @@ function addCanvasPaged(pdf, canvas, startNewPage){
   while(y<canvas.height){
     const sliceH=Math.min(pageHpx, canvas.height-y);
     const c2=document.createElement('canvas'); c2.width=canvas.width; c2.height=sliceH;
-    const cx=c2.getContext('2d'); cx.fillStyle='#13181d'; cx.fillRect(0,0,c2.width,c2.height);
+    const cx=c2.getContext('2d'); cx.fillStyle=pdfPageFillStyle(); cx.fillRect(0,0,c2.width,c2.height);
     cx.drawImage(canvas,0,y,canvas.width,sliceH,0,0,canvas.width,sliceH);
     if(startNewPage || idx>0) pdf.addPage();
-    pdf.setFillColor(19,24,29); pdf.rect(0,0,imgW,pageH,'F');
+    pdfPageFill(pdf); pdf.rect(0,0,imgW,pageH,'F');
     pdf.addImage(c2.toDataURL('image/jpeg',0.92),'JPEG',0,0,imgW, sliceH/pxPerMm);
     y+=sliceH; idx++; c2.width=0; c2.height=0;
   }
@@ -986,7 +1013,7 @@ async function printNewsletter(sid){
     const canvas=await nlCapture(host.firstChild);
     const jsPDF=getJsPDF(); const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
     addCanvasPaged(pdf, canvas, false);
-    pdf.save('가정통신문_'+m.name+'.pdf');
+    pdf.save('가정통신문_'+m.name+(PDF_LIGHT?'_인쇄용':'')+'.pdf');
   }catch(e){ alert('가정통신문 생성 오류: '+(e.message||e)); }
   finally{ host.innerHTML=''; repHideOverlay(); }
 }
@@ -1006,7 +1033,7 @@ async function printNewsletterAll(){
     host.innerHTML=buildCoverHTML('과제 리포트', courseName+(weekLabel?' · '+weekLabel:''), cards.length+'명 · '+esc(BRAND)+' · '+esc(TEACHER));
     await new Promise(r=>setTimeout(r,150));
     const cover=await nlCapture(host.firstChild);
-    pdf.setFillColor(19,24,29); pdf.rect(0,0,210,297,'F');
+    pdfPageFill(pdf); pdf.rect(0,0,210,297,'F');
     { const ratio=cover.height/cover.width; let w=210,h=210*ratio; if(h>297){h=297;w=h/ratio;} pdf.addImage(cover.toDataURL('image/jpeg',0.92),'JPEG',(210-w)/2,(297-h)/2,w,h); }
     // 학생별
     for(let i=0;i<cards.length;i++){
@@ -1020,7 +1047,7 @@ async function printNewsletterAll(){
       c.width=0;c.height=0;
     }
     repOverlay('PDF 저장 중…'); await new Promise(r=>setTimeout(r,30));
-    pdf.save('가정통신문_일괄_'+courseName+'.pdf');
+    pdf.save('가정통신문_일괄_'+courseName+(PDF_LIGHT?'_인쇄용':'')+'.pdf');
   }catch(e){ alert('일괄 생성 오류: '+(e.message||e)); }
   finally{ host.innerHTML=''; if(btn) btn.disabled=false; repHideOverlay(); }
 }
