@@ -28,23 +28,32 @@ var HEADERS = [
 ];
 var ROSTER_HEADERS = ['courseId','name','school','guardianName','guardianPhone','studentPhone','consent','memo'];
 var LOG_HEADERS    = ['timestamp','courseId','name','phone','channel','scenario','message','result','messageId','error'];
+var PENDING_SHEET  = '발송대기';
+var PENDING_HEADERS= ['생성일','scenario','name','phone','courseId','weekLabel','message','status'];
+// 자동발송용 브랜드/교사명 (config.js 와 별개로 GAS에서 직접 사용)
+var BRAND_NAME = '김가경 국어 연구소';
+var TEACHER_NAME = '가경T';
+var DONE_MAP = {'전부 끝냄':100,'대부분(70% 이상)':85,'절반쯤':50,'조금만(30% 이하)':25,'아직 시작 못 함':0};
 
 // ════════════════════════ 라우팅 ════════════════════════
 function doPost(e){
   var params = (e && e.parameter) ? e.parameter : {};
   if (params.action === 'sendMessages') return handleSend_(params);
+  if (params.action === 'markSent')     return handleMarkSent_(params);
   return handleSubmit_(params);   // 기본: 학생 제출 누적
 }
 function doGet(e){
   var action = (e && e.parameter && e.parameter.action) || 'list';
-  if (action === 'roster') return json_(readRoster_());
-  if (action === 'list')   return json_(readAll_());
+  if (action === 'roster')  return json_(readRoster_());
+  if (action === 'pending') return json_(readPending_());
+  if (action === 'list')    return json_(readAll_());
   return json_({ ok:true, msg:'오름 숙제 진단 백엔드 정상 작동 중' });
 }
 
-// ★ 권한 승인 전용: 편집기에서 이 함수를 1회 실행 → '허용'만 누르면 외부 발송 권한이 부여됩니다.
+// ★ 권한 승인 전용: 편집기에서 이 함수를 1회 실행 → '허용'만 누르면 외부발송+메일 권한이 부여됩니다.
 function authorizeExternal(){
   try { UrlFetchApp.fetch('https://api.solapi.com/cash/v1/balance', { muteHttpExceptions:true }); } catch(e){}
+  try { MailApp.getRemainingDailyQuota(); } catch(e){}   // 자동발송 알림 메일 권한(send_mail)
   return '권한 승인 완료';
 }
 
@@ -150,6 +159,94 @@ function logSend_(m, channel, result, messageId, error){
   }catch(_){}
 }
 function maskPhone_(p){ p=digits_(p); return p.length>=7 ? p.slice(0,3)+'****'+p.slice(-4) : p; }
+
+// ════════════════════════ 자동발송(반자동) — 주간 다이제스트 ════════════════════════
+// 매주 트리거로 실행: 최신 주차 기준 '미완 독려'+'주간 요약' 대상을 만들어 '발송대기' 시트에 적재 + 교사 메일 알림.
+// 실제 발송은 대시보드 '자동발송 대기함'에서 교사가 확인 후 진행(반자동).
+function weeklyDigest(){
+  var subs = readAll_();
+  var roster = readRoster_();
+  if(!subs.length || !roster.length) return '데이터 없음';
+
+  var latest = 0;
+  subs.forEach(function(r){ var w=Number(r.week)||0; if(w>latest) latest=w; });
+  var weekLabel='', byName={};
+  subs.forEach(function(r){
+    if((Number(r.week)||0)===latest){ byName[String(r.name).trim()]=r; if(!weekLabel) weekLabel=String(r.weekLabel||('주차 '+latest)); }
+  });
+
+  var pending=[], undoneN=0, sumN=0;
+  roster.forEach(function(p){
+    var name=String(p.name||'').trim();
+    var phone=String(p.guardianPhone||p.studentPhone||'').replace(/[^0-9]/g,'');
+    var consent=String(p.consent||'').toUpperCase();
+    if(!name || !phone) return;
+    if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
+    var sub=byName[name];
+    var doneLabel = sub ? String(sub['완수상태']||'') : '';
+    var doneRate  = (DONE_MAP[doneLabel]!=null) ? DONE_MAP[doneLabel] : (sub?'':0);
+    var rate = sub ? String(sub['정답률']||'') : '';
+    var doneTxt = (doneRate==='')?'-':(doneRate+'%');
+    var rateTxt = rate===''? '-' : (String(rate).indexOf('%')>=0?rate:rate+'%');
+
+    // 미완 독려: 미제출 또는 완수율<100
+    if(!sub || (DONE_MAP[doneLabel]!=null && DONE_MAP[doneLabel]<100)){
+      var t='['+BRAND_NAME+'] '+name+' 학생, 이번 '+weekLabel+' 과제 완수율이 '+doneTxt+'입니다. 약속한 기한까지 꼭 마무리 부탁드립니다. ('+TEACHER_NAME+')';
+      pending.push([new Date(),'undone',name,phone,p.courseId||'',weekLabel,t,'대기']); undoneN++;
+    }
+    // 주간 요약: 그 주차 제출자
+    if(sub){
+      var t2='['+BRAND_NAME+'] '+name+' 학생 '+weekLabel+' 과제 결과 안내 — 평균 정답률 '+rateTxt+', 완수율 '+doneTxt+'. 자세한 내용은 가정통신문을 확인해 주세요. ('+TEACHER_NAME+')';
+      pending.push([new Date(),'summary',name,phone,p.courseId||'',weekLabel,t2,'대기']); sumN++;
+    }
+  });
+
+  // '발송대기' 시트: 머리글만 남기고 비운 뒤 이번 주 대기 적재(이번 주 큐)
+  var sh=getSheet_(PENDING_SHEET, PENDING_HEADERS);
+  if(sh.getLastRow()>1) sh.getRange(2,1,sh.getLastRow()-1,PENDING_HEADERS.length).clearContent();
+  if(pending.length) sh.getRange(2,1,pending.length,pending[0].length).setValues(pending);
+
+  // 교사 메일 알림
+  try{
+    var to=Session.getEffectiveUser().getEmail();
+    if(to){
+      MailApp.sendEmail(to,
+        '[숙제시스템] '+weekLabel+' 자동발송 대기 '+pending.length+'건',
+        weekLabel+' 자동발송 대기가 준비됐습니다.\n'
+        +'· 미완 독려: '+undoneN+'명\n· 주간 요약: '+sumN+'명\n\n'
+        +'대시보드 → 문자 발송 → "자동발송 대기함"에서 검토 후 발송하세요.\n');
+    }
+  }catch(e){}
+  return '대기 '+pending.length+'건 준비(미완 '+undoneN+', 요약 '+sumN+')';
+}
+function readPending_(){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var sh=ss.getSheetByName(PENDING_SHEET);
+  if(!sh) return [];
+  var v=sh.getDataRange().getValues();
+  if(v.length<2) return [];
+  var head=v[0], out=[];
+  for(var i=1;i<v.length;i++){
+    if(String(v[i][7]||'')!=='대기') continue;   // status
+    var o={}; for(var j=0;j<head.length;j++) o[head[j]]=v[i][j];
+    o._row=i+1; out.push(o);
+  }
+  return out;
+}
+// 대시보드에서 발송 완료한 대기 항목을 '발송완료'로 표시 (keys = "phone|scenario" 배열)
+function handleMarkSent_(params){
+  try{
+    var keys=JSON.parse(params.keys||'[]'); var set={}; keys.forEach(function(k){ set[k]=1; });
+    var ss=SpreadsheetApp.getActiveSpreadsheet(); var sh=ss.getSheetByName(PENDING_SHEET);
+    if(!sh) return json_({ok:true,updated:0});
+    var v=sh.getDataRange().getValues(), upd=0;
+    for(var i=1;i<v.length;i++){
+      var key=String(v[i][3]).replace(/[^0-9]/g,'')+'|'+String(v[i][1]);   // phone|scenario
+      if(set[key] && String(v[i][7])==='대기'){ sh.getRange(i+1,8).setValue('발송완료'); upd++; }
+    }
+    return json_({ok:true,updated:upd});
+  }catch(err){ return json_({ok:false,error:String(err)}); }
+}
 
 // ════════════════════════ ③ 명단 조회 ════════════════════════
 function readRoster_(){
