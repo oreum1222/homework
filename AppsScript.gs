@@ -231,9 +231,9 @@ function weeklyDigest(){
   var pending=[], undoneN=0, sumN=0;
   roster.forEach(function(p){
     var name=String(p.name||'').trim();
-    var phone=String(p.guardianPhone||p.studentPhone||'').replace(/[^0-9]/g,'');
+    var gp=digits_(p.guardianPhone||''), sp=digits_(p.studentPhone||'');   // 학부모/학생 번호
     var consent=String(p.consent||'').toUpperCase();
-    if(!name || !phone) return;
+    if(!name || (!gp && !sp)) return;
     if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
     var sub=byName[normName_(name)];
     var doneLabel = sub ? String(sub['완수상태']||'') : '';
@@ -242,15 +242,19 @@ function weeklyDigest(){
     var doneTxt = (doneRate==='')?'-':(doneRate+'%');
     var rateTxt = rate===''? '-' : (String(rate).indexOf('%')>=0?rate:rate+'%');
 
-    // 미완 독려: 미제출 또는 완수율<100
+    // 미완 독려 → 학생에게 (학생 번호 없으면 학부모로 대체)
     if(!sub || (DONE_MAP[doneLabel]!=null && DONE_MAP[doneLabel]<100)){
-      var t='['+BRAND_NAME+'] '+name+' 학생, 이번 '+weekLabel+' 과제 완수율이 '+doneTxt+'입니다. 약속한 기한까지 꼭 마무리 부탁드립니다. ('+TEACHER_NAME+')';
-      pending.push([new Date(),'undone',name,phone,p.courseId||'',weekLabel,t,'대기']); undoneN++;
+      var toU = sp || gp;
+      if(toU){
+        var t='['+BRAND_NAME+'] '+name+' 학생, 이번 '+weekLabel+' 과제 완수율이 '+doneTxt+'입니다. 약속한 기한까지 꼭 마무리합시다. ('+TEACHER_NAME+')';
+        pending.push([new Date(),'undone',name,toU,p.courseId||'',weekLabel,t,'대기']); undoneN++;
+      }
     }
-    // 주간 요약: 그 주차 제출자
+    // 주간 요약 → 학부모 + 학생 둘 다
     if(sub){
       var t2='['+BRAND_NAME+'] '+name+' 학생 '+weekLabel+' 과제 결과 안내 — 평균 정답률 '+rateTxt+', 완수율 '+doneTxt+'. 자세한 내용은 가정통신문을 확인해 주세요. ('+TEACHER_NAME+')';
-      pending.push([new Date(),'summary',name,phone,p.courseId||'',weekLabel,t2,'대기']); sumN++;
+      [gp,sp].forEach(function(ph){ if(ph) pending.push([new Date(),'summary',name,ph,p.courseId||'',weekLabel,t2,'대기']); });
+      sumN++;
     }
   });
 
