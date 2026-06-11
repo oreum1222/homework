@@ -150,8 +150,8 @@ function handleOathSend_(params){
     var due =String(params.dueDate||'').trim();
     if(!name) return json_({ ok:false, error:'이름이 없습니다.' });
 
-    var roster=readRoster_(), match=null;
-    for(var i=0;i<roster.length;i++){ if(String(roster[i].name).trim()===name){ match=roster[i]; break; } }
+    var roster=readRoster_(), match=null, nn=normName_(name);
+    for(var i=0;i<roster.length;i++){ if(normName_(roster[i].name)===nn){ match=roster[i]; break; } }
     var phones=[];
     if(match){
       var gp=String(match.guardianPhone||'').replace(/[^0-9]/g,''); if(gp) phones.push(gp);
@@ -201,6 +201,8 @@ function solapiAuth_(key, secret){
   return 'HMAC-SHA256 apiKey=' + key + ', date=' + date + ', salt=' + salt + ', signature=' + hex;
 }
 function digits_(s){ return String(s||'').replace(/[^0-9]/g, ''); }
+// 이름 정규화(매칭용): 공백·대괄호·괄호 문자 제거 → "[실험용]"==="실험용", " 홍 길동 "==="홍길동"
+function normName_(s){ return String(s||'').replace(/[\s\[\]（）()｛｝{}]/g,''); }
 
 function logSend_(m, channel, result, messageId, error){
   try{
@@ -223,7 +225,7 @@ function weeklyDigest(){
   subs.forEach(function(r){ var w=Number(r.week)||0; if(w>latest) latest=w; });
   var weekLabel='', byName={};
   subs.forEach(function(r){
-    if((Number(r.week)||0)===latest){ byName[String(r.name).trim()]=r; if(!weekLabel) weekLabel=String(r.weekLabel||('주차 '+latest)); }
+    if((Number(r.week)||0)===latest){ byName[normName_(r.name)]=r; if(!weekLabel) weekLabel=String(r.weekLabel||('주차 '+latest)); }
   });
 
   var pending=[], undoneN=0, sumN=0;
@@ -233,7 +235,7 @@ function weeklyDigest(){
     var consent=String(p.consent||'').toUpperCase();
     if(!name || !phone) return;
     if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
-    var sub=byName[name];
+    var sub=byName[normName_(name)];
     var doneLabel = sub ? String(sub['완수상태']||'') : '';
     var doneRate  = (DONE_MAP[doneLabel]!=null) ? DONE_MAP[doneLabel] : (sub?'':0);
     var rate = sub ? String(sub['정답률']||'') : '';
