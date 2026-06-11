@@ -209,6 +209,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
   <div class="tabs">
     <button class="tab on" id="tabList" onclick="switchTab('list')">제출 목록</button>
     <button class="tab" id="tabReport" onclick="switchTab('report')">학생별 개별 리포트</button>
+    <button class="tab" id="tabSms" onclick="switchTab('sms')">문자 발송</button>
   </div>
 
   <!-- 제출 목록 -->
@@ -250,6 +251,60 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
       </div>
       <div id="repNote" style="color:var(--text-muted);font-size:0.8rem;margin-bottom:18px"></div>
       <div id="reportRoot"><div class="empty">데이터를 불러오는 중...</div></div>
+    </div>
+  </div>
+
+  <!-- 문자 발송 -->
+  <div id="smsPane" style="display:none">
+    <div class="section">
+      <div class="section-title">문자 발송
+        <span id="smsModeBadge" style="font-size:0.72rem;padding:3px 10px;border-radius:20px;margin-left:8px;background:rgba(95,198,163,.15);color:var(--gold);border:1px solid var(--border-soft)">테스트 모드</span>
+      </div>
+      <div class="row">
+        <select id="smsCourse" style="min-width:200px" onchange="smsBuildTargets();smsRenderTargets()"></select>
+        <select id="smsScenario" style="min-width:200px" onchange="smsApplyTemplate()">
+          <option value="undone">미제출·미완 독려</option>
+          <option value="summary">가정통신문 요약</option>
+          <option value="absent">결석·지각 알림</option>
+          <option value="free">직접 작성</option>
+        </select>
+        <button onclick="smsAutoSelect()">조건 대상 자동선택</button>
+        <button class="ghost" onclick="smsReloadRoster()">명단 새로고침</button>
+      </div>
+      <div id="smsRosterMsg" style="color:var(--text-muted);font-size:0.82rem;margin-top:8px"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">받는 사람 <span id="smsCntBadge" style="color:var(--text-muted);font-weight:400;font-size:0.82rem"></span></div>
+      <div id="smsTargets"><div class="empty">명단/제출 데이터를 불러오세요.</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">메시지</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" class="no-print">
+        <span style="color:var(--text-muted);font-size:0.8rem;align-self:center">변수 삽입:</span>
+        <button class="cmt-btn" onclick="smsInsert('#{이름}')">이름</button>
+        <button class="cmt-btn" onclick="smsInsert('#{주차}')">주차</button>
+        <button class="cmt-btn" onclick="smsInsert('#{완수율}')">완수율</button>
+        <button class="cmt-btn" onclick="smsInsert('#{정답률}')">정답률</button>
+        <button class="cmt-btn" onclick="smsInsert('#{선생님}')">선생님</button>
+        <button class="cmt-btn" onclick="smsInsert('#{브랜드}')">브랜드</button>
+      </div>
+      <textarea id="smsText" class="cmt-area" style="min-height:110px" oninput="smsUpdateMeta()" placeholder="시나리오를 고르면 템플릿이 채워집니다. #{이름} 등은 학생별로 자동 치환됩니다."></textarea>
+      <div id="smsMeta" style="color:var(--text-muted);font-size:0.82rem;margin-top:6px"></div>
+      <div style="margin-top:10px"><div class="rblk-t gold" style="font-size:0.78rem">미리보기 <span class="rblk-sub">(선택된 첫 번째 대상 기준)</span></div>
+        <div id="smsPreview" style="background:var(--bg-dark);border:1px solid var(--border-line);border-radius:8px;padding:14px 16px;color:var(--cream);font-size:0.9rem;line-height:1.7;white-space:pre-wrap;min-height:40px"></div>
+      </div>
+      <div class="row" style="margin-top:14px;align-items:center">
+        <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:0.9rem">
+          <input type="checkbox" id="smsReal" style="accent-color:#5fc6a3" onchange="smsRefreshMode()"> <b>실제 발송</b> (체크 안 하면 테스트 — 실제 전송 안 함)</label>
+        <button onclick="smsSend()" style="background:var(--gold);color:var(--bg-dark);font-weight:700;border:none">발송하기</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">발송 결과</div>
+      <div id="smsResult"><div class="empty">아직 발송 내역이 없습니다.</div></div>
     </div>
   </div>
 </div>
@@ -382,11 +437,155 @@ document.addEventListener('input',e=>{
 });
 
 function switchTab(t){
-  const isList=t==='list';
-  document.getElementById('listPane').style.display=isList?'':'none';
-  document.getElementById('reportPane').style.display=isList?'none':'';
-  document.getElementById('tabList').classList.toggle('on',isList);
-  document.getElementById('tabReport').classList.toggle('on',!isList);
+  const panes={list:'listPane',report:'reportPane',sms:'smsPane'};
+  Object.keys(panes).forEach(k=>{ const el=document.getElementById(panes[k]); if(el) el.style.display=(k===t)?'':'none'; });
+  document.getElementById('tabList').classList.toggle('on',t==='list');
+  document.getElementById('tabReport').classList.toggle('on',t==='report');
+  const ts=document.getElementById('tabSms'); if(ts) ts.classList.toggle('on',t==='sms');
+  if(t==='sms') smsInit();
+}
+
+// ════════════════════════ 문자 발송 ════════════════════════
+var SMS={ roster:[], targets:[], loaded:false };
+const SMS_TEMPLATES={
+  undone:'[#{브랜드}] #{이름} 학생, 이번 #{주차} 과제 완수율이 #{완수율}입니다. 약속한 기한까지 꼭 마무리 부탁드립니다. (#{선생님})',
+  summary:'[#{브랜드}] #{이름} 학생 #{주차} 과제 결과를 안내드립니다. 평균 정답률 #{정답률}, 완수율 #{완수율}. 자세한 내용은 가정통신문을 확인해 주세요. (#{선생님})',
+  absent:'[#{브랜드}] #{이름} 학생이 금일 수업에 결석/지각하였음을 안내드립니다. 확인 부탁드립니다. (#{선생님})',
+  free:''
+};
+function digitsJS(s){ return String(s||'').replace(/[^0-9]/g,''); }
+function lastNonNull(a){ if(!a) return null; for(let i=a.length-1;i>=0;i--){ if(a[i]!=null) return a[i]; } return null; }
+function consentOK(v){ if(v===undefined||v===null||v==='') return true; const s=String(v).trim().toUpperCase(); return !(s==='N'||s==='NO'||s==='X'||s.indexOf('미동의')>=0||s.indexOf('거부')>=0||s==='아니오'); }
+
+function smsInit(){
+  // 수업 선택 옵션
+  const sel=document.getElementById('smsCourse');
+  if(sel && !sel.dataset.filled){
+    let html='<option value="all">전체 수업</option>';
+    (window.COURSE_LIST||[]).forEach(c=>{ html+='<option value="'+c.id+'">'+esc(c.name)+'</option>'; });
+    sel.innerHTML=html; sel.dataset.filled='1';
+  }
+  if(!SMS.loaded){ smsReloadRoster(); }
+  else { smsBuildTargets(); smsRenderTargets(); }
+  if(!document.getElementById('smsText').value) smsApplyTemplate();
+  smsRefreshMode();
+}
+function smsReloadRoster(){
+  const msg=document.getElementById('smsRosterMsg');
+  if(!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR')){ msg.textContent='SCRIPT_URL 미설정 — 명단을 불러올 수 없습니다(제출 학생 목록만 표시).'; SMS.roster=[]; SMS.loaded=true; smsBuildTargets(); smsRenderTargets(); return; }
+  msg.textContent='명단 불러오는 중…';
+  fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{
+    SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true;
+    msg.textContent='명단 '+SMS.roster.length+'명 로드됨.'+(SMS.roster.length?'':' (명단 시트가 비어 있어요. 제출 학생 목록으로 표시합니다.)');
+    smsBuildTargets(); smsRenderTargets();
+  }).catch(e=>{ msg.textContent='명단 로드 실패: '+e.message+' (제출 학생 목록만 표시)'; SMS.roster=[]; SMS.loaded=true; smsBuildTargets(); smsRenderTargets(); });
+}
+function smsBuildTargets(){
+  const course=document.getElementById('smsCourse').value;
+  const rByName={}; SMS.roster.forEach(r=>{ if(course==='all'||String(r.courseId)===course){ rByName[String(r.name).trim()]=r; } });
+  const mByName={}; (REP.master||[]).forEach(m=>{ if(course==='all'||m.courseId===course){ mByName[m.name]=m; } });
+  const names={}; Object.keys(rByName).forEach(n=>names[n]=1); Object.keys(mByName).forEach(n=>names[n]=1);
+  SMS.targets=Object.keys(names).map(n=>{
+    const r=rByName[n]||{}, m=mByName[n]||null;
+    const phone=digitsJS(r.guardianPhone||r.studentPhone||'');
+    return { name:n, courseId:String(r.courseId||(m&&m.courseId)||''), phone:phone, consent:consentOK(r.consent), inRoster:!!rByName[n], m:m, checked:false };
+  }).sort((a,b)=> (a.name>b.name?1:-1));
+}
+function smsRenderTargets(){
+  const box=document.getElementById('smsTargets');
+  if(!SMS.targets.length){ box.innerHTML='<div class="empty">대상이 없습니다. ‘명단 새로고침’ 또는 제출 목록을 먼저 불러오세요.</div>'; smsUpdateMeta(); return; }
+  let rows=SMS.targets.map((t,i)=>{
+    const done=t.m?lastNonNull(t.m.doneSeq):null;
+    const sendable=!!t.phone && t.consent;
+    const phoneCell = t.phone ? (t.phone.replace(/(\d{3})(\d{3,4})(\d{4})/,'$1-$2-$3')) : '<span style="color:#d68a8a">명단에 번호 없음</span>';
+    const cons = t.phone ? (t.consent?'<span style="color:#9fd0ad">동의</span>':'<span style="color:#d68a8a">미동의</span>') : '—';
+    return '<tr style="border-bottom:1px solid var(--border-line)">'
+      +'<td style="padding:7px 8px"><input type="checkbox" data-i="'+i+'" '+(sendable?'':'disabled')+' '+(t.checked?'checked':'')+' onchange="smsToggle('+i+',this.checked)" style="accent-color:#5fc6a3"></td>'
+      +'<td style="padding:7px 8px;color:var(--cream)">'+esc(t.name)+(t.inRoster?'':' <span style="color:var(--text-muted);font-size:.75rem">(명단외)</span>')+'</td>'
+      +'<td style="padding:7px 8px">'+(COURSE_NAME[t.courseId]||t.courseId||'-')+'</td>'
+      +'<td style="padding:7px 8px">'+phoneCell+'</td>'
+      +'<td style="padding:7px 8px;text-align:center">'+cons+'</td>'
+      +'<td style="padding:7px 8px;text-align:center">'+(done!=null?done+'%':'-')+'</td>'
+      +'<td style="padding:7px 8px;text-align:center">'+(t.m&&t.m.avgRate!=null?t.m.avgRate+'%':'-')+'</td></tr>';
+  }).join('');
+  box.innerHTML='<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:0.88rem">'
+    +'<thead><tr style="border-bottom:1px solid var(--border-soft);color:var(--text-secondary);text-align:left">'
+    +'<th style="padding:7px 8px"><input type="checkbox" onchange="smsToggleAll(this.checked)" style="accent-color:#5fc6a3"></th><th style="padding:7px 8px">이름</th><th style="padding:7px 8px">수업</th><th style="padding:7px 8px">보호자 번호</th><th style="padding:7px 8px;text-align:center">동의</th><th style="padding:7px 8px;text-align:center">완수율</th><th style="padding:7px 8px;text-align:center">정답률</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody></table></div>';
+  smsUpdateMeta();
+}
+function smsToggle(i,v){ if(SMS.targets[i]) SMS.targets[i].checked=v; smsUpdateMeta(); }
+function smsToggleAll(v){ SMS.targets.forEach(t=>{ if(t.phone&&t.consent) t.checked=v; }); smsRenderTargets(); }
+function smsAutoSelect(){
+  const sc=document.getElementById('smsScenario').value;
+  SMS.targets.forEach(t=>{
+    if(!(t.phone&&t.consent)){ t.checked=false; return; }
+    if(sc==='undone'){ const d=t.m?lastNonNull(t.m.doneSeq):null; t.checked=(d!=null&&d<100); }
+    else { t.checked=true; }
+  });
+  smsRenderTargets();
+}
+function smsApplyTemplate(){ const sc=document.getElementById('smsScenario').value; document.getElementById('smsText').value=SMS_TEMPLATES[sc]||''; smsUpdateMeta(); }
+function smsInsert(tok){ const ta=document.getElementById('smsText'); const s=ta.selectionStart||ta.value.length, e=ta.selectionEnd||ta.value.length; ta.value=ta.value.slice(0,s)+tok+ta.value.slice(e); ta.focus(); ta.selectionStart=ta.selectionEnd=s+tok.length; smsUpdateMeta(); }
+function smsSubst(text,t){
+  const m=t.m; const wk=(m&&m.seq&&m.seq.length)?weekShort(m.seq[m.seq.length-1]):'이번 주';
+  const done=m?lastNonNull(m.doneSeq):null;
+  return String(text)
+    .replace(/#\{이름\}/g,t.name||'')
+    .replace(/#\{주차\}/g,wk)
+    .replace(/#\{완수율\}/g,done!=null?done+'%':'-')
+    .replace(/#\{정답률\}/g,(m&&m.avgRate!=null)?m.avgRate+'%':'-')
+    .replace(/#\{선생님\}/g,TEACHER).replace(/#\{브랜드\}/g,BRAND);
+}
+function smsBytes(s){ let b=0; for(const ch of String(s)) b+=(ch.charCodeAt(0)>127?2:1); return b; }
+function smsUpdateMeta(){
+  const text=document.getElementById('smsText').value;
+  const checked=SMS.targets.filter(t=>t.checked);
+  const sample=checked[0]||SMS.targets.find(t=>t.phone&&t.consent)||SMS.targets[0];
+  const prev=sample?smsSubst(text,sample):text;
+  const bytes=smsBytes(prev); const type=bytes<=90?'SMS(단문)':'LMS(장문)';
+  document.getElementById('smsMeta').innerHTML='약 '+bytes+'바이트 · '+type+' · 선택 <b style="color:var(--gold)">'+checked.length+'</b>명';
+  document.getElementById('smsPreview').textContent=prev||'(내용을 입력하세요)';
+  document.getElementById('smsCntBadge').textContent=SMS.targets.length?('· 총 '+SMS.targets.length+'명 / 선택 '+checked.length+'명'):'';
+}
+function smsRefreshMode(){
+  const real=document.getElementById('smsReal').checked;
+  const b=document.getElementById('smsModeBadge');
+  b.textContent=real?'실제 발송 모드':'테스트 모드';
+  b.style.background=real?'rgba(214,138,138,.15)':'rgba(95,198,163,.15)';
+  b.style.color=real?'#d68a8a':'var(--gold)';
+  b.style.borderColor=real?'rgba(214,138,138,.4)':'var(--border-soft)';
+}
+function smsSend(){
+  const text=document.getElementById('smsText').value.trim();
+  const real=document.getElementById('smsReal').checked;
+  const checked=SMS.targets.filter(t=>t.checked && t.phone && t.consent);
+  if(!text){ alert('메시지 내용을 입력하세요.'); return; }
+  if(!checked.length){ alert('받는 사람을 한 명 이상 선택하세요. (번호 없음/미동의는 제외)'); return; }
+  const sc=document.getElementById('smsScenario').value;
+  const msgs=checked.map(t=>({ to:t.phone, text:smsSubst(text,t), name:t.name, scenario:sc, courseId:t.courseId }));
+
+  if(!confirm((real?'[실제 발송] ':'[테스트] ')+checked.length+'명에게 보냅니다.\n\n예시) '+msgs[0].text.slice(0,60)+'…\n\n진행할까요?')) return;
+
+  // 테스트(미체크): 네트워크 없이 클라이언트 시뮬레이션 → 즉시 결과 표시
+  if(!real){ smsShowResult({ ok:true, dryRun:true, count:msgs.length, results:msgs.map(m=>({to:m.to,name:m.name,ok:true,dry:true})) }, msgs); return; }
+
+  if(!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR')){ alert('실제 발송은 SCRIPT_URL 설정이 필요합니다.'); return; }
+  const rbox=document.getElementById('smsResult'); rbox.innerHTML='<div class="empty">발송 중…</div>';
+  const body='action=sendMessages&dryRun=0&messages='+encodeURIComponent(JSON.stringify(msgs));
+  fetch(SCRIPT_URL,{ method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body:body })
+    .then(r=>r.json()).then(d=>smsShowResult(d,msgs))
+    .catch(e=>{ rbox.innerHTML='<div class="error">발송 요청 실패: '+esc(e.message)+'</div>'; });
+}
+function smsShowResult(d, msgs){
+  const rbox=document.getElementById('smsResult');
+  if(!d || d.ok===false){ rbox.innerHTML='<div class="error">발송 실패: '+esc((d&&d.error)||'알 수 없는 오류')+'</div>'; return; }
+  const res=d.results||[]; const okN=res.filter(r=>r.ok).length, failN=res.length-okN;
+  const head = d.dryRun
+    ? '<div style="color:var(--gold);margin-bottom:8px">✅ 테스트 완료 — 실제로는 전송되지 않았습니다. (대상 '+res.length+'명)'+(d.hasKeys===false?' · 백엔드에 Solapi 키 미설정':'')+'</div>'
+    : '<div style="color:#9fd0ad;margin-bottom:8px">📨 발송 완료 — 성공 '+okN+'명'+(failN?' · <span style="color:#d68a8a">실패 '+failN+'명</span>':'')+'</div>';
+  const list=res.map(r=>'<div style="font-size:0.85rem;padding:3px 0;color:'+(r.ok?'var(--text-secondary)':'#d68a8a')+'">'+(r.ok?(r.dry?'· (테스트) ':'· ✓ '):'· ✗ ')+esc(r.name||'')+' '+esc(String(r.to||'').replace(/(\d{3})(\d{3,4})(\d{4})/,'$1-$2-$3'))+(r.error?' — '+esc(r.error):'')+'</div>').join('');
+  rbox.innerHTML=head+list;
 }
 
 // ════════════════ 학생별 개별 리포트 ════════════════
