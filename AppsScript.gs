@@ -40,6 +40,7 @@ function doPost(e){
   var params = (e && e.parameter) ? e.parameter : {};
   if (params.action === 'sendMessages') return handleSend_(params);
   if (params.action === 'markSent')     return handleMarkSent_(params);
+  if (params.action === 'oathSend')     return handleOathSend_(params);
   return handleSubmit_(params);   // 기본: 학생 제출 누적
 }
 function doGet(e){
@@ -139,6 +140,56 @@ function handleSend_(params){
     return json_({ ok:true, dryRun:false, sent:ok, count:messages.length, groupId:gid, results:results });
 
   }catch(err){ return json_({ ok:false, error:String(err) }); }
+}
+
+// ════════════════════════ 각서 자동발송 (학생 제출 즉시 학부모+본인) ════════════════════════
+// 보안: 클라이언트가 번호를 못 정함. 서버가 '명단'에서 이름으로 본인 연락처를 찾아 그 번호로만 발송.
+function handleOathSend_(params){
+  try{
+    var name=String(params.name||'').trim();
+    var due =String(params.dueDate||'').trim();
+    if(!name) return json_({ ok:false, error:'이름이 없습니다.' });
+
+    var roster=readRoster_(), match=null;
+    for(var i=0;i<roster.length;i++){ if(String(roster[i].name).trim()===name){ match=roster[i]; break; } }
+    var phones=[];
+    if(match){
+      var gp=String(match.guardianPhone||'').replace(/[^0-9]/g,''); if(gp) phones.push(gp);
+      var sp=String(match.studentPhone||'').replace(/[^0-9]/g,'');  if(sp && phones.indexOf(sp)<0) phones.push(sp);
+    }
+    if(!phones.length) return json_({ ok:false, error:'명단에서 '+name+' 학생의 연락처를 찾지 못했습니다.' });
+
+    var text=oathText_(name, due);
+    var props=PropertiesService.getScriptProperties();
+    var key=props.getProperty('SOLAPI_KEY'), secret=props.getProperty('SOLAPI_SECRET'), sender=props.getProperty('SOLAPI_SENDER');
+
+    if(!(key&&secret&&sender)){   // 키 없으면 테스트(실발송X)
+      phones.forEach(function(p){ logSend_({to:p,name:name,scenario:'oath',courseId:params.courseId||'',text:text},'테스트','테스트','',''); });
+      return json_({ ok:true, dryRun:true, sentTo:phones });
+    }
+    var payload={ messages: phones.map(function(p){ return { to:p, from:digits_(sender), text:text }; }) };
+    var res=UrlFetchApp.fetch('https://api.solapi.com/messages/v4/send-many/detail',{
+      method:'post', contentType:'application/json',
+      headers:{ Authorization: solapiAuth_(key,secret) }, payload:JSON.stringify(payload), muteHttpExceptions:true });
+    var code=res.getResponseCode(); var body={}; try{ body=JSON.parse(res.getContentText()||'{}'); }catch(_){}
+    var gid=(body.groupInfo&&body.groupInfo.groupId)||'';
+    if(code>=300){
+      var em=(body&&(body.errorMessage||body.message))||('HTTP '+code);
+      phones.forEach(function(p){ logSend_({to:p,name:name,scenario:'oath',courseId:params.courseId||'',text:text},'문자','실패',gid,em); });
+      return json_({ ok:false, error:em });
+    }
+    var failed={}; (body.failedMessageList||[]).forEach(function(f){ failed[digits_(f.to)]=(f.statusMessage||'실패'); });
+    phones.forEach(function(p){ var er=failed[digits_(p)]; logSend_({to:p,name:name,scenario:'oath',courseId:params.courseId||'',text:text},'문자',er?'실패':'발송',gid,er||''); });
+    return json_({ ok:true, sentTo:phones, groupId:gid });
+  }catch(err){ return json_({ ok:false, error:String(err) }); }
+}
+function oathText_(name, due){
+  return '[' + BRAND_NAME + '] 각서\n\n'
+    + '나, ' + name + '은(는) 숙제를 안 해 온 오늘의 나를 솔직히 인정합니다.\n\n'
+    + '숙제를 안 하면 그 순간은 편하지만, 복습을 제때 못 해 다음 수업 이해가 어렵고, 수업은 들었으나 남는 게 없어 결국 손해 보는 사람은 나라는 것도 알고 있습니다.\n\n'
+    + '다시 숙제를 안 해 올 경우 "깜빡했어요·시간이 없었어요·했는데 두고 왔어요" 같은 인류 공통의 변명을 잠시 내려놓고, 밀린 숙제부터 조용히 해결하겠습니다.\n\n'
+    + '숙제 완료 기한: ' + (due || '(미정)') + '\n\n'
+    + '* 지금의 숙제가 정말 버겁다면 ' + TEACHER_NAME + '에게 꼭 연락주세요. 상황을 헤아려 적정한 양으로 줄여드립니다. (진심입니다)';
 }
 
 // Solapi HMAC-SHA256 인증 헤더
