@@ -42,6 +42,12 @@ function doGet(e){
   return json_({ ok:true, msg:'오름 숙제 진단 백엔드 정상 작동 중' });
 }
 
+// ★ 권한 승인 전용: 편집기에서 이 함수를 1회 실행 → '허용'만 누르면 외부 발송 권한이 부여됩니다.
+function authorizeExternal(){
+  try { UrlFetchApp.fetch('https://api.solapi.com/cash/v1/balance', { muteHttpExceptions:true }); } catch(e){}
+  return '권한 승인 완료';
+}
+
 // ════════════════════════ ① 제출 누적 ════════════════════════
 function handleSubmit_(params){
   try{
