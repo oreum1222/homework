@@ -49,6 +49,7 @@ window.COURSE_LIST = [
     period: '2026 썸머스쿨',
     // roster: ['홍길동','김영희'],   // (선택) 수강생 명단 → 미제출자 자동 체크
     weeks: [
+      { week: 1, file: 'data/hw-summer-grammar-w1.json', label: '1주차 · 품사편', area: '품사', status: 'active' },
       { week: 8, file: 'data/hw-summer-grammar-w8.json', label: '8주차 · 음운 변동', area: '음운 변동', status: 'active' },
     ]
   },
