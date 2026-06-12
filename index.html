@@ -119,7 +119,7 @@ body.landing .corner-logo{display:none}
 
 /* ─── Answer marking ─── */
 .area-block{margin-bottom:32px}
-.area-title{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border-soft)}
+.area-title{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .area-title .sub{color:var(--text-muted);font-size:0.78rem;margin-left:10px;letter-spacing:0;font-weight:300}
 .q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
 .q-item{display:flex;align-items:center;gap:10px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;padding:10px 12px;cursor:pointer;transition:all 0.15s;user-select:none}
@@ -243,6 +243,12 @@ body.landing .corner-logo{display:none}
 .chk-name{font-size:0.95rem;color:var(--cream,#e8eef0);line-height:1.4}
 .chk-item.on .chk-name{font-weight:600}
 .chk-count{text-align:center;font-size:1.05rem;font-weight:700;color:var(--gold,#5fc6a3);margin:18px 0 4px}
+/* N제 '안 풂' 토글 */
+.notsolved-btn{margin-left:auto;font-size:0.78rem;font-weight:700;padding:5px 13px;border-radius:11px;border:1.5px solid rgba(214,138,138,.5);background:transparent;color:#d6a96a;cursor:pointer;transition:.12s}
+.notsolved-btn:hover{border-color:#d6a96a}
+.notsolved-btn.on{background:#d68a8a;color:#241010;border-color:#d68a8a}
+.q-grid.grid-disabled{opacity:0.35;pointer-events:none;filter:grayscale(0.6)}
+.notsolved-note{margin-top:10px;font-size:0.85rem;color:#d6a96a;font-weight:600}
 /* 재검사 방법 */
 .oath-method{margin:18px 0 4px;padding:18px 20px;border-radius:10px;background:rgba(95,198,163,.08);border:1px solid rgba(95,198,163,.3)}
 .oath-method>label{display:block;font-weight:700;color:var(--cream,#e8eef0);font-size:1.1rem;margin-bottom:10px}
@@ -509,7 +515,7 @@ function loadWeek(courseId, monthKey, week){
     document.getElementById('loading').style.display='none';
     STATE.data = d;
     STATE.week = monthKey ? weekUid : (d.week!=null ? d.week : week);
-    STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.studyAns = {}; STATE.result = null;
+    STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.notSolved = new Set(); STATE.studyAns = {}; STATE.result = null;
     STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null; STATE.oathMethod = null;
     renderDiag();
   }).catch(err=>{
@@ -734,20 +740,33 @@ function renderStep2(){
     el('h2',{class:'section-title'},'오답 마킹'),
     el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항이 다루는 <strong>개념(영역)</strong>입니다.'})
   ));
-  secs.forEach(sec=>{
-    const titleExtra = sec.range ? ` (${sec.range})` : '';
-    root.appendChild(areaBlock((sec.title||'문항')+titleExtra, sec.questions||[]));
-  });
+  secs.forEach((sec,si)=>{ root.appendChild(areaBlock(sec, si)); });
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
     el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();}}, STATE.data.checklist?'다음 → 이매진 체크':'다음 단계 →')
   ));
 }
-function areaBlock(title, questions){
-  const block = el('div',{class:'section area-block'},
-    el('div',{class:'area-title'}, title, el('span',{class:'sub'}, questions.length+'문항'))
-  );
-  const grid = el('div',{class:'q-grid'});
+function secKeyOf(sec, i){ return String((sec&&sec.key) || (sec&&sec.title) || i); }
+function toggleNotSolved(secKey){
+  if(STATE.notSolved.has(secKey)) STATE.notSolved.delete(secKey);
+  else {
+    STATE.notSolved.add(secKey);
+    // 안 풂으로 표시하면 그 회차 오답 마킹 제거 (안 풀었으니 오답 없음)
+    (STATE.data.sections||[]).forEach((s,i)=>{ if(secKeyOf(s,i)===secKey) (s.questions||[]).forEach(q=>STATE.wrong.delete(String(q.no))); });
+  }
+  renderDiag();
+}
+function areaBlock(sec, si){
+  const secKey = secKeyOf(sec, si);
+  const questions = sec.questions||[];
+  const title = (sec.title||'문항') + (sec.range?` (${sec.range})`:'');
+  const notSolved = STATE.notSolved.has(secKey);
+  const block = el('div',{class:'section area-block'});
+  block.appendChild(el('div',{class:'area-title'}, title,
+    el('span',{class:'sub'}, questions.length+'문항'),
+    el('button',{type:'button', class:'notsolved-btn'+(notSolved?' on':''), onclick:()=>toggleNotSolved(secKey)}, notSolved?'✓ 안 풂':'안 풂')
+  ));
+  const grid = el('div',{class:'q-grid'+(notSolved?' grid-disabled':'')});
   questions.forEach(q=>{
     const key = String(q.no);
     const item = el('div',{class: STATE.wrong.has(key)?'q-item wrong':'q-item'},
@@ -756,12 +775,14 @@ function areaBlock(title, questions){
       (q.wr!=null) ? el('span',{class:'q-wr'}, q.wr+'%') : (q.area ? el('span',{class:'q-cc'}, q.area) : null)
     );
     item.onclick = ()=>{
+      if(STATE.notSolved.has(secKey)) return;   // 안 풂이면 마킹 불가
       if(STATE.wrong.has(key)) STATE.wrong.delete(key); else STATE.wrong.add(key);
       item.classList.toggle('wrong');
     };
     grid.appendChild(item);
   });
   block.appendChild(grid);
+  if(notSolved) block.appendChild(el('div',{class:'notsolved-note'},'이 회차는 ‘안 풂’으로 표시됐어요 — 과제 해결 정도에 반영됩니다.'));
   return block;
 }
 
@@ -810,6 +831,11 @@ function renderStep3(){
 }
 function goToResult(){
   STATE.result = computeResult();
+  // 과제 해결 정도 10% 이하 → 사실상 '안 함' → 각서 작성
+  if(!STATE.teacherView && STATE.result.solveRate!=null && STATE.result.solveRate<=10){
+    alert('과제 해결 정도가 '+STATE.result.solveRate+'%예요. 거의 안 한 것으로 보여 각서를 작성하게 됩니다.');
+    STATE.didHw='undone'; STATE.step='oath'; STATE.autoSubmitted=false; renderDiag(); return;
+  }
   STATE.step = 4; STATE.autoSubmitted = false; STATE.teacherView = false;
   renderDiag();
 }
@@ -872,13 +898,13 @@ function computeChecklistResult(){
   const completion = { doneIdx: completed?0:(c.done===0?4:2), doneLabel:label, completed, doneRate:c.rate,
     dueDate: dueRaw?fmtKDate(dueRaw):'', pledge:'', timeliness:'', reason:'' };
   return { totalPts:0, rawPts:0, total:0, correct:0, wrongN:0, rate:0, wrongDetails:[], patterns:[], strengths:[],
-    areaStat:{}, studyDiag:[], diligence:null, completion, checklist:c };
+    areaStat:{}, studyDiag:[], diligence:null, completion, checklist:c, solveRate:c.rate, notSolvedTitles:[] };
 }
 
 // ─────────────────── 진단 계산 엔진 ───────────────────
 function allQuestions(){
   const out = [];
-  (STATE.data.sections||[]).forEach(sec=>(sec.questions||[]).forEach(q=>out.push({...q, sectionKey:sec.key, sectionTitle:sec.title})));
+  (STATE.data.sections||[]).forEach((sec,i)=>(sec.questions||[]).forEach(q=>out.push({...q, sectionKey:sec.key, sectionTitle:sec.title, _secKey:secKeyOf(sec,i)})));
   return out;
 }
 function computeResult(){
@@ -886,15 +912,16 @@ function computeResult(){
   const cl = !!(STATE.data && STATE.data.checklist);
   if(cl && !mk) return computeChecklistResult();   // 순수 체크리스트
   const qs = allQuestions();
-  let totalPts=0, rawPts=0, correct=0;
+  let totalPts=0, rawPts=0, correct=0, solvedQ=0;
   const wrongDetails=[];
   qs.forEach(q=>{
+    if(STATE.notSolved.has(q._secKey)) return;   // '안 풂' 회차 문항은 정답률 계산에서 제외
     const pts = q.points || (q.three?3:2);
-    totalPts += pts;
+    totalPts += pts; solvedQ++;
     if(STATE.wrong.has(String(q.no))){ wrongDetails.push({...q, score:pts}); }
     else { rawPts += pts; correct++; }
   });
-  const total = qs.length;
+  const total = solvedQ;   // 푼 문항만 정답률 모수
   const wrongN = wrongDetails.length;
   const rate = total ? Math.round((correct/total)*100) : 0;
 
@@ -914,7 +941,18 @@ function computeResult(){
     reason: studyOpt('reason', studyGet(STATE.studyAns,'reason'))
   };
 
-  const result = { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag, diligence, completion };
+  // ── 과제 해결 정도(%) — '안 풂' 회차 + 이매진 미체크 반영 ──
+  let nSec=0, solvedSec=0; const notSolvedTitles=[];
+  (STATE.data.sections||[]).forEach((s,i)=>{ if(!(s.questions||[]).length) return; nSec++;
+    if(STATE.notSolved.has(secKeyOf(s,i))) notSolvedTitles.push(s.title||('회차'+(i+1))); else solvedSec++; });
+  const imgTotal = cl ? chkTotal() : 0;
+  const imgDone  = cl ? STATE.checked.size : 0;
+  const totalUnits = nSec + imgTotal;
+  const solveRate = totalUnits ? Math.round((solvedSec+imgDone)/totalUnits*100)
+                               : (completion.doneRate!=null?completion.doneRate:null);
+
+  const result = { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag, diligence, completion,
+    solveRate, notSolvedTitles };
   if(cl) result.checklist = computeChecklistData();   // N제 + 이매진 조합: 이매진 완수율도 함께
   return result;
 }
@@ -1057,15 +1095,15 @@ function renderStep4(){
 
   if(noItems){
     root.appendChild(el('div',{class:'score-block'},
-      scoreCard('완수율', (r.completion&&r.completion.doneRate!=null?r.completion.doneRate+'%':'-'), (r.completion&&r.completion.doneLabel)||''),
+      scoreCard('과제 해결 정도', (r.solveRate!=null?r.solveRate+'%':'-'), (r.completion&&r.completion.doneLabel)||''),
       scoreCard('성실도', (r.diligence!=null?r.diligence:'-'), '/ 100')
     ));
   } else {
     root.appendChild(el('div',{class:'score-block'},
-      scoreCard('정답률', r.rate+'%', '/ 100%'),
+      scoreCard('과제 해결 정도', (r.solveRate!=null?r.solveRate+'%':'-'), (r.notSolvedTitles&&r.notSolvedTitles.length?('안 풂 '+r.notSolvedTitles.length+'개'):'다 풂')),
+      scoreCard('정답률', r.rate+'%', '/ 푼 문항 기준'),
       scoreCard('맞은 문항', r.correct, '/ '+r.total+'문항'),
-      scoreCard('틀린 문항', r.wrongN, '문항'),
-      scoreCard('성실도', (r.diligence!=null?r.diligence:'-'), '/ 100')
+      scoreCard('틀린 문항', r.wrongN, '문항')
     ));
   }
 
@@ -1249,8 +1287,10 @@ function submitResult(isManual){
     }))),
     studyDiagJson: JSON.stringify(r.studyDiag),
     studyAnsJson: JSON.stringify(STATE.studyAns),
-    체크리스트: r.checklist ? ('완료 '+r.checklist.done+'/'+r.checklist.total+(r.checklist.undoneItems.length?(' · 미완: '+r.checklist.undoneItems.join(', ')):'')) : '',
-    완수율: r.checklist ? (r.checklist.rate+'%') : ''
+    과제해결정도: (r.solveRate!=null ? r.solveRate+'%' : ''),
+    안풂회차: (r.notSolvedTitles||[]).join(', '),
+    이매진완수율: r.checklist ? (r.checklist.rate+'%') : '',
+    체크리스트: r.checklist ? ('완료 '+r.checklist.done+'/'+r.checklist.total+(r.checklist.undoneItems.length?(' · 미완: '+r.checklist.undoneItems.join(', ')):'')) : ''
   };
   STATE.autoSubmitted = true;
 
