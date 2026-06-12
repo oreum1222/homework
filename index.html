@@ -538,8 +538,10 @@ function renderDiag(){
     renderOath();
     window.scrollTo(0,0); return;
   }
-  // 완료 체크리스트형(이매진 등): 기본정보 → 완료 체크 → 결과 (3단계)
-  if(STATE.data && STATE.data.checklist){
+  const mk = (STATE.data.sections||[]).some(s=>(s.questions||[]).length);
+  const cl = !!(STATE.data && STATE.data.checklist);
+  // 순수 체크리스트형(오답 없음): 기본정보 → 완료 체크 → 결과 (3단계)
+  if(cl && !mk){
     root.appendChild(el('div',{class:'step-bar'},
       el('div',{class:STATE.step===1?'step active':'step done'}, el('span',{class:'step-num'},'STEP 1'), el('span',{class:'step-label'},'기본 정보')),
       el('div',{class:STATE.step===2?'step active':(STATE.step>2?'step done':'step')}, el('span',{class:'step-num'},'STEP 2'), el('span',{class:'step-label'},'완료 체크')),
@@ -550,11 +552,23 @@ function renderDiag(){
     else if(STATE.step===4) renderStep4();
     window.scrollTo(0,0); return;
   }
-  root.appendChild(el('div',{class:'step-bar'},
-    stepEl(1,'기본 정보'), stepEl(2,'오답 마킹'), stepEl(3,'과제 점검'), stepEl(4,'진단 결과')
-  ));
+  // 일반 흐름 (+이매진 있으면 오답 마킹 다음에 '이매진 체크' 단계 삽입)
+  const sEl=(num,label,active,done)=>el('div',{class:active?'step active':(done?'step done':'step')}, el('span',{class:'step-num'},'STEP '+num), el('span',{class:'step-label'},label));
+  const isImg = STATE.step==='imagine';
+  const bar=[];
+  if(cl){
+    bar.push(sEl(1,'기본 정보', STATE.step===1, STATE.step!==1));
+    bar.push(sEl(2,'오답 마킹', STATE.step===2, isImg||STATE.step===3||STATE.step===4));
+    bar.push(sEl(3,'이매진 체크', isImg, STATE.step===3||STATE.step===4));
+    bar.push(sEl(4,'과제 점검', STATE.step===3, STATE.step===4));
+    bar.push(sEl(5,'진단 결과', STATE.step===4, false));
+  } else {
+    bar.push(stepEl(1,'기본 정보'), stepEl(2,'오답 마킹'), stepEl(3,'과제 점검'), stepEl(4,'진단 결과'));
+  }
+  root.appendChild(el('div',{class:'step-bar'}, ...bar));
   if(STATE.step===1) renderStep1();
   else if(STATE.step===2) renderStep2();
+  else if(STATE.step==='imagine') renderChecklist();
   else if(STATE.step===3) renderStep3();
   else if(STATE.step===4) renderStep4();
   window.scrollTo(0,0);
@@ -726,7 +740,7 @@ function renderStep2(){
   });
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
-    el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=3; renderDiag();}},'다음 단계 →')
+    el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();}}, STATE.data.checklist?'다음 → 이매진 체크':'다음 단계 →')
   ));
 }
 function areaBlock(title, questions){
@@ -790,7 +804,7 @@ function renderStep3(){
   surveyBox.appendChild(surveyList);
   root.appendChild(surveyBox);
   root.appendChild(el('div',{class:'btn-row'},
-    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=2; renderDiag();}},'← 이전'),
+    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=(STATE.data.checklist?'imagine':2); renderDiag();}},'← 이전'),
     el('button',{class:'btn btn-primary', onclick:goToResult},'진단 결과 보기 →')
   ));
 }
@@ -830,14 +844,17 @@ function renderChecklist(){
     )
   ));
   root.appendChild(el('div',{class:'chk-count', id:'chkCount'}, ''));
+  const combined = (STATE.data.sections||[]).some(s=>(s.questions||[]).length);  // N제+이매진 조합
   root.appendChild(el('div',{class:'btn-row'},
-    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
-    el('button',{class:'btn btn-primary', onclick:goToResult},'결과 보기 →')
+    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=(combined?2:1); renderDiag();}}, combined?'← 오답 마킹':'← 이전'),
+    combined
+      ? el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=3; renderDiag();}},'다음 단계 →')
+      : el('button',{class:'btn btn-primary', onclick:goToResult},'결과 보기 →')
   ));
   updateChkCount();
 }
 function updateChkCount(){ const e=document.getElementById('chkCount'); if(!e)return; const t=chkTotal(); e.textContent='완료 '+STATE.checked.size+' / 전체 '+t+'개'; }
-function computeChecklistResult(){
+function computeChecklistData(){
   const total=chkTotal(), done=STATE.checked.size;
   const rate=total?Math.round(done/total*100):0;
   const doneItems=[], undoneItems=[];
@@ -845,13 +862,17 @@ function computeChecklistResult(){
     const lbl=(g.date?g.date.split('·')[0].trim()+' ':'')+'['+(it.type||'')+'] '+it.name;
     (STATE.checked.has(String(it.key))?doneItems:undoneItems).push(lbl);
   }));
+  return { total, done, rate, doneItems, undoneItems };
+}
+function computeChecklistResult(){
+  const c = computeChecklistData();
+  const completed = c.total>0 && c.done===c.total;
   const dueRaw=(document.getElementById('chkDue')||{}).value||'';
-  const completed = total>0 && done===total;
-  const label = completed?'전부 끝냄':(done===0?'아직 시작 못 함':(rate>=70?'대부분(70% 이상)':rate>=40?'절반쯤':'조금만(30% 이하)'));
-  const completion = { doneIdx: completed?0:(done===0?4:2), doneLabel:label, completed, doneRate:rate,
+  const label = completed?'전부 끝냄':(c.done===0?'아직 시작 못 함':(c.rate>=70?'대부분(70% 이상)':c.rate>=40?'절반쯤':'조금만(30% 이하)'));
+  const completion = { doneIdx: completed?0:(c.done===0?4:2), doneLabel:label, completed, doneRate:c.rate,
     dueDate: dueRaw?fmtKDate(dueRaw):'', pledge:'', timeliness:'', reason:'' };
   return { totalPts:0, rawPts:0, total:0, correct:0, wrongN:0, rate:0, wrongDetails:[], patterns:[], strengths:[],
-    areaStat:{}, studyDiag:[], diligence:null, completion, checklist:{ total, done, rate, doneItems, undoneItems } };
+    areaStat:{}, studyDiag:[], diligence:null, completion, checklist:c };
 }
 
 // ─────────────────── 진단 계산 엔진 ───────────────────
@@ -861,7 +882,9 @@ function allQuestions(){
   return out;
 }
 function computeResult(){
-  if(STATE.data && STATE.data.checklist) return computeChecklistResult();
+  const mk = (STATE.data.sections||[]).some(s=>(s.questions||[]).length);
+  const cl = !!(STATE.data && STATE.data.checklist);
+  if(cl && !mk) return computeChecklistResult();   // 순수 체크리스트
   const qs = allQuestions();
   let totalPts=0, rawPts=0, correct=0;
   const wrongDetails=[];
@@ -891,7 +914,9 @@ function computeResult(){
     reason: studyOpt('reason', studyGet(STATE.studyAns,'reason'))
   };
 
-  return { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag, diligence, completion };
+  const result = { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag, diligence, completion };
+  if(cl) result.checklist = computeChecklistData();   // N제 + 이매진 조합: 이매진 완수율도 함께
+  return result;
 }
 // 영역(area)/유형(type)별 정오 집계 — 대시보드·강약점 분석용
 function computeAreaStat(qs){
@@ -1021,7 +1046,7 @@ function renderStep4(){
   const r = STATE.result;
   const wm = STATE.data.weekMeta;
   const course = COURSES.find(c=>c.id===STATE.courseId);
-  if(r.checklist){ renderChecklistResult(r, course, wm); return; }
+  if(r.checklist && r.total===0){ renderChecklistResult(r, course, wm); return; }   // 순수 체크리스트
 
   const noItems = STATE.data.completionOnly || r.total===0;   // 완료 점검형(수수활 등)
 
@@ -1121,6 +1146,16 @@ function renderStep4(){
   }
   root.appendChild(wBlock);
   } // end if(!noItems) — 틀린 문항
+
+  // 이매진 완료 (N제+이매진 조합)
+  if(r.checklist){
+    const c=r.checklist;
+    const ib = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'}, '이매진 완료 — 완수율 '+c.rate+'% ('+c.done+'/'+c.total+'개)'));
+    if(!c.undoneItems.length) ib.appendChild(el('p',{class:'empty-msg'},'이매진 항목 전부 완료했습니다. 훌륭해요!'));
+    else { ib.appendChild(el('div',{class:'pattern-diag', style:'margin-bottom:8px'},'안 한 항목 '+c.undoneItems.length+'개:'));
+      c.undoneItems.forEach(s=> ib.appendChild(el('div',{class:'pattern'}, el('div',{class:'pattern-name'}, s)))); }
+    root.appendChild(ib);
+  }
 
   // 제출
   const navButtons = [
