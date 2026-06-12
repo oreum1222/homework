@@ -32,13 +32,9 @@ window.COURSE_LIST = [
         key: '2026-06', month: '6월', status: 'active', desc: '6월 보충 — 수수활 + 이감 선택과목 N제',
         weeks: [
           { week: 1, file: 'data/hw-go3-2606-susu.json', label: '1주차에 한 숙제 검사 · 수수활 보충', date: '6/12(금)~6/13(토)', area: '수수활', status: 'active' },
-          { week: 2, file: 'data/hw-go3-2606-w2.json', label: '2주차에 한 숙제 검사 · N제 1~7회', date: '6/19(금)~6/20(토)', area: '선택과목', status: 'active' },
-          { week: 3, file: 'data/hw-go3-2606-w3.json', label: '3주차에 한 숙제 검사 · N제 8~14회', date: '6/26(금)~6/27(토)', area: '선택과목', status: 'active' },
-          { week: 4, file: 'data/hw-go3-2606-w4.json', label: '4주차에 한 숙제 검사 · N제 15~18회', date: '7/3(금)~7/4(토)', area: '선택과목', status: 'active' },
-          { week: 5, file: 'data/hw-go3-2606-imagine-w1.json', label: '이매진 4호 · 1주차 (Day 1~5)', date: '6/13~6/17', area: '이매진', status: 'active' },
-          { week: 6, file: 'data/hw-go3-2606-imagine-w2.json', label: '이매진 4호 · 2주차 (Day 6~10)', date: '6/18~6/22', area: '이매진', status: 'active' },
-          { week: 7, file: 'data/hw-go3-2606-imagine-w3.json', label: '이매진 4호 · 3주차 (Day 11~15)', date: '6/23~6/27', area: '이매진', status: 'active' },
-          { week: 8, file: 'data/hw-go3-2606-imagine-w4.json', label: '이매진 4호 · 4주차 (Day 16~20)', date: '6/28~7/2', area: '이매진', status: 'active' }
+          { week: 2, file: 'data/hw-go3-2606-w2.json', label: '2주차에 한 숙제 검사 · N제 1~7회 + 이매진', date: '6/19(금)~6/20(토)', area: '선택+이매진', status: 'active' },
+          { week: 3, file: 'data/hw-go3-2606-w3.json', label: '3주차에 한 숙제 검사 · N제 8~14회 + 이매진', date: '6/26(금)~6/27(토)', area: '선택+이매진', status: 'active' },
+          { week: 4, file: 'data/hw-go3-2606-w4.json', label: '4주차에 한 숙제 검사 · N제 15~18회 + 이매진', date: '7/3(금)~7/4(토)', area: '선택+이매진', status: 'active' }
         ]
       },
       {
