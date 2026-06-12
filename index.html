@@ -65,6 +65,7 @@ body.landing .corner-logo{display:none}
 .card-num{font-family:'Noto Serif KR',serif;font-weight:700;color:var(--gold);font-size:0.78rem;letter-spacing:3px}
 .card-grade{font-size:0.72rem;color:var(--text-muted);padding:3px 10px;border:1px solid var(--border-soft);border-radius:11px;letter-spacing:1px}
 .card-status{font-size:0.72rem;letter-spacing:0.5px;padding:3px 10px;border-radius:11px}
+.card-date{font-size:0.74rem;color:var(--gold);padding:3px 10px;border:1px solid var(--border-soft);border-radius:11px;font-weight:600;letter-spacing:0.5px}
 .status-active{background:rgba(47,107,82,0.45);color:var(--cream);border:1px solid var(--green-deep)}
 .status-tentative{background:rgba(95,198,163,0.12);color:var(--gold-soft);border:1px solid rgba(95,198,163,0.3)}
 .status-closed{background:rgba(122,116,102,0.18);color:var(--text-muted);border:1px solid var(--border-soft)}
@@ -465,7 +466,8 @@ function renderWeeks(courseId, monthKey){
       el('div',{class:'card-meta-left'},
         el('span',{class:'card-num'}, 'WEEK '+String(w.week).padStart(2,'0')),
         w.area ? el('span',{class:'card-grade'}, w.area) : null,
-        el('span',{class:'card-status '+statusClass(w.status)}, statusLabel(w.status))
+        el('span',{class:'card-status '+statusClass(w.status)}, statusLabel(w.status)),
+        w.date ? el('span',{class:'card-date'}, '검사일 '+w.date) : null
       ),
       el('span',{class:'card-arrow'},'→')
     ));
