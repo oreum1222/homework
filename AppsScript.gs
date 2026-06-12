@@ -159,7 +159,9 @@ function handleOathSend_(params){
     }
     if(!phones.length) return json_({ ok:false, error:'명단에서 '+name+' 학생의 연락처를 찾지 못했습니다.' });
 
-    var text=oathText_(name, due);
+    var type=String(params.type||'undone');
+    var method=String(params.method||'');
+    var text=(type==='forgot') ? forgotText_(name, due, method) : oathText_(name, due);
     var props=PropertiesService.getScriptProperties();
     var key=props.getProperty('SOLAPI_KEY'), secret=props.getProperty('SOLAPI_SECRET'), sender=props.getProperty('SOLAPI_SENDER');
 
@@ -190,6 +192,15 @@ function oathText_(name, due){
     + '다시 숙제를 안 해 올 경우 "깜빡했어요·시간이 없었어요·했는데 두고 왔어요" 같은 인류 공통의 변명을 잠시 내려놓고, 밀린 숙제부터 조용히 해결하겠습니다.\n\n'
     + '숙제 완료 기한: ' + (due || '(미정)') + '\n\n'
     + '* 지금의 숙제가 정말 버겁다면 ' + TEACHER_NAME + '에게 꼭 연락주세요. 상황을 헤아려 적정한 양으로 줄여드립니다. (진심입니다)';
+}
+function forgotText_(name, due, method){
+  return '[' + BRAND_NAME + '] 각서\n\n'
+    + '나, ' + name + '은(는) 오늘 숙제 교재와 워크북을 가져오지 않았음을 솔직히 인정합니다.\n\n'
+    + '교재·워크북이 없으면 숙제를 확인할 수 없고 수업 중 점검도 어려워, 결국 손해 보는 사람은 나라는 것도 알고 있습니다.\n\n'
+    + '다음부터는 숙제 교재와 워크북을 빠짐없이 챙겨 오겠으며, 아래대로 반드시 재검사를 받겠습니다.\n\n'
+    + '재검사 일자: ' + (due || '(미정)') + '\n'
+    + '재검사 방법: ' + (method || '(미정)') + '\n\n'
+    + '* 숙제가 정말 버겁다면 ' + TEACHER_NAME + '에게 꼭 연락주세요. 상황을 헤아려 적정한 양으로 줄여드립니다. (진심입니다)';
 }
 
 // Solapi HMAC-SHA256 인증 헤더

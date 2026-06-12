@@ -222,12 +222,17 @@ body.landing .corner-logo{display:none}
   .pattern-action,.q-detail-rem,.strength{background:#fff !important;border:1px solid #888 !important}
   *{box-shadow:none !important;text-shadow:none !important}
 }
-/* 숙제 함/안 함 */
-.hw-choice{display:flex;gap:12px;margin-top:6px}
-.hw-btn{flex:1;padding:16px 12px;border-radius:12px;border:1.5px solid var(--border-line,rgba(255,255,255,.12));background:rgba(255,255,255,.03);color:var(--text-secondary,#9fb0b8);font-size:1.05rem;font-weight:600;cursor:pointer;transition:.15s}
+/* 숙제 함/안 함/안 가져옴 */
+.hw-choice{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
+.hw-btn{flex:1 1 180px;padding:16px 12px;border-radius:12px;border:1.5px solid var(--border-line,rgba(255,255,255,.12));background:rgba(255,255,255,.03);color:var(--text-secondary,#9fb0b8);font-size:1.05rem;font-weight:600;cursor:pointer;transition:.15s}
 .hw-btn:hover{border-color:var(--gold,#5fc6a3)}
 .hw-btn.on{background:var(--gold,#5fc6a3);color:#10211b;border-color:var(--gold,#5fc6a3)}
 .hw-btn.undone.on{background:#d6a96a;color:#241a0c;border-color:#d6a96a}
+.hw-btn.forgot.on{background:#cbab6a;color:#241f0c;border-color:#cbab6a}
+/* 재검사 방법 */
+.oath-method{margin:18px 0 4px;padding:18px 20px;border-radius:10px;background:rgba(95,198,163,.08);border:1px solid rgba(95,198,163,.3)}
+.oath-method>label{display:block;font-weight:700;color:var(--cream,#e8eef0);font-size:1.1rem;margin-bottom:10px}
+.oath-method .hw-btn{font-size:1rem;padding:14px 12px}
 /* 각서 */
 .oath-stamp-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin:10px 0 4px;position:relative}
 .oath-emoji{font-size:3rem;line-height:1}
@@ -490,7 +495,7 @@ function loadWeek(courseId, monthKey, week){
     STATE.data = d;
     STATE.week = monthKey ? weekUid : (d.week!=null ? d.week : week);
     STATE.step = 1; STATE.wrong = new Set(); STATE.studyAns = {}; STATE.result = null;
-    STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null;
+    STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null; STATE.oathMethod = null;
     renderDiag();
   }).catch(err=>{
     document.getElementById('loading').style.display='none';
@@ -545,7 +550,8 @@ function renderStep1(){
   const hwRow = el('div',{class:'form-row'}, el('label',{}, '오늘 숙제 했나요?', el('span',{class:'req'},' *')));
   const choice = el('div',{class:'hw-choice'},
     el('button',{type:'button', class:'hw-btn'+(STATE.didHw==='done'?' on':''), onclick:()=>{STATE.didHw='done'; nextFromStep1();}}, '숙제를 하였습니다'),
-    el('button',{type:'button', class:'hw-btn undone'+(STATE.didHw==='undone'?' on':''), onclick:()=>{STATE.didHw='undone'; nextFromStep1();}}, '숙제를 안 하였습니다')
+    el('button',{type:'button', class:'hw-btn undone'+(STATE.didHw==='undone'?' on':''), onclick:()=>{STATE.didHw='undone'; nextFromStep1();}}, '숙제를 안 하였습니다'),
+    el('button',{type:'button', class:'hw-btn forgot'+(STATE.didHw==='forgot'?' on':''), onclick:()=>{STATE.didHw='forgot'; nextFromStep1();}}, '숙제를 안 가져왔습니다')
   );
   hwRow.appendChild(choice);
   hwRow.appendChild(el('div',{class:'hint'}, '선택하면 바로 다음 단계로 넘어갑니다. (이름·학교를 먼저 입력해 주세요)'));
@@ -572,30 +578,48 @@ function nextFromStep1(){
   if(!s.name||!s.name.trim()) return alert('이름을 입력해 주세요.');
   if(!s.school||!s.school.trim()) return alert('학교를 입력해 주세요.');
   if(!STATE.didHw) return alert('오늘 숙제를 했는지 선택해 주세요.');
-  if(STATE.didHw==='undone'){ STATE.step='oath'; renderDiag(); return; }
+  if(STATE.didHw==='undone' || STATE.didHw==='forgot'){ STATE.step='oath'; renderDiag(); return; }
   STATE.step=2; renderDiag();
 }
 function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function fmtKDate(v){ if(!v) return ''; const d=new Date(v+'T00:00:00'); if(isNaN(d.getTime())) return ''; const days=['일','월','화','수','목','금','토']; return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+days[d.getDay()]+'요일'; }
 
-// ─── 각서 페이지 (숙제 안 함) ───
+// ─── 각서 페이지 (숙제 안 함 / 숙제 안 가져옴) ───
 function renderOath(){
   const s = STATE.student;
+  const forgot = STATE.didHw==='forgot';
   root.appendChild(el('div',{class:'oath-stamp-wrap'},
     el('div',{class:'oath-seal'}, el('span',{},'반성'))
   ));
   const box = el('div',{class:'section oath-box'});
   box.appendChild(el('div',{class:'oath-title'},'각      서'));
-  box.appendChild(el('div',{class:'oath-body', html:
-      '나, <b class="oath-name">'+escapeHtml(s.name||'____')+'</b> 은/는<br>숙제를 안 해 온 오늘의 나를 솔직히 인정합니다.'
-    + '<br><br>사실 숙제를 안 하면 그 순간은 편하지만, 복습을 제때 못 해 다음 수업의 이해가 어렵고, 수업은 들었으나 나에게 남는 건 딱히 없어서, <b>결국 손해 보는 사람은 나</b>라는 것도 알고 있습니다.'
-    + '<br><br>다시 숙제를 안 해 올 경우, “깜빡했어요”, “시간이 없었어요”, “했는데 두고 왔어요” 같은 <b>인류 공통의 변명</b>을 잠시 내려놓고 밀린 숙제부터 조용히 해결하겠습니다.' }));
+  if(forgot){
+    box.appendChild(el('div',{class:'oath-body', html:
+        '나, <b class="oath-name">'+escapeHtml(s.name||'____')+'</b> 은/는<br>오늘 숙제 <b>교재와 워크북을 가져오지 않았음</b>을 솔직히 인정합니다.'
+      + '<br><br>숙제를 했더라도 교재·워크북이 없으면 확인할 수 없고, 수업 중 점검도 어려워 <b>결국 손해 보는 사람은 나</b>라는 것도 알고 있습니다.'
+      + '<br><br>다음부터는 숙제 <b>교재와 워크북을 빠짐없이 챙겨</b> 오겠으며, 아래 정한 날짜·방법으로 <b>반드시 재검사</b>를 받겠습니다.' }));
+  } else {
+    box.appendChild(el('div',{class:'oath-body', html:
+        '나, <b class="oath-name">'+escapeHtml(s.name||'____')+'</b> 은/는<br>숙제를 안 해 온 오늘의 나를 솔직히 인정합니다.'
+      + '<br><br>사실 숙제를 안 하면 그 순간은 편하지만, 복습을 제때 못 해 다음 수업의 이해가 어렵고, 수업은 들었으나 나에게 남는 건 딱히 없어서, <b>결국 손해 보는 사람은 나</b>라는 것도 알고 있습니다.'
+      + '<br><br>다시 숙제를 안 해 올 경우, “깜빡했어요”, “시간이 없었어요”, “했는데 두고 왔어요” 같은 <b>인류 공통의 변명</b>을 잠시 내려놓고 밀린 숙제부터 조용히 해결하겠습니다.' }));
+  }
   const dueRow = el('div',{class:'oath-due'},
-    el('label',{},'숙제 완료 기한'),
+    el('label',{}, forgot?'재검사 일자':'숙제 완료 기한'),
     el('input',{type:'date', id:'oathDue', oninput:e=>{ document.getElementById('oathDueFmt').textContent = fmtKDate(e.target.value); }}),
     el('span',{class:'oath-due-fmt', id:'oathDueFmt'},'')
   );
   box.appendChild(dueRow);
+  if(forgot){
+    const mRow = el('div',{class:'oath-method'},
+      el('label',{},'재검사 방법'),
+      el('div',{class:'hw-choice', id:'oathMethodBtns'},
+        el('button',{type:'button', class:'hw-btn'+(STATE.oathMethod==='대면'?' on':''), onclick:e=>oathPickMethod('대면',e.currentTarget)},'대면'),
+        el('button',{type:'button', class:'hw-btn'+(STATE.oathMethod==='카톡 영상'?' on':''), onclick:e=>oathPickMethod('카톡 영상',e.currentTarget)},'카톡으로 영상 찍어 보냄')
+      )
+    );
+    box.appendChild(mRow);
+  }
   box.appendChild(el('div',{class:'oath-note', html:
     '* 지금의 숙제가 정말 버겁게 느껴진다면 <b>'+TEACHER+'</b>에게 꼭 연락주세요. 인류 한정 호구 ENFJ '+TEACHER+'가 여러분의 상황을 헤아려 <b>적정한 양으로 줄여</b> 드릴 수 있습니다. (진심입니다)'}));
   root.appendChild(box);
@@ -605,25 +629,38 @@ function renderOath(){
   ));
   root.appendChild(el('div',{id:'oathFeedback'}));
 }
+function oathPickMethod(m, btn){
+  STATE.oathMethod = m;
+  document.querySelectorAll('#oathMethodBtns .hw-btn').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+}
 function submitOath(){
+  const forgot = STATE.didHw==='forgot';
   const due = (document.getElementById('oathDue')||{}).value || '';
-  if(!due) return alert('숙제 완료 기한 날짜를 선택해 주세요.');
+  if(!due) return alert(forgot?'재검사 일자를 선택해 주세요.':'숙제 완료 기한 날짜를 선택해 주세요.');
+  if(forgot && !STATE.oathMethod) return alert('재검사 방법을 선택해 주세요. (대면 / 카톡으로 영상)');
   const fb = document.getElementById('oathFeedback'), btn = document.getElementById('oathSubmitBtn');
   const dueK = fmtKDate(due), s = STATE.student, course = COURSES.find(c=>c.id===STATE.courseId), wm = STATE.data.weekMeta;
   if(!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR')){ if(fb) fb.innerHTML='<div class="submit-msg submit-err">시스템 설정 오류입니다. 관리자에게 문의해 주세요.</div>'; return; }
   if(btn){ btn.disabled=true; btn.textContent='제출 중...'; }
+  const oathType = forgot?'forgot':'undone';
+  const reason = forgot ? ('숙제 미지참 — 재검사 각서 ('+STATE.oathMethod+')') : '숙제 안 함 — 각서 작성';
   // 1) 미완 기록(제출 시트)
   const rec = { timestamp:new Date().toISOString(), courseId:STATE.courseId, courseLabel:course?course.name:'',
     week:STATE.week, weekLabel:wm.label, month:wm.month||STATE.monthLabel||'', name:s.name, school:s.school, grade:s.grade,
-    완수상태:'아직 시작 못 함', 완수예정일:dueK, 미완사유:'숙제 안 함 — 각서 작성', 성실도:'', 제출방식:'각서' };
+    완수상태:'아직 시작 못 함', 완수예정일:dueK, 미완사유:reason, 성실도:'', 제출방식:'각서' };
   postForm_(rec);
   // 2) 각서 문자 자동발송(서버가 명단에서 본인 번호로 학부모+학생 발송)
-  fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
-    body:'action=oathSend&name='+encodeURIComponent(s.name)+'&dueDate='+encodeURIComponent(dueK)+'&courseId='+encodeURIComponent(STATE.courseId) })
+  let body='action=oathSend&type='+oathType+'&name='+encodeURIComponent(s.name)+'&dueDate='+encodeURIComponent(dueK)+'&courseId='+encodeURIComponent(STATE.courseId);
+  if(forgot) body+='&method='+encodeURIComponent(STATE.oathMethod);
+  fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body:body })
     .then(r=>r.json()).then(d=>{
       if(btn) btn.textContent='제출 완료 ✓';
+      const okMsg = forgot
+        ? ('재검사 각서가 제출되고 학부모님과 본인에게 문자가 발송되었습니다. '+dueK+' · '+STATE.oathMethod+'(으)로 재검사 꼭 받아요.')
+        : ('각서가 제출되고 학부모님과 본인에게 문자가 발송되었습니다. 약속한 '+dueK+'까지 꼭 끝내요.');
       if(fb){ fb.innerHTML='';
-        if(d.ok && !d.dryRun) fb.appendChild(el('div',{class:'submit-msg submit-ok'},'각서가 제출되고 학부모님과 본인에게 문자가 발송되었습니다. 약속한 '+dueK+'까지 꼭 끝내요.'));
+        if(d.ok && !d.dryRun) fb.appendChild(el('div',{class:'submit-msg submit-ok'}, okMsg));
         else if(d.ok && d.dryRun) fb.appendChild(el('div',{class:'submit-msg submit-ok'},'각서가 제출되었습니다. (문자 발송은 관리자 설정 후 동작합니다)'));
         else fb.appendChild(el('div',{class:'submit-msg submit-err'},'각서는 기록됐지만 문자 발송에 실패했어요: '+(d.error||'')+'. '+TEACHER+'에게 알려주세요.'));
       }
