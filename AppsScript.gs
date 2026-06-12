@@ -319,6 +319,93 @@ function handleMarkSent_(params){
   }catch(err){ return json_({ok:false,error:String(err)}); }
 }
 
+// ════════════════════════ 고3 정규반 전용 주간 자동발송 (완전 자동) ════════════════════════
+// 운영: 매주 토요일 1회. 학생 먼저(오후 2~3시) → 10분 뒤 학부모.  [트리거는 go3WeeklyRun 하나만 주 단위로 등록]
+// 분류 우선순위: 반복 > 미제출 > 미완성(과제 해결 71% 미만). 한 학생당 1통. 71% 이상은 발송 안 함.
+var GO3_COURSE = 'go3-regular';
+var GO3_KIHAN  = '오늘 밤 11시';
+
+function go3SolveOf_(r){
+  var s=String(r['과제해결정도']||'').replace('%','').replace(/\s/g,'');
+  if(s!=='' && !isNaN(parseFloat(s))) return parseFloat(s);
+  var dl=String(r['완수상태']||''); return (DONE_MAP[dl]!=null)?DONE_MAP[dl]:0;
+}
+function go3Classify_(){
+  var subs=readAll_(), roster=readRoster_();
+  var weekSet={};
+  subs.forEach(function(r){ if(String(r.courseId)===GO3_COURSE){ var w=Number(r.week)||0; if(w) weekSet[w]=1; } });
+  var weeks=Object.keys(weekSet).map(Number).sort(function(a,b){return b-a;});
+  if(!weeks.length) return { week:0, list:[] };
+  var latest=weeks[0], recent=weeks.slice(0,3);
+  var byNW={}, firstW={};   // normName -> { week: bestSolveRate }, 그리고 첫 제출 주차
+  subs.forEach(function(r){ if(String(r.courseId)!==GO3_COURSE) return; var w=Number(r.week)||0; if(!w) return;
+    var nn=normName_(r.name), sr=go3SolveOf_(r);
+    if(!byNW[nn]) byNW[nn]={};
+    if(byNW[nn][w]==null || sr>byNW[nn][w]) byNW[nn][w]=sr;
+    if(firstW[nn]==null || w<firstW[nn]) firstW[nn]=w;
+  });
+  var list=[];
+  roster.forEach(function(p){ if(String(p.courseId)!==GO3_COURSE) return;
+    var name=String(p.name||'').trim(); var gp=digits_(p.guardianPhone||''), sp=digits_(p.studentPhone||'');
+    var consent=String(p.consent||'').toUpperCase();
+    if(!name || (!gp&&!sp)) return;
+    if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
+    var rec=byNW[normName_(name)]||{};
+    var minW=(firstW[normName_(name)]!=null)?firstW[normName_(name)]:Infinity;   // 첫 제출 이전(등록 전)은 미제출로 안 셈
+    function badAt(w){ if(w<minW) return false; if(!(w in rec)) return true; return rec[w]<71; }
+    var hasLatest=(latest in rec), latestSr=hasLatest?rec[latest]:null;
+    var thisMissing=!hasLatest, thisIncomplete=hasLatest && latestSr<71;
+    if(!(thisMissing||thisIncomplete)) return;   // 71% 이상 → 발송 안 함
+    var badCount=0; recent.forEach(function(w){ if(badAt(w)) badCount++; });
+    var consec = recent.length>=2 && badAt(recent[0]) && badAt(recent[1]);   // 2주 연속
+    var cat = (badCount>=2 || consec) ? 'repeat' : (thisMissing?'missing':'incomplete');
+    list.push({ name:name, gp:gp, sp:sp, cat:cat, rate:(latestSr!=null?Math.round(latestSr):0) });
+  });
+  return { week:latest, list:list };
+}
+function go3StudentMsg_(x){
+  var n=x.name, rate=x.rate+'%';
+  if(x.cat==='missing') return n+', 이번 주 고3 수능 정규반 과제 검사 제출 기록이 아직 없습니다.\n\n숙제를 안 한 거면 오늘 안으로 마무리하고,\n숙제를 했는데 입력을 안 한 거면 지금 바로 검사 응답하기 바랍니다.\n\n여러분들이 제발 이 지긋지긋한 입시를 올해 마무리하고, 내년엔 웃는 얼굴로 행복하게 지내길 바랍니다.\n\n[오름] 국어 가경T';
+  if(x.cat==='incomplete') return n+', 이번 주 과제 완수율이 '+rate+'로 확인됐습니다.\n\n고3 수업에서 과제는 그냥 숙제가 아니라 하루하루 쌓여가는 나의 수능 점수입니다.\n미완 부분은 '+GO3_KIHAN+'까지 반드시 마무리하고 다시 확인받기 바랍니다.\n\n여러분들이 제발 이 지긋지긋한 입시를 올해 마무리하고, 내년엔 웃는 얼굴로 행복하게 지내길 바랍니다.\n\n[오름] 국어 가경T';
+  return n+', 최근 과제 미제출/미완성이 반복되고 있습니다.\n\n지금은 국어 실력보다, 해야 할 걸 제때 끝내지 않는 흐름이 더 문제입니다.\n고3이 이 패턴으로 가면 수업을 들어도 실전 감각이 전혀 쌓이지 않고, 수능날의 점수로 드러날 것입니다.\n\n여러분들이 제발 이 지긋지긋한 입시를 올해 마무리하고, 내년엔 웃는 얼굴로 행복하게 지내길 바랍니다.\n\n[오름] 국어 가경T';
+}
+function go3ParentMsg_(x){
+  var n=x.name, rate=x.rate+'%';
+  if(x.cat==='missing') return '[오름] 국어\n\n안녕하세요, '+n+' 학생 학부모님.\n이번 주 고3 수능 정규반 과제 검사에서 아직 '+n+' 학생의 제출 기록이 확인되지 않아 안내드립니다.\n\n숙제를 하지 않았거나, 했더라도 검사 입력을 안 한 상태일 수 있습니다.\n오늘 안으로 학생이 과제 검사에 응답할 수 있도록 한 번만 가정에서도 이야기해주시면 좋을 것 같습니다.\n\n학생들이 올해 꼭 입시를 끝내길 바라는 마음에서 가정에도 연락을 드립니다.\n\n- 가경T 드림';
+  if(x.cat==='incomplete') return '[오름] 국어\n\n안녕하세요, '+n+' 학생 학부모님.\n이번 주 고3 수능 정규반 과제 확인 결과, '+n+' 학생의 과제 완수율은 '+rate+'입니다.\n\n고3 수업은 매주 과제 누적이 곧 수능 루틴으로 이어지기 때문에, 미완 부분은 '+GO3_KIHAN+'까지 마무리하도록 안내했습니다.\n가정에서도 한 번 이야기해주시면 좋을 것 같습니다.\n\n학생들이 올해 꼭 입시를 끝내길 바라는 마음에서 가정에도 연락을 드립니다.\n\n- 가경T 드림';
+  return '[오름] 국어\n\n안녕하세요, '+n+' 학생 학부모님.\n최근 과제 검사에서 '+n+' 학생의 미완/미응답이 반복되어 안내드립니다.\n\n현재는 국어 실력 자체보다, 매주 해야 할 학습량이 제때 쌓이지 않는 흐름이 더 걱정되는 상황입니다.\n고3 수능반에서는 이 부분이 누적되면 실전 감각과 시간 운용에도 바로 영향을 줍니다.\n\n학생에게 반복적으로 잔소리를 하고 있으나 고쳐지지 않는다는 건 현재 학습 의지의 문제가 아닐까 염려됩니다.\n가정에서 "이렇게 불성실하게 학원을 다니면 보내주기 어렵다"라고 말씀하셔도 되니 아이가 마음을 다잡을 수 있게 한 마디 해주시면 감사하겠습니다.\n\n- 가경T 드림';
+}
+function go3Send_(messages, label){
+  if(!messages.length) return (label||'')+' 대상 0명';
+  var props=PropertiesService.getScriptProperties();
+  var key=props.getProperty('SOLAPI_KEY'),secret=props.getProperty('SOLAPI_SECRET'),sender=props.getProperty('SOLAPI_SENDER');
+  if(!(key&&secret&&sender)){ messages.forEach(function(m){ logSend_(m,'테스트','테스트','',''); }); return (label||'')+' 테스트모드 '+messages.length+'건(미발송)'; }
+  var payload={messages:messages.map(function(m){ return {to:digits_(m.to),from:digits_(sender),text:m.text}; })};
+  var res=UrlFetchApp.fetch('https://api.solapi.com/messages/v4/send-many/detail',{method:'post',contentType:'application/json',headers:{Authorization:solapiAuth_(key,secret)},payload:JSON.stringify(payload),muteHttpExceptions:true});
+  var body={}; try{ body=JSON.parse(res.getContentText()||'{}'); }catch(_){}
+  var failed={}; (body.failedMessageList||[]).forEach(function(f){ failed[digits_(f.to)]=f.statusMessage||'실패'; });
+  var gid=(body.groupInfo&&body.groupInfo.groupId)||'', ok=0;
+  messages.forEach(function(m){ var er=failed[digits_(m.to)]; logSend_(m,'문자',er?'실패':'발송',gid,er||''); if(!er)ok++; });
+  return (label||'')+' 발송 '+ok+'/'+messages.length;
+}
+function go3SendStudents(){    // 학생 발송 (학생 번호, 없으면 학부모)
+  var c=go3Classify_(), msgs=[];
+  c.list.forEach(function(x){ var to=x.sp||x.gp; if(to) msgs.push({to:to,text:go3StudentMsg_(x),name:x.name,scenario:'go3학생-'+x.cat,courseId:GO3_COURSE}); });
+  return go3Send_(msgs,'[학생]');
+}
+function go3SendParents(){     // 학부모 발송 (토 오후 3~4시 트리거)
+  var c=go3Classify_(), msgs=[];
+  c.list.forEach(function(x){ if(x.gp) msgs.push({to:x.gp,text:go3ParentMsg_(x),name:x.name,scenario:'go3학부모-'+x.cat,courseId:GO3_COURSE}); });
+  return go3Send_(msgs,'[학부모]');
+}
+// 발송 안 하고 분류만 확인(테스트용) — 편집기에서 실행 후 로그 보기
+function go3Preview(){
+  var c=go3Classify_();
+  var s='[고3 정규반 자동발송 미리보기] 최신주차='+c.week+' · 대상 '+c.list.length+'명\n';
+  c.list.forEach(function(x){ s+=' · '+x.name+' → '+({missing:'미제출',incomplete:'미완성',repeat:'반복'}[x.cat])+' ('+x.rate+'%)\n'; });
+  Logger.log(s); return s;
+}
+
 // ════════════════════════ ③ 명단 조회 ════════════════════════
 function readRoster_(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
