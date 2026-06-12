@@ -629,6 +629,7 @@ function nextFromStep1(){
   STATE.step=2; renderDiag();
 }
 function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function dueRange(){ const t=new Date(); t.setHours(0,0,0,0); const m=new Date(t); m.setDate(m.getDate()+7); const f=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); return {min:f(t), max:f(m)}; }
 function fmtKDate(v){ if(!v) return ''; const d=new Date(v+'T00:00:00'); if(isNaN(d.getTime())) return ''; const days=['일','월','화','수','목','금','토']; return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+days[d.getDay()]+'요일'; }
 
 // ─── 각서 페이지 (숙제 안 함 / 숙제 안 가져옴) ───
@@ -653,7 +654,7 @@ function renderOath(){
   }
   const dueRow = el('div',{class:'oath-due'},
     el('label',{}, forgot?'재검사 일자':'숙제 완료 기한'),
-    el('input',{type:'date', id:'oathDue', oninput:e=>{ document.getElementById('oathDueFmt').textContent = fmtKDate(e.target.value); }}),
+    el('input',{type:'date', id:'oathDue', min:dueRange().min, max:dueRange().max, oninput:e=>{ document.getElementById('oathDueFmt').textContent = fmtKDate(e.target.value); }}),
     el('span',{class:'oath-due-fmt', id:'oathDueFmt'},'')
   );
   box.appendChild(dueRow);
@@ -798,13 +799,17 @@ function renderStep3(){
   const controllers = new Set(items.filter(t=>t.showIf).map(t=>t.showIf.q));
   let qno=0;
   items.forEach(tq=>{
+    if(tq.tag==='duePledge') return;   // 추상 약속('다음 수업 전까지' 등) 제거 — 완수 예정일(날짜)로만 받음
     if(tq.showIf){ const av=STATE.studyAns[String(tq.showIf.q)]; if(av==null || av < (tq.showIf.minIndex||1)) return; }
     qno++;
     const tqBlock = el('div',{class:'tq'}, el('span',{class:'tq-num'},'Q '+qno), el('p',{class:'tq-q'}, tq.q));
     if(tq.type==='date'){
-      const inp = el('input',{type:'date', class:'tq-date', value:(STATE.studyAns[String(tq.num)]||'')});
+      const today=new Date(); today.setHours(0,0,0,0); const maxD=new Date(today); maxD.setDate(maxD.getDate()+7);
+      const fmtd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      const inp = el('input',{type:'date', class:'tq-date', value:(STATE.studyAns[String(tq.num)]||''), min:fmtd(today), max:fmtd(maxD)});
       inp.onchange = ()=>{ STATE.studyAns[String(tq.num)] = inp.value; };
       tqBlock.appendChild(el('div',{class:'tq-opts'}, inp));
+      tqBlock.appendChild(el('div',{class:'hint', style:'margin-top:8px;color:#d6a96a'},'※ 오늘부터 7일 이내 날짜로 반드시 선택해야 다음으로 넘어갑니다.'));
     } else {
       const opts = el('div',{class:'tq-opts'});
       (tq.opts||[]).forEach((opt, idx)=>{
@@ -829,7 +834,18 @@ function renderStep3(){
     el('button',{class:'btn btn-primary', onclick:goToResult},'진단 결과 보기 →')
   ));
 }
+function validateDue(){
+  const items = STATE.data.studyCheck||[];
+  const dq = items.find(x=>x.tag==='dueDate'); if(!dq) return true;
+  if(dq.showIf){ const av=STATE.studyAns[String(dq.showIf.q)]; if(av==null || av < (dq.showIf.minIndex||1)) return true; } // 안 보이는 상황이면 통과
+  const v = STATE.studyAns[String(dq.num)];
+  if(!v){ alert('완수 예정일을 날짜로 반드시 선택해 주세요. (필수)'); return false; }
+  const d=new Date(v+'T00:00:00'); const today=new Date(); today.setHours(0,0,0,0); const max=new Date(today); max.setDate(max.getDate()+7);
+  if(isNaN(d.getTime()) || d<today || d>max){ alert('완수 예정일은 오늘부터 7일 이내 날짜로 선택해 주세요.'); return false; }
+  return true;
+}
 function goToResult(){
+  if(!STATE.teacherView && !validateDue()) return;
   STATE.result = computeResult();
   // 과제 해결 정도 10% 이하 → 사실상 '안 함' → 각서 작성
   if(!STATE.teacherView && STATE.result.solveRate!=null && STATE.result.solveRate<=10){
@@ -865,8 +881,8 @@ function renderChecklist(){
   });
   root.appendChild(el('div',{class:'section'},
     el('div',{class:'form-row'},
-      el('label',{},'아직 다 못 끝냈다면 — 언제까지 끝낼 건가요? (완수 예정일, 선택)'),
-      el('input',{type:'date', id:'chkDue'})
+      el('label',{},'아직 다 못 끝냈다면 — 언제까지 끝낼 건가요? (완수 예정일, 7일 이내)'),
+      el('input',{type:'date', id:'chkDue', min:dueRange().min, max:dueRange().max})
     )
   ));
   root.appendChild(el('div',{class:'chk-count', id:'chkCount'}, ''));
