@@ -230,6 +230,19 @@ body.landing .corner-logo{display:none}
 .hw-btn.on{background:var(--gold,#5fc6a3);color:#10211b;border-color:var(--gold,#5fc6a3)}
 .hw-btn.undone.on{background:#d6a96a;color:#241a0c;border-color:#d6a96a}
 .hw-btn.forgot.on{background:#cbab6a;color:#241f0c;border-color:#cbab6a}
+/* 완료 체크리스트 */
+.chk-group{padding:16px 18px}
+.chk-date{font-family:'Noto Serif KR',serif;font-weight:700;color:var(--gold,#5fc6a3);font-size:0.95rem;margin-bottom:10px;letter-spacing:0.5px}
+.chk-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;border:1px solid var(--border-line,rgba(255,255,255,.08));margin-bottom:7px;cursor:pointer;transition:.12s}
+.chk-item:hover{border-color:rgba(95,198,163,.5)}
+.chk-item.on{background:rgba(95,198,163,.12);border-color:rgba(95,198,163,.55)}
+.chk-item input[type=checkbox]{width:20px;height:20px;accent-color:#5fc6a3;flex-shrink:0;cursor:pointer}
+.chk-type{font-size:0.72rem;font-weight:700;padding:3px 9px;border-radius:9px;flex-shrink:0}
+.chk-type.read{background:rgba(214,138,138,.18);color:#e0a3a3}
+.chk-type.lit{background:rgba(134,201,168,.18);color:#86c9a8}
+.chk-name{font-size:0.95rem;color:var(--cream,#e8eef0);line-height:1.4}
+.chk-item.on .chk-name{font-weight:600}
+.chk-count{text-align:center;font-size:1.05rem;font-weight:700;color:var(--gold,#5fc6a3);margin:18px 0 4px}
 /* 재검사 방법 */
 .oath-method{margin:18px 0 4px;padding:18px 20px;border-radius:10px;background:rgba(95,198,163,.08);border:1px solid rgba(95,198,163,.3)}
 .oath-method>label{display:block;font-weight:700;color:var(--cream,#e8eef0);font-size:1.1rem;margin-bottom:10px}
@@ -496,7 +509,7 @@ function loadWeek(courseId, monthKey, week){
     document.getElementById('loading').style.display='none';
     STATE.data = d;
     STATE.week = monthKey ? weekUid : (d.week!=null ? d.week : week);
-    STATE.step = 1; STATE.wrong = new Set(); STATE.studyAns = {}; STATE.result = null;
+    STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.studyAns = {}; STATE.result = null;
     STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null; STATE.oathMethod = null;
     renderDiag();
   }).catch(err=>{
@@ -523,6 +536,18 @@ function renderDiag(){
   if(STATE.step==='oath'){
     root.appendChild(el('div',{class:'step-bar'}, stepEl(1,'기본 정보'), el('div',{class:'step active'}, el('span',{class:'step-num'},'STEP 2'), el('span',{class:'step-label'},'각서 작성'))));
     renderOath();
+    window.scrollTo(0,0); return;
+  }
+  // 완료 체크리스트형(이매진 등): 기본정보 → 완료 체크 → 결과 (3단계)
+  if(STATE.data && STATE.data.checklist){
+    root.appendChild(el('div',{class:'step-bar'},
+      el('div',{class:STATE.step===1?'step active':'step done'}, el('span',{class:'step-num'},'STEP 1'), el('span',{class:'step-label'},'기본 정보')),
+      el('div',{class:STATE.step===2?'step active':(STATE.step>2?'step done':'step')}, el('span',{class:'step-num'},'STEP 2'), el('span',{class:'step-label'},'완료 체크')),
+      el('div',{class:STATE.step===4?'step active':'step'}, el('span',{class:'step-num'},'STEP 3'), el('span',{class:'step-label'},'진단 결과'))
+    ));
+    if(STATE.step===1) renderStep1();
+    else if(STATE.step===2) renderChecklist();
+    else if(STATE.step===4) renderStep4();
     window.scrollTo(0,0); return;
   }
   root.appendChild(el('div',{class:'step-bar'},
@@ -775,6 +800,60 @@ function goToResult(){
   renderDiag();
 }
 
+// ─── 완료 체크리스트 (이매진 등) ───
+function chkTotal(){ let n=0; ((STATE.data.checklist||{}).groups||[]).forEach(g=>n+=(g.items||[]).length); return n; }
+function renderChecklist(){
+  const cl = STATE.data.checklist||{};
+  root.appendChild(el('div',{class:'section'},
+    el('h2',{class:'section-title'}, cl.title||'완료한 항목에 체크하세요'),
+    el('p',{class:'section-desc'}, cl.desc||'한 항목에만 체크해 주세요. 안 한 것은 비워 두면 됩니다.')
+  ));
+  (cl.groups||[]).forEach(g=>{
+    const block = el('div',{class:'section chk-group'});
+    block.appendChild(el('div',{class:'chk-date'}, g.date||''));
+    (g.items||[]).forEach(it=>{
+      const key=String(it.key);
+      const row = el('label',{class:'chk-item'+(STATE.checked.has(key)?' on':'')});
+      const cb = el('input',{type:'checkbox'}); cb.checked = STATE.checked.has(key);
+      cb.onchange = ()=>{ if(cb.checked) STATE.checked.add(key); else STATE.checked.delete(key); row.classList.toggle('on', cb.checked); updateChkCount(); };
+      row.appendChild(cb);
+      row.appendChild(el('span',{class:'chk-type '+(it.type==='독서'?'read':'lit')}, it.type||''));
+      row.appendChild(el('span',{class:'chk-name'}, it.name||''));
+      block.appendChild(row);
+    });
+    root.appendChild(block);
+  });
+  root.appendChild(el('div',{class:'section'},
+    el('div',{class:'form-row'},
+      el('label',{},'아직 다 못 끝냈다면 — 언제까지 끝낼 건가요? (완수 예정일, 선택)'),
+      el('input',{type:'date', id:'chkDue'})
+    )
+  ));
+  root.appendChild(el('div',{class:'chk-count', id:'chkCount'}, ''));
+  root.appendChild(el('div',{class:'btn-row'},
+    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
+    el('button',{class:'btn btn-primary', onclick:goToResult},'결과 보기 →')
+  ));
+  updateChkCount();
+}
+function updateChkCount(){ const e=document.getElementById('chkCount'); if(!e)return; const t=chkTotal(); e.textContent='완료 '+STATE.checked.size+' / 전체 '+t+'개'; }
+function computeChecklistResult(){
+  const total=chkTotal(), done=STATE.checked.size;
+  const rate=total?Math.round(done/total*100):0;
+  const doneItems=[], undoneItems=[];
+  ((STATE.data.checklist||{}).groups||[]).forEach(g=>(g.items||[]).forEach(it=>{
+    const lbl=(g.date?g.date.split('·')[0].trim()+' ':'')+'['+(it.type||'')+'] '+it.name;
+    (STATE.checked.has(String(it.key))?doneItems:undoneItems).push(lbl);
+  }));
+  const dueRaw=(document.getElementById('chkDue')||{}).value||'';
+  const completed = total>0 && done===total;
+  const label = completed?'전부 끝냄':(done===0?'아직 시작 못 함':(rate>=70?'대부분(70% 이상)':rate>=40?'절반쯤':'조금만(30% 이하)'));
+  const completion = { doneIdx: completed?0:(done===0?4:2), doneLabel:label, completed, doneRate:rate,
+    dueDate: dueRaw?fmtKDate(dueRaw):'', pledge:'', timeliness:'', reason:'' };
+  return { totalPts:0, rawPts:0, total:0, correct:0, wrongN:0, rate:0, wrongDetails:[], patterns:[], strengths:[],
+    areaStat:{}, studyDiag:[], diligence:null, completion, checklist:{ total, done, rate, doneItems, undoneItems } };
+}
+
 // ─────────────────── 진단 계산 엔진 ───────────────────
 function allQuestions(){
   const out = [];
@@ -782,6 +861,7 @@ function allQuestions(){
   return out;
 }
 function computeResult(){
+  if(STATE.data && STATE.data.checklist) return computeChecklistResult();
   const qs = allQuestions();
   let totalPts=0, rawPts=0, correct=0;
   const wrongDetails=[];
@@ -913,10 +993,35 @@ function diagnoseStudy(ans, codes){
 }
 
 // ─── Step 4: 결과지 ───
+function renderChecklistResult(r, course, wm){
+  const c = r.checklist;
+  root.appendChild(el('div',{class:'result-hero'},
+    el('h2',{class:'result-name'}, STATE.student.name+' 학생'),
+    el('p',{class:'result-meta'}, [STATE.student.school, course?course.name:'', wm.label].filter(Boolean).join(' · '))
+  ));
+  const statusSub = c.done===c.total ? '전부 완료' : (c.done===0 ? '아직 안 함' : '일부 완료');
+  root.appendChild(el('div',{class:'score-block'},
+    scoreCard('완수율', c.rate+'%', statusSub),
+    scoreCard('완료', c.done, '/ '+c.total+'개')
+  ));
+  const w = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'}, '안 한 항목 — '+c.undoneItems.length+'개'));
+  if(!c.undoneItems.length) w.appendChild(el('p',{class:'empty-msg'},'전부 완료했습니다. 훌륭해요!'));
+  else c.undoneItems.forEach(s=> w.appendChild(el('div',{class:'pattern'}, el('div',{class:'pattern-name'}, s))));
+  root.appendChild(w);
+  const navButtons = [
+    el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=2; renderDiag();}},'← 체크 수정'),
+    el('button',{class:'btn btn-ghost', onclick:()=>window.print()},'PDF 저장 / 인쇄')
+  ];
+  if(!STATE.teacherView) navButtons.push(el('button',{class:'btn btn-primary', id:'submitBtn', onclick:()=>submitResult(true)},'결과 다시 보내기'));
+  root.appendChild(el('div',{class:'btn-row'}, ...navButtons));
+  root.appendChild(el('div',{id:'submitFeedback'}));
+  if(!STATE.teacherView && !STATE.autoSubmitted){ setTimeout(()=>submitResult(false), 400); }
+}
 function renderStep4(){
   const r = STATE.result;
   const wm = STATE.data.weekMeta;
   const course = COURSES.find(c=>c.id===STATE.courseId);
+  if(r.checklist){ renderChecklistResult(r, course, wm); return; }
 
   const noItems = STATE.data.completionOnly || r.total===0;   // 완료 점검형(수수활 등)
 
@@ -1108,7 +1213,9 @@ function submitResult(isManual){
       remediation:q.remediation||'', parentNote:q.parentNote||''
     }))),
     studyDiagJson: JSON.stringify(r.studyDiag),
-    studyAnsJson: JSON.stringify(STATE.studyAns)
+    studyAnsJson: JSON.stringify(STATE.studyAns),
+    체크리스트: r.checklist ? ('완료 '+r.checklist.done+'/'+r.checklist.total+(r.checklist.undoneItems.length?(' · 미완: '+r.checklist.undoneItems.join(', ')):'')) : '',
+    완수율: r.checklist ? (r.checklist.rate+'%') : ''
   };
   STATE.autoSubmitted = true;
 
