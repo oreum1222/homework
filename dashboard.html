@@ -416,13 +416,25 @@ function renderStatsAndTable(){
   const tableBox=document.getElementById('tableBox');
   if(!rows.length){ tableBox.innerHTML='<div class="empty">조건에 해당하는 제출이 없습니다.</div>'; return; }
   rows.sort((a,b)=>val(b,'timestamp','제출시각').localeCompare(val(a,'timestamp','제출시각')));
-  let html='<div style="overflow-x:auto"><table><thead><tr><th>시각</th><th>이름</th><th>학교</th><th>수업</th><th>주차</th><th>정답률</th><th>틀린</th><th>핵심 약점</th></tr></thead><tbody>';
+  let html='<div style="overflow-x:auto"><table><thead><tr><th>시각</th><th>이름</th><th>학교</th><th>수업</th><th>주차</th><th>과제 해결 정도</th><th>정답률</th><th>틀린</th><th>핵심 약점</th></tr></thead><tbody>';
   rows.forEach(r=>{
     const ts=val(r,'timestamp','제출시각').substring(0,16).replace('T',' ');
     const cid=val(r,'courseId','수업ID'); const cname=COURSE_NAME[cid]||val(r,'courseLabel','수업명')||cid;
     const week=val(r,'week','주차');
     const rate=val(r,'정답률','정답률');
     const wrongN=val(r,'틀린개수','틀린개수');
+    const total=parseInt(val(r,'총문항','총문항'),10)||0;
+    const method=val(r,'제출방식','제출방식'); const isOath=method.indexOf('각서')>=0;
+    const solve=String(val(r,'과제해결정도','과제해결정도')).trim();
+    // 과제 해결 정도 셀 (밴드 색)
+    let solveCell;
+    if(isOath){ solveCell='<span class="tag" style="background:rgba(214,138,138,.2);color:#e0a3a3">각서(안 함)</span>'; }
+    else if(solve!==''){ const n=parseFloat(solve); const c=n>=71?'#9fd0ad':(n>=10?'#d6a96a':'#e0a3a3');
+      solveCell='<span class="tag" style="color:'+c+';border:1px solid '+c+'55">'+esc(solve)+'</span>'; }
+    else { solveCell='<span style="color:var(--text-muted)">–</span>'; }
+    // 정답률 셀 (문항형만)
+    const rateCell = isOath ? '<span style="color:var(--text-muted)">–</span>'
+                   : (total>0 ? '<span class="tag tag-rate">'+esc(rate)+'%</span>' : '<span style="color:var(--text-muted)">– <span style="font-size:0.72rem">(완료형)</span></span>');
     const pat=(val(r,'핵심패턴','핵심패턴')).split('|').map(p=>p.split(':')[1]||p.split(':')[0]).filter(Boolean).slice(0,2).join(', ');
     html+=`<tr>
       <td style="color:var(--text-muted);font-size:0.78rem">${esc(ts)}</td>
@@ -430,8 +442,9 @@ function renderStatsAndTable(){
       <td>${esc(val(r,'school','학교'))}</td>
       <td><span class="tag tag-c">${esc(cname)}</span></td>
       <td><span class="tag tag-w">${esc(weekShort(week))}</span></td>
-      <td><span class="tag tag-rate">${esc(rate)}%</span></td>
-      <td style="color:var(--gold)">${esc(wrongN)}</td>
+      <td>${solveCell}</td>
+      <td>${rateCell}</td>
+      <td style="color:var(--gold)">${isOath?'–':esc(wrongN)}</td>
       <td style="font-size:0.8rem">${esc(pat)}</td>
     </tr>`;
   });
