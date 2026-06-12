@@ -293,7 +293,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
         <span style="color:var(--text-muted);font-size:0.8rem;align-self:center">변수 삽입:</span>
         <button class="cmt-btn" onclick="smsInsert('#{이름}')">이름</button>
         <button class="cmt-btn" onclick="smsInsert('#{주차}')">주차</button>
-        <button class="cmt-btn" onclick="smsInsert('#{완수율}')">완수율</button>
+        <button class="cmt-btn" onclick="smsInsert('#{완수율}')">과제 해결 정도</button>
         <button class="cmt-btn" onclick="smsInsert('#{정답률}')">정답률</button>
         <button class="cmt-btn" onclick="smsInsert('#{선생님}')">선생님</button>
         <button class="cmt-btn" onclick="smsInsert('#{브랜드}')">브랜드</button>
@@ -456,8 +456,8 @@ function switchTab(t){
 // ════════════════════════ 문자 발송 ════════════════════════
 var SMS={ roster:[], targets:[], loaded:false, pending:[] };
 const SMS_TEMPLATES={
-  undone:'[#{브랜드}] #{이름} 학생, 이번 #{주차} 과제 완수율이 #{완수율}입니다. 약속한 기한까지 꼭 마무리 부탁드립니다. (#{선생님})',
-  summary:'[#{브랜드}] #{이름} 학생 #{주차} 과제 결과를 안내드립니다. 평균 정답률 #{정답률}, 완수율 #{완수율}. 자세한 내용은 가정통신문을 확인해 주세요. (#{선생님})',
+  undone:'[#{브랜드}] #{이름} 학생, 이번 #{주차} 과제 해결 정도가 #{완수율}입니다. 약속한 기한까지 꼭 마무리 부탁드립니다. (#{선생님})',
+  summary:'[#{브랜드}] #{이름} 학생 #{주차} 과제 결과를 안내드립니다. 평균 정답률 #{정답률}, 과제 해결 정도 #{완수율}. 자세한 내용은 가정통신문을 확인해 주세요. (#{선생님})',
   absent:'[#{브랜드}] #{이름} 학생이 금일 수업에 결석/지각하였음을 안내드립니다. 확인 부탁드립니다. (#{선생님})',
   free:''
 };
@@ -518,7 +518,7 @@ function smsRenderTargets(){
   }).join('');
   box.innerHTML='<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:0.88rem">'
     +'<thead><tr style="border-bottom:1px solid var(--border-soft);color:var(--text-secondary);text-align:left">'
-    +'<th style="padding:7px 8px"><input type="checkbox" onchange="smsToggleAll(this.checked)" style="accent-color:#5fc6a3"></th><th style="padding:7px 8px">이름</th><th style="padding:7px 8px">수업</th><th style="padding:7px 8px">보호자 번호</th><th style="padding:7px 8px;text-align:center">동의</th><th style="padding:7px 8px;text-align:center">완수율</th><th style="padding:7px 8px;text-align:center">정답률</th></tr></thead>'
+    +'<th style="padding:7px 8px"><input type="checkbox" onchange="smsToggleAll(this.checked)" style="accent-color:#5fc6a3"></th><th style="padding:7px 8px">이름</th><th style="padding:7px 8px">수업</th><th style="padding:7px 8px">보호자 번호</th><th style="padding:7px 8px;text-align:center">동의</th><th style="padding:7px 8px;text-align:center">해결 정도</th><th style="padding:7px 8px;text-align:center">정답률</th></tr></thead>'
     +'<tbody>'+rows+'</tbody></table></div>';
   smsUpdateMeta();
 }
@@ -528,7 +528,7 @@ function smsAutoSelect(){
   const sc=document.getElementById('smsScenario').value;
   SMS.targets.forEach(t=>{
     if(!(t.phone&&t.consent)){ t.checked=false; return; }
-    if(sc==='undone'){ const d=t.m?lastNonNull(t.m.doneSeq):null; t.checked=(d!=null&&d<100); }
+    if(sc==='undone'){ const d=t.m?lastNonNull(t.m.doneSeq):null; t.checked=(d!=null&&d>=10&&d<=70); }   // '덜함' 10~70% 만
     else { t.checked=true; }
   });
   smsRenderTargets();
@@ -821,6 +821,7 @@ function repWrongs(s){ return s?String(s).split(',').map(x=>x.trim()).filter(Boo
 function repTrend(rates){ if(rates.length<2) return '단일'; const d=rates[rates.length-1]-rates[0]; return d>=8?'상승':d<=-8?'하락':'유지'; }
 function doneRateFromLabel(l){ return {'전부 끝냄':100,'대부분(70% 이상)':85,'절반쯤':50,'조금만(30% 이하)':25,'아직 시작 못 함':0}[l]; }
 function pwDoneRate(pw){
+  if(pw && pw.solveRate!=null && !isNaN(pw.solveRate)) return pw.solveRate;   // 실제 과제 해결 정도 우선
   if(pw && pw.doneLabel){ const v=doneRateFromLabel(pw.doneLabel); if(v!=null) return v; }
   const sd=(pw&&pw.studyDiag)||[];
   if(sd.some(d=>(d.label||'')==='과제 완수')) return 100;
@@ -861,6 +862,8 @@ function buildReports(){
       studyDiag:jparse(val(r,'studyDiagJson','studyDiagJson'))||[],
       wrongDetails:jparse(val(r,'wrongDetailsJson','wrongDetailsJson'))||[],
       // 완수·성실 (컬럼 우선, 없으면 studyDiag 라벨로 보완)
+      solveRate:(function(){ var v=val(r,'과제해결정도','과제해결정도'); v=String(v).replace('%','').trim(); return v===''?null:(parseFloat(v)); })(),
+      notSolved:val(r,'안풂회차','안풂회차'),
       doneLabel:val(r,'완수상태','완수상태'),
       dueDate:val(r,'완수예정일','완수예정일'),
       pledge:val(r,'완수약속','완수약속'),
@@ -1096,23 +1099,28 @@ function renderReports(){
   (function(){
     const tw=REP.week;
     const getPw = m => { if(tw==='latest') return m.perWeek[m.perWeek.length-1]; const idx=m.seq.indexOf(+tw); return idx>=0?m.perWeek[idx]:null; };
-    const rows=[]; let doneCnt=0, subCnt=0;
-    master.forEach(m=>{ const pw=getPw(m); if(!pw) return; const dr=pwDoneRate(pw); if(dr==null) return; subCnt++; if(dr>=100){ doneCnt++; return; }
-      rows.push({name:m.name, dr, due:pw.dueDate, pledge:pw.pledge, reason:pw.reason, wl:weekShort(pw.week)});
+    const rows=[]; let okCnt=0, subCnt=0, lessCnt=0, noneCnt=0;
+    master.forEach(m=>{ const pw=getPw(m); if(!pw) return; const dr=pwDoneRate(pw); if(dr==null) return; subCnt++;
+      if(dr>=71){ okCnt++; return; }                       // 71~100% : 문자 X
+      const band = dr<10 ? '안함' : '덜함';                  // ~10% 안함 / 10~70% 덜함
+      if(band==='안함') noneCnt++; else lessCnt++;
+      rows.push({name:m.name, dr, band, due:pw.dueDate, pledge:pw.pledge, reason:pw.reason, wl:weekShort(pw.week)});
     });
     if(subCnt>0){
-      note.innerHTML += ' · '+(tw==='latest'?'최근 주차':weekShort(tw))+' 완수 <b style="color:#9fd0ad">'+doneCnt+'/'+subCnt+'명</b>';
+      note.innerHTML += ' · '+(tw==='latest'?'최근 주차':weekShort(tw))+' 해결 71%↑ <b style="color:#9fd0ad">'+okCnt+'</b> · 덜함 <b style="color:#d6a96a">'+lessCnt+'</b> · 안함 <b style="color:#e0a3a3">'+noneCnt+'</b> (/'+subCnt+'명)';
     }
     if(rows.length){
       const today=new Date(); today.setHours(0,0,0,0);
       const over = r => { if(!r.due) return -1; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(r.due); if(!m) return -1; const d=new Date(+m[1],+m[2]-1,+m[3]); d.setHours(0,0,0,0); return d<today?1:0; };
-      rows.sort((a,b)=> over(b)-over(a) || a.dr-b.dr);
+      rows.sort((a,b)=> a.dr-b.dr || over(b)-over(a));       // 해결 정도 낮은 순(안함 먼저)
       let body='';
-      rows.forEach(r=>{ const ov=over(r)===1;
-        body+='<div class="miss-row"><div class="miss-name">'+esc(r.name)+' <span style="color:#e0a3a3;font-weight:600">완수율 '+r.dr+'%</span> <span style="color:var(--text-muted);font-size:0.78rem">'+esc(r.wl)+'</span></div>'
+      rows.forEach(r=>{ const ov=over(r)===1; const bc = r.band==='안함'?'#e0a3a3':'#d6a96a';
+        body+='<div class="miss-row"><div class="miss-name">'+esc(r.name)
+          +' <span style="display:inline-block;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:9px;background:'+(r.band==='안함'?'rgba(214,138,138,.2)':'rgba(214,169,106,.2)')+';color:'+bc+'">'+r.band+'</span>'
+          +' <span style="color:'+bc+';font-weight:600">해결 '+r.dr+'%</span> <span style="color:var(--text-muted);font-size:0.78rem">'+esc(r.wl)+'</span></div>'
           +'<div class="tc" style="color:var(--text-secondary)">'+(r.due?('완수 예정 <b style="color:'+(ov?'#e0a3a3':'var(--cream)')+'">'+esc(dDayText(r.due))+'</b>'):'<span style="color:var(--text-muted)">완수 예정일 미입력</span>')+(r.pledge?' · 약속: '+esc(r.pledge):'')+(r.reason?' · 사유: '+esc(String(r.reason).split('(')[0].trim()):'')+'</div></div>';
       });
-      undoneHtml='<div class="miss-panel"><div class="miss-title">⚠ 미완자 관리 — '+(tw==='latest'?'최근 주차':weekShort(tw))+' · '+rows.length+'명 (기한 경과 우선)</div>'+body+'</div>';
+      undoneHtml='<div class="miss-panel"><div class="miss-title">⚠ 과제 미완 관리 — '+(tw==='latest'?'최근 주차':weekShort(tw))+' · 덜함 '+lessCnt+' / 안함 '+noneCnt+'명 <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(과제 해결 정도 70% 이하 · 안함 먼저)</span></div>'+body+'</div>';
     }
   })();
 
@@ -1149,7 +1157,7 @@ function renderReports(){
       +'<button class="rpdf-btn no-print" onclick="printOneReport(\''+sid+'\')">이 학생 PDF</button></div></div>'
       +'<div class="rc-row1"><div><div class="rblk-t">주차별 정답률</div>'+rSpark(m)+'</div>'
       +'<div><div class="rblk-t">영역별 누적 오답 비중</div>'+rDonut(m)+'</div></div>'
-      +'<div class="rc-blk"><div class="rblk-t gold">성실도 · 완수 추세 <span class="rblk-sub">(막대=성실도, 위 숫자=완수율'+(m.avgDil!=null?' · 평균 성실도 '+m.avgDil:'')+')</span></div>'+rDiligenceSpark(m)+'</div>'
+      +'<div class="rc-blk"><div class="rblk-t gold">성실도 · 과제 해결 추세 <span class="rblk-sub">(막대=성실도, 위 숫자=과제 해결 정도'+(m.avgDil!=null?' · 평균 성실도 '+m.avgDil:'')+')</span></div>'+rDiligenceSpark(m)+'</div>'
       +'<div class="rc-blk"><div class="rblk-t">주차별 기록</div>'
       +'<table class="rtbl2"><thead><tr><th>주차</th><th>정답률</th><th>영역</th><th>틀린 문항</th></tr></thead><tbody>'+rWeekRows(m)+'</tbody></table></div>'
       +(areaTableBlock?'<div class="rc-blk"><div class="rblk-t gold">영역별 정답률 <span class="rblk-sub">(약한 영역 순)</span></div>'+areaTableBlock+typeLine+'</div>':'')

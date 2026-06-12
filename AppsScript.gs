@@ -248,22 +248,25 @@ function weeklyDigest(){
     if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
     var sub=byName[normName_(name)];
     var doneLabel = sub ? String(sub['완수상태']||'') : '';
-    var doneRate  = (DONE_MAP[doneLabel]!=null) ? DONE_MAP[doneLabel] : (sub?'':0);
+    // 과제 해결 정도(%) 우선, 없으면 완수상태 라벨 환산
+    var sStr = sub ? String(sub['과제해결정도']||'').replace('%','').replace(/\s/g,'') : '';
+    var solveRate = (sStr!=='' && !isNaN(parseFloat(sStr))) ? parseFloat(sStr)
+                    : (DONE_MAP[doneLabel]!=null ? DONE_MAP[doneLabel] : null);
     var rate = sub ? String(sub['정답률']||'') : '';
-    var doneTxt = (doneRate==='')?'-':(doneRate+'%');
+    var doneTxt = (solveRate==null)?'-':(Math.round(solveRate)+'%');
     var rateTxt = rate===''? '-' : (String(rate).indexOf('%')>=0?rate:rate+'%');
 
-    // 미완 독려 → 학생에게 (학생 번호 없으면 학부모로 대체)
-    if(!sub || (DONE_MAP[doneLabel]!=null && DONE_MAP[doneLabel]<100)){
+    // '덜함'(과제 해결 10~70%) 독려 → 학생에게 (학생 번호 없으면 학부모로 대체)
+    if(sub && solveRate!=null && solveRate>=10 && solveRate<=70){
       var toU = sp || gp;
       if(toU){
-        var t='['+BRAND_NAME+'] '+name+' 학생, 이번 '+weekLabel+' 과제 완수율이 '+doneTxt+'입니다. 약속한 기한까지 꼭 마무리합시다. ('+TEACHER_NAME+')';
+        var t='['+BRAND_NAME+'] '+name+' 학생, 이번 '+weekLabel+' 과제 해결 정도가 '+doneTxt+'입니다. 약속한 기한까지 꼭 마무리합시다. ('+TEACHER_NAME+')';
         pending.push([new Date(),'undone',name,toU,p.courseId||'',weekLabel,t,'대기']); undoneN++;
       }
     }
     // 주간 요약 → 학부모 + 학생 둘 다
     if(sub){
-      var t2='['+BRAND_NAME+'] '+name+' 학생 '+weekLabel+' 과제 결과 안내 — 평균 정답률 '+rateTxt+', 완수율 '+doneTxt+'. 자세한 내용은 가정통신문을 확인해 주세요. ('+TEACHER_NAME+')';
+      var t2='['+BRAND_NAME+'] '+name+' 학생 '+weekLabel+' 과제 결과 안내 — 평균 정답률 '+rateTxt+', 과제 해결 정도 '+doneTxt+'. 자세한 내용은 가정통신문을 확인해 주세요. ('+TEACHER_NAME+')';
       [gp,sp].forEach(function(ph){ if(ph) pending.push([new Date(),'summary',name,ph,p.courseId||'',weekLabel,t2,'대기']); });
       sumN++;
     }
