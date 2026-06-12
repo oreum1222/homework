@@ -37,28 +37,7 @@ window.COURSE_LIST = [
           { week: 4, file: 'data/hw-go3-2606-w4.json', label: '4주차에 한 숙제 검사 · N제 15~18회 + 이매진', date: '7/3(금)~7/4(토)', area: '선택+이매진', status: 'active' }
         ]
       },
-      {
-        key: '2026-09', month: '9월', status: 'active', desc: '9월 정규반 과제',
-        weeks: [
-          { week: 1, file: 'data/hw-go3-2609-w1.json', label: '1주차', area: '', status: 'active' },
-          // { week: 2, file: 'data/hw-go3-2609-w2.json', label: '2주차', area: '', status: 'tentative' },
-        ]
-      },
-      // { key: '2026-10', month: '10월', status: 'tentative', weeks: [] },
-    ]
-  },
-
-  {
-    id: 'sample',                       // 영문/숫자 식별자 (파일명·시트 키로 쓰임)
-    name: '샘플 강좌 — 현대문학 집중',     // 화면 표시 이름
-    grade: '고3',                        // 대상 학년
-    desc: '예시용 강좌입니다. 실제 강좌를 추가하면 이 카드는 지우세요.',
-    period: '2026 여름방학',             // 운영 기간(표시용)
-    roster: ['홍길동','김영희','이준호','박서연'],  // (선택) 수강생 명단 → 미제출자 자동 체크
-    weeks: [
-      { week: 1, file: 'data/hw-sample-w1.json', label: '1주차 · 현대시', area: '현대시', status: 'active' },
-      { week: 2, file: 'data/hw-sample-w2.json', label: '2주차 · 현대소설', area: '현대소설', status: 'active' },
-      // { week: 3, file: 'data/hw-sample-w3.json', label: '3주차 · 갈래복합', area: '갈래복합', status: 'tentative' },
+      // (9월·10월 등 다음 달은 여기에 months 항목 추가)
     ]
   },
 
