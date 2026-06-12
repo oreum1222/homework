@@ -431,8 +431,8 @@ function go3MailDigest(){
     +'<h2 style="margin:0 0 4px">고3 정규반 자동발송 검수</h2>'
     +'<div style="color:#566">'+c.week+'주차 · 대상 학생 '+stu+'명 / 학부모 '+par+'명 &nbsp;(미제출 '+nm+' · 미완성 '+ni+' · 반복 '+nr+')</div>'
     +'<div style="margin:12px 0;padding:12px;background:#fff6f6;border:1px solid #f0caca;border-radius:8px;font-size:14px">'
-    +'<b>⏰ 발송 예정(오늘):</b> 학생 15:00 · 학부모 16:00<br>'
-    +'<b>⛔ 멈추려면:</b> 구글시트 <b>「발송제어」</b> 탭 <b>B1칸</b>에 <b>Y</b> 입력 (15:00 학생발송 전까지) → 학생·학부모 모두 발송 안 됨. <u>회신 불필요</u>.'
+    +'<b>⏰ 발송 예정:</b> 이 검수메일과 같은 날(토) 학생 15:00 · 학부모 16:00<br>'
+    +'<b>⛔ 멈추려면:</b> 구글시트 <b>「발송제어」</b> 탭 <b>B1칸</b>에 <b>Y</b> 입력 (학생발송 15:00 전까지) → 학생·학부모 모두 발송 안 됨. <u>회신 불필요</u>.'
     +'</div>'
     +(c.list.length
       ? '<table style="border-collapse:collapse;width:100%;font-size:13px" border="1" cellpadding="6">'
