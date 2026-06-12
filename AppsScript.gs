@@ -319,11 +319,36 @@ function handleMarkSent_(params){
   }catch(err){ return json_({ok:false,error:String(err)}); }
 }
 
-// ════════════════════════ 고3 정규반 전용 주간 자동발송 (완전 자동) ════════════════════════
-// 운영: 매주 토요일 1회. 학생 먼저(오후 2~3시) → 10분 뒤 학부모.  [트리거는 go3WeeklyRun 하나만 주 단위로 등록]
+// ════════════════════════ 고3 정규반 전용 주간 자동발송 (검수 게이트) ════════════════════════
+// 운영: 매주 토요일. ① 13시 검수메일(go3MailDigest) → ② 15시 학생(go3SendStudents) → ③ 16시 학부모(go3SendParents)
+//        [트리거 3개 주 단위 등록]. 멈추려면 구글시트 「발송제어」 탭 B1칸에 Y → 그 주 학생·학부모 모두 발송 보류(발송 후 자동 비움).
 // 분류 우선순위: 반복 > 미제출 > 미완성(과제 해결 71% 미만). 한 학생당 1통. 71% 이상은 발송 안 함.
 var GO3_COURSE = 'go3-regular';
 var GO3_KIHAN  = '오늘 밤 11시';
+// 검수메일 받을 주소(비우면 스크립트 소유자 본인 지메일). 다른 주소로 받으려면 Script Property GO3_NOTIFY_EMAIL 설정.
+function go3NotifyEmail_(){
+  var p=PropertiesService.getScriptProperties().getProperty('GO3_NOTIFY_EMAIL');
+  if(p && p.indexOf('@')>0) return p.trim();
+  try{ return Session.getEffectiveUser().getEmail(); }catch(e){ return Session.getActiveUser().getEmail(); }
+}
+function go3Esc_(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// 발송 멈춤 스위치 — 「발송제어」 탭 B1칸 (Y/중지/보류/STOP 이면 보류)
+function go3ControlSheet_(){
+  var ss=SpreadsheetApp.getActiveSpreadsheet(); if(!ss) return null;
+  var sh=ss.getSheetByName('발송제어');
+  if(!sh){ sh=ss.insertSheet('발송제어');
+    sh.getRange('A1').setValue('발송보류(Y=중지)'); sh.getRange('B1').setValue('');
+    sh.getRange('A2').setValue('설명'); sh.getRange('B2').setValue('B1칸에 Y 입력 시 이번 주 학생·학부모 문자 모두 발송 보류. 발송(또는 보류) 처리 후 자동으로 비워집니다.');
+    sh.setColumnWidth(1,160); sh.setColumnWidth(2,520); }
+  return sh;
+}
+function go3Hold_(){
+  try{ var sh=go3ControlSheet_(); if(!sh) return false;
+    var v=String(sh.getRange('B1').getValue()||'').trim().toUpperCase();
+    return v==='Y'||v==='YES'||v.indexOf('중지')>=0||v.indexOf('보류')>=0||v.indexOf('STOP')>=0;
+  }catch(e){ return false; }
+}
+function go3ClearHold_(){ try{ var sh=go3ControlSheet_(); if(sh) sh.getRange('B1').setValue(''); }catch(e){} }
 
 function go3SolveOf_(r){
   var s=String(r['과제해결정도']||'').replace('%','').replace(/\s/g,'');
@@ -388,15 +413,61 @@ function go3Send_(messages, label){
   messages.forEach(function(m){ var er=failed[digits_(m.to)]; logSend_(m,'문자',er?'실패':'발송',gid,er||''); if(!er)ok++; });
   return (label||'')+' 발송 '+ok+'/'+messages.length;
 }
-function go3SendStudents(){    // 학생 발송 (학생 번호, 없으면 학부모)
+// ① 토 13시 트리거 — 검수메일(발송 대상+문자 내용)을 가경T 지메일로. 발송 안 함.
+function go3MailDigest(){
+  var c=go3Classify_();
+  var CAT={missing:'미제출',incomplete:'미완성',repeat:'반복'};
+  var stu=c.list.filter(function(x){return x.sp||x.gp;}).length;
+  var par=c.list.filter(function(x){return x.gp;}).length;
+  var nm=0,ni=0,nr=0; c.list.forEach(function(x){ if(x.cat==='missing')nm++; else if(x.cat==='incomplete')ni++; else nr++; });
+  var rows=c.list.map(function(x){
+    return '<tr><td>'+go3Esc_(x.name)+'</td><td style="text-align:center">'+CAT[x.cat]+'</td><td style="text-align:center">'+x.rate+'%</td>'
+      +'<td style="text-align:center">'+(x.sp?'O':(x.gp?'(학부모폰)':'X'))+'</td><td style="text-align:center">'+(x.gp?'O':'X')+'</td></tr>';
+  }).join('');
+  var sRate=(c.list[0]?c.list[0].rate:0);
+  function box(t,txt){ return '<div style="margin:6px 0;padding:10px 12px;background:#f6f7f9;border-radius:8px"><b>'+t+'</b>'
+    +'<pre style="white-space:pre-wrap;font-family:inherit;margin:6px 0 0;font-size:13px">'+go3Esc_(txt)+'</pre></div>'; }
+  var html='<div style="font-family:apple sd gothic neo,malgun gothic,sans-serif;max-width:680px;color:#1c2128">'
+    +'<h2 style="margin:0 0 4px">고3 정규반 자동발송 검수</h2>'
+    +'<div style="color:#566">'+c.week+'주차 · 대상 학생 '+stu+'명 / 학부모 '+par+'명 &nbsp;(미제출 '+nm+' · 미완성 '+ni+' · 반복 '+nr+')</div>'
+    +'<div style="margin:12px 0;padding:12px;background:#fff6f6;border:1px solid #f0caca;border-radius:8px;font-size:14px">'
+    +'<b>⏰ 발송 예정(오늘):</b> 학생 15:00 · 학부모 16:00<br>'
+    +'<b>⛔ 멈추려면:</b> 구글시트 <b>「발송제어」</b> 탭 <b>B1칸</b>에 <b>Y</b> 입력 (15:00 학생발송 전까지) → 학생·학부모 모두 발송 안 됨. <u>회신 불필요</u>.'
+    +'</div>'
+    +(c.list.length
+      ? '<table style="border-collapse:collapse;width:100%;font-size:13px" border="1" cellpadding="6">'
+        +'<tr style="background:#eef1f4"><th>이름</th><th>분류</th><th>완수율</th><th>학생문자</th><th>학부모문자</th></tr>'+rows+'</table>'
+      : '<div style="padding:14px;background:#eef7ef;border-radius:8px">이번 주 발송 대상이 없습니다.</div>')
+    +'<h3 style="margin:18px 0 6px">발송될 문자 내용</h3>'
+    +'<div style="color:#566;font-size:12px;margin-bottom:6px">실제 발송 시 <b>OOO</b>=학생 이름, 완수율=학생별 값으로 치환됩니다.</div>'
+    +'<h4 style="margin:10px 0 2px">▣ 학생</h4>'
+    +box('미제출',go3StudentMsg_({name:'OOO',cat:'missing',rate:0}))
+    +box('미완성',go3StudentMsg_({name:'OOO',cat:'incomplete',rate:sRate}))
+    +box('반복',go3StudentMsg_({name:'OOO',cat:'repeat',rate:0}))
+    +'<h4 style="margin:10px 0 2px">▣ 학부모</h4>'
+    +box('미제출',go3ParentMsg_({name:'OOO',cat:'missing',rate:0}))
+    +box('미완성',go3ParentMsg_({name:'OOO',cat:'incomplete',rate:sRate}))
+    +box('반복',go3ParentMsg_({name:'OOO',cat:'repeat',rate:0}))
+    +'</div>';
+  var subject=c.list.length ? ('[고3 자동발송 검수] '+c.week+'주차 · 학생 '+stu+' / 학부모 '+par+'명')
+                            : '[고3 자동발송 검수] 발송 대상 0명';
+  go3ClearHold_();   // 새 주차 검수 시작 → 지난 보류값 초기화
+  MailApp.sendEmail({to:go3NotifyEmail_(), subject:subject, htmlBody:html});
+  return '검수메일 발송 → '+go3NotifyEmail_()+' (대상 '+c.list.length+'명)';
+}
+// ② 토 15시 트리거 — 학생 발송 (학생 번호, 없으면 학부모)
+function go3SendStudents(){
+  if(go3Hold_()){ try{MailApp.sendEmail({to:go3NotifyEmail_(),subject:'[고3 자동발송] 보류됨(학생)',body:'「발송제어」 Y 설정으로 이번 주 학생 문자가 발송되지 않았습니다.'});}catch(e){} return '보류됨(학생) — 발송 안 함'; }
   var c=go3Classify_(), msgs=[];
   c.list.forEach(function(x){ var to=x.sp||x.gp; if(to) msgs.push({to:to,text:go3StudentMsg_(x),name:x.name,scenario:'go3학생-'+x.cat,courseId:GO3_COURSE}); });
   return go3Send_(msgs,'[학생]');
 }
-function go3SendParents(){     // 학부모 발송 (토 오후 3~4시 트리거)
+// ③ 토 16시 트리거 — 학부모 발송 + 보류값 자동 비움
+function go3SendParents(){
+  if(go3Hold_()){ try{MailApp.sendEmail({to:go3NotifyEmail_(),subject:'[고3 자동발송] 보류됨(학부모)',body:'「발송제어」 Y 설정으로 이번 주 학부모 문자가 발송되지 않았습니다.'});}catch(e){} go3ClearHold_(); return '보류됨(학부모) — 발송 안 함'; }
   var c=go3Classify_(), msgs=[];
   c.list.forEach(function(x){ if(x.gp) msgs.push({to:x.gp,text:go3ParentMsg_(x),name:x.name,scenario:'go3학부모-'+x.cat,courseId:GO3_COURSE}); });
-  return go3Send_(msgs,'[학부모]');
+  var r=go3Send_(msgs,'[학부모]'); go3ClearHold_(); return r;
 }
 // 발송 안 하고 분류만 확인(테스트용) — 편집기에서 실행 후 로그 보기
 function go3Preview(){
