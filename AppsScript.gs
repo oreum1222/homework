@@ -476,6 +476,26 @@ function go3Preview(){
   c.list.forEach(function(x){ s+=' · '+x.name+' → '+({missing:'미제출',incomplete:'미완성',repeat:'반복'}[x.cat])+' ('+x.rate+'%)\n'; });
   Logger.log(s); return s;
 }
+// ★★ 트리거 일괄 등록 — 편집기에서 이 함수 1회 실행(트리거 관리 권한 '허용'). 매주 토요일 13/15/16시 자동.
+function go3InstallTriggers(){
+  var want=[['go3MailDigest',13],['go3SendStudents',15],['go3SendParents',16]];
+  var names={}; want.forEach(function(w){ names[w[0]]=1; });
+  ScriptApp.getProjectTriggers().forEach(function(t){ if(names[t.getHandlerFunction()]) ScriptApp.deleteTrigger(t); });  // 중복 제거
+  want.forEach(function(w){
+    ScriptApp.newTrigger(w[0]).timeBased().onWeekDay(ScriptApp.WeekDay.SATURDAY).atHour(w[1]).create();
+  });
+  var tz=Session.getScriptTimeZone();
+  var out=ScriptApp.getProjectTriggers().filter(function(t){return names[t.getHandlerFunction()];})
+    .map(function(t){return t.getHandlerFunction();});
+  var msg='토요일 트리거 등록 완료 ('+tz+'): '+out.join(', ')+'\n  · go3MailDigest 13시(검수메일) → go3SendStudents 15시(학생) → go3SendParents 16시(학부모)';
+  Logger.log(msg); return msg;
+}
+// 트리거 전체 해제(자동발송 끄기)
+function go3RemoveTriggers(){
+  var names={go3MailDigest:1,go3SendStudents:1,go3SendParents:1}, n=0;
+  ScriptApp.getProjectTriggers().forEach(function(t){ if(names[t.getHandlerFunction()]){ ScriptApp.deleteTrigger(t); n++; } });
+  Logger.log('삭제된 트리거 '+n+'개'); return '삭제된 트리거 '+n+'개';
+}
 
 // ════════════════════════ ③ 명단 조회 ════════════════════════
 function readRoster_(){
