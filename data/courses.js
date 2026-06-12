@@ -31,10 +31,10 @@ window.COURSE_LIST = [
       {
         key: '2026-06', month: '6월', status: 'active', desc: '6월 보충 — 수수활 + 이감 선택과목 N제',
         weeks: [
-          { week: 1, file: 'data/hw-go3-2606-susu.json', label: '1주차 · 수수활 보충', area: '수수활', status: 'active' },
-          { week: 2, file: 'data/hw-go3-2606-w2.json', label: '2주차 · N제 1~7회', area: '선택과목', status: 'active' },
-          { week: 3, file: 'data/hw-go3-2606-w3.json', label: '3주차 · N제 8~14회', area: '선택과목', status: 'active' },
-          { week: 4, file: 'data/hw-go3-2606-w4.json', label: '4주차 · N제 15~18회', area: '선택과목', status: 'active' }
+          { week: 1, file: 'data/hw-go3-2606-susu.json', label: '1주차에 한 숙제 검사 · 수수활 보충', date: '6/12(금)~6/13(토)', area: '수수활', status: 'active' },
+          { week: 2, file: 'data/hw-go3-2606-w2.json', label: '2주차에 한 숙제 검사 · N제 1~7회', date: '6/19(금)~6/20(토)', area: '선택과목', status: 'active' },
+          { week: 3, file: 'data/hw-go3-2606-w3.json', label: '3주차에 한 숙제 검사 · N제 8~14회', date: '6/26(금)~6/27(토)', area: '선택과목', status: 'active' },
+          { week: 4, file: 'data/hw-go3-2606-w4.json', label: '4주차에 한 숙제 검사 · N제 15~18회', date: '7/3(금)~7/4(토)', area: '선택과목', status: 'active' }
         ]
       },
       {
