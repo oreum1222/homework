@@ -72,7 +72,7 @@ body.landing .corner-logo{display:none}
 .card-arrow{font-family:'Noto Serif KR',serif;font-size:1.4rem;color:var(--text-muted);transition:color 0.2s,transform 0.2s;line-height:1;align-self:center}
 .exam-card:hover .card-arrow{color:var(--gold);transform:translateX(4px)}
 .card-name{font-family:'Noto Serif KR',serif;font-weight:500;font-size:1.32rem;color:var(--cream);margin-bottom:8px;letter-spacing:-0.3px}
-.card-date{color:var(--text-muted);font-size:0.85rem;margin-bottom:22px;font-weight:300}
+.card-desc{color:#c8d3ce;font-size:0.92rem;margin-bottom:20px;font-weight:400;line-height:1.5}
 .card-body{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding-top:22px;border-top:1px solid var(--border-line)}
 .card-body-block{display:flex;flex-direction:column;gap:8px}
 .body-label{font-size:0.72rem;color:var(--text-muted);letter-spacing:1.5px;font-weight:500}
@@ -429,7 +429,7 @@ function renderMonths(courseId){
       el('span',{class:'card-arrow'},'→')
     ));
     card.appendChild(el('div',{class:'card-name'}, m.month || m.key));
-    if(m.desc) card.appendChild(el('div',{class:'card-date'}, m.desc));
+    if(m.desc) card.appendChild(el('div',{class:'card-desc'}, m.desc));
     card.appendChild(el('div',{class:'card-body'},
       el('div',{class:'card-body-block'},
         el('span',{class:'body-label'},'주차'),
