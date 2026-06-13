@@ -418,6 +418,32 @@ function go3Send_(messages, label){
   messages.forEach(function(m){ var er=failed[digits_(m.to)]; logSend_(m,'문자',er?'실패':'발송',gid,er||''); if(!er)ok++; });
   return (label||'')+' 발송 '+ok+'/'+messages.length;
 }
+// ── 일회성 리마인드: 신지효·공두영, 수수활 과제검사 7/10 (전날 7/9 발송) ──
+//   설치: go3SetupRemindJul9() 1회 실행 → 2026-07-09 14:00 자동 발송. 발송 후 트리거 자동 정리.
+function go3RemindJul9(){
+  var targets=['신지효','공두영'], roster=readRoster_(), msgs=[];
+  targets.forEach(function(nm){
+    var hit=null;
+    roster.forEach(function(p){ if(String(p.courseId)===GO3_COURSE && normName_(p.name)===normName_(nm)) hit=p; });
+    if(!hit) return;
+    var sp=digits_(hit.studentPhone||''), gp=digits_(hit.guardianPhone||''), to=sp||gp;
+    if(!to) return;
+    var text=nm+' 학생, 내일(7/10) 수수활 과제 검사 예정입니다.\n\n내신 기간이라 미뤄 둔 수수활, 오늘까지 마무리해서 내일 꼭 검사받기 바랍니다.\n\n[오름] 국어 가경T';
+    msgs.push({to:to,text:text,name:nm,scenario:'go3리마인드-수수활710',courseId:GO3_COURSE});
+  });
+  var r=go3Send_(msgs,'[리마인드7/10]');
+  try{ ScriptApp.getProjectTriggers().forEach(function(t){ if(t.getHandlerFunction()==='go3RemindJul9') ScriptApp.deleteTrigger(t); }); }catch(e){}  // 일회성: 발송 후 정리
+  return r;
+}
+// 2026-07-09 14:00에 1회 발송 예약 — 편집기에서 이 함수 1회 실행
+function go3SetupRemindJul9(){
+  try{ ScriptApp.getProjectTriggers().forEach(function(t){ if(t.getHandlerFunction()==='go3RemindJul9') ScriptApp.deleteTrigger(t); }); }catch(e){}
+  var when=new Date(2026,6,9,14,0,0);  // 2026-07-09 14:00 (월 인덱스 6=7월, Asia/Seoul)
+  ScriptApp.newTrigger('go3RemindJul9').timeBased().at(when).create();
+  var msg='리마인드 예약 완료: 2026-07-09 14:00 → 신지효·공두영 (수수활 7/10 검사 안내)';
+  Logger.log(msg); return msg;
+}
+
 // ① 토 13시 트리거 — 검수메일(발송 대상+문자 내용)을 가경T 지메일로. 발송 안 함.
 function go3MailDigest(){
   var c=go3Classify_();
