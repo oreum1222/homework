@@ -353,27 +353,29 @@ function go3Hold_(){
 }
 function go3ClearHold_(){ try{ var sh=go3ControlSheet_(); if(sh) sh.getRange('B1').setValue(''); }catch(e){} }
 
+// 테스트 계정(실험용 등)은 집계에서 제외 — 최신주차·미제출 오염 방지
+function go3IsTest_(name){ var n=String(normName_(name)||''); return n.indexOf('실험용')>=0 || n.indexOf('테스트')>=0 || n.toLowerCase()==='test'; }
 function go3SolveOf_(r){
   var s=String(r['과제해결정도']||'').replace('%','').replace(/\s/g,'');
-  if(s!=='' && !isNaN(parseFloat(s))) return parseFloat(s);
+  if(s!=='' && !isNaN(parseFloat(s))){ var v=parseFloat(s); if(v<=1) v=v*100; return v; }  // 분수(0~1) 저장분은 퍼센트로 환산
   var dl=String(r['완수상태']||''); return (DONE_MAP[dl]!=null)?DONE_MAP[dl]:0;
 }
 function go3Classify_(){
   var subs=readAll_(), roster=readRoster_();
   var weekSet={};
-  subs.forEach(function(r){ if(String(r.courseId)===GO3_COURSE){ var w=Number(r.week)||0; if(w) weekSet[w]=1; } });
+  subs.forEach(function(r){ if(String(r.courseId)===GO3_COURSE && !go3IsTest_(r.name)){ var w=Number(r.week)||0; if(w) weekSet[w]=1; } });
   var weeks=Object.keys(weekSet).map(Number).sort(function(a,b){return b-a;});
   if(!weeks.length) return { week:0, list:[] };
   var latest=weeks[0], recent=weeks.slice(0,3);
   var byNW={}, firstW={};   // normName -> { week: bestSolveRate }, 그리고 첫 제출 주차
-  subs.forEach(function(r){ if(String(r.courseId)!==GO3_COURSE) return; var w=Number(r.week)||0; if(!w) return;
+  subs.forEach(function(r){ if(String(r.courseId)!==GO3_COURSE || go3IsTest_(r.name)) return; var w=Number(r.week)||0; if(!w) return;
     var nn=normName_(r.name), sr=go3SolveOf_(r);
     if(!byNW[nn]) byNW[nn]={};
     if(byNW[nn][w]==null || sr>byNW[nn][w]) byNW[nn][w]=sr;
     if(firstW[nn]==null || w<firstW[nn]) firstW[nn]=w;
   });
   var list=[];
-  roster.forEach(function(p){ if(String(p.courseId)!==GO3_COURSE) return;
+  roster.forEach(function(p){ if(String(p.courseId)!==GO3_COURSE || go3IsTest_(p.name)) return;
     var name=String(p.name||'').trim(); var gp=digits_(p.guardianPhone||''), sp=digits_(p.studentPhone||'');
     var consent=String(p.consent||'').toUpperCase();
     if(!name || (!gp&&!sp)) return;
