@@ -50,6 +50,8 @@ window.COURSE_LIST = [
     // roster: ['홍길동','김영희'],   // (선택) 수강생 명단 → 미제출자 자동 체크
     weeks: [
       { week: 1, file: 'data/hw-summer-grammar-w1.json', label: '1주차 · 품사편', area: '품사', status: 'active' },
+      { week: 2, file: 'data/hw-summer-grammar-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
+      { week: 7, file: 'data/hw-summer-grammar-w7.json', label: '7주차 · 음운의 정의와 체계', area: '음운 체계', status: 'active' },
       { week: 8, file: 'data/hw-summer-grammar-w8.json', label: '8주차 · 음운 변동', area: '음운 변동', status: 'active' },
     ]
   },
