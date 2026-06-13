@@ -48,7 +48,21 @@ function doGet(e){
   if (action === 'roster')  return json_(readRoster_());
   if (action === 'pending') return json_(readPending_());
   if (action === 'list')    return json_(readAll_());
+  if (action === 'sendlog') return json_(readLog_((e&&e.parameter&&e.parameter.date)||''));
   return json_({ ok:true, msg:'오름 숙제 진단 백엔드 정상 작동 중' });
+}
+// 발송로그 조회(읽기 전용) — date='yyyy-MM-dd'(Asia/Seoul) 주면 그날 것만. 번호는 마스킹 저장됨.
+function readLog_(dateStr){
+  try{
+    var sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(LOG_SHEET);
+    if(!sh) return [];
+    var vals=sh.getDataRange().getValues(); if(vals.length<2) return [];
+    var head=vals[0], out=[];
+    for(var i=1;i<vals.length;i++){ var o={}; for(var j=0;j<head.length;j++) o[head[j]]=vals[i][j]; out.push(o); }
+    if(dateStr){ out=out.filter(function(r){ var t=r[head[0]]; if(!(t instanceof Date)) return false;
+      return Utilities.formatDate(t, Session.getScriptTimeZone(), 'yyyy-MM-dd')===dateStr; }); }
+    return out;
+  }catch(e){ return []; }
 }
 
 // ★ 권한 승인 전용: 편집기에서 이 함수를 1회 실행 → '허용'만 누르면 외부발송+메일 권한이 부여됩니다.
