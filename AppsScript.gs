@@ -325,6 +325,9 @@ function handleMarkSent_(params){
 // 분류 우선순위: 반복 > 미제출 > 미완성(과제 해결 71% 미만). 한 학생당 1통. 71% 이상은 발송 안 함.
 var GO3_COURSE = 'go3-regular';
 var GO3_KIHAN  = '오늘 밤 11시';
+// ★ 반복 발송 토글: false면 '반복'으로 분류 안 함 → 그 학생은 이번 주 실제 상태(미제출/미완성)로 처리·발송.
+//   (반복 집계 점검 동안 임시 OFF. 다시 켜려면 true)
+var GO3_SEND_REPEAT = false;
 // 검수메일 받을 주소(비우면 스크립트 소유자 본인 지메일). 다른 주소로 받으려면 Script Property GO3_NOTIFY_EMAIL 설정.
 function go3NotifyEmail_(){
   var p=PropertiesService.getScriptProperties().getProperty('GO3_NOTIFY_EMAIL');
@@ -383,7 +386,7 @@ function go3Classify_(){
     if(!(thisMissing||thisIncomplete)) return;   // 71% 이상 → 발송 안 함
     var badCount=0; recent.forEach(function(w){ if(badAt(w)) badCount++; });
     var consec = recent.length>=2 && badAt(recent[0]) && badAt(recent[1]);   // 2주 연속
-    var cat = (badCount>=2 || consec) ? 'repeat' : (thisMissing?'missing':'incomplete');
+    var cat = (GO3_SEND_REPEAT && (badCount>=2 || consec)) ? 'repeat' : (thisMissing?'missing':'incomplete');
     list.push({ name:name, gp:gp, sp:sp, cat:cat, rate:(latestSr!=null?Math.round(latestSr):0) });
   });
   return { week:latest, list:list };
