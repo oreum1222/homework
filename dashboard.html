@@ -883,7 +883,8 @@ function kstDateStr(v){ // ISO/타임스탬프 또는 yyyy-mm-dd → KST 'yyyy-m
   return k.getUTCFullYear()+'-'+p(k.getUTCMonth()+1)+'-'+p(k.getUTCDate());
 }
 function normNameR(s){ return String(s||'').replace(/[\s\[\]（）()｛｝{}]/g,''); }   // 이름 정규화(매칭용)
-function isTestName(nm){ const n=normNameR(nm); return n.indexOf('실험용')>=0||n.indexOf('테스트')>=0||n.toLowerCase()==='test'; }
+var EXCLUDE_NAMES=['심재영'];   // 다른 반 학생 등 — 집계·화면에서 완전 제외
+function isTestName(nm){ const n=normNameR(nm); if(EXCLUDE_NAMES.indexOf(n)>=0) return true; return n.indexOf('실험용')>=0||n.indexOf('테스트')>=0||n.toLowerCase()==='test'; }
 var OVR={loaded:false,_loading:false,set:new Set()};   // 수동 완료(예외)처리 키 집합: 'courseId|week|normName'
 function jsesc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 function ensureReportData(){   // 미응답 분류용 명단 + 예외처리 1회 로드 후 재렌더
@@ -920,7 +921,7 @@ function buildReports(){
   // (수업,학생) 단위로 묶고 주차 오름차순
   const groups={};
   (ALL_DATA||[]).forEach(r=>{
-    let name=val(r,'name','이름').trim(); if(!name||EXCLUDE[name]) return;
+    let name=val(r,'name','이름').trim(); if(!name||EXCLUDE[name]||isTestName(name)) return;   // 테스트·제외명단 숨김
     const cid=val(r,'courseId','수업ID').trim(); if(!cid) return;
     const week=parseInt(val(r,'week','주차'),10)||0;
     const gkey=cid+'||'+name;
