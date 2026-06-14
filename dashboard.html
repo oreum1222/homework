@@ -1419,9 +1419,26 @@ function traitsToParent(raw){
     (pol==='neg'?neg:pos).push(sent);
   });
   let out='';
-  if(pos.length) out+=pos.join(' ');
-  if(neg.length) out+=(out?' 다만, ':'')+neg.join(' ');
+  if(pos.length) out+=weaveSents_(pos);
+  if(neg.length) out+=(out?' 다만, ':'')+weaveSents_(neg);
   return out.trim();
+}
+// 완성 문장 → 연결형('고')으로 바꿔 한 문장으로 엮기 (마지막 문장만 종결형 유지)
+function toConnective_(s){
+  s=String(s).replace(/[.\s]+$/,'');
+  if(s.endsWith('습니다')) return s.slice(0,-3)+'고';
+  if(s.endsWith('니다')){                       // X+ㅂ니다 → 받침 ㅂ 제거 후 '고' (합니다→하고, 옵니다→오고)
+    const pre=s.slice(0,-2), code=pre.charCodeAt(pre.length-1);
+    if(code>=0xAC00 && code<=0xD7A3 && (code-0xAC00)%28===17) return pre.slice(0,-1)+String.fromCharCode(code-17)+'고';
+    return pre+'고';
+  }
+  if(s.endsWith('다')) return s.slice(0,-1)+'고';
+  return s;
+}
+function weaveSents_(arr){
+  if(!arr.length) return '';
+  if(arr.length===1) return arr[0];
+  return arr.slice(0,-1).map(toConnective_).join(', ')+', '+arr[arr.length-1];
 }
 // 누적 데이터 → 학부모 대상 통합 서술(3인칭, 존댓말, 학생에게 직접 말하지 않음)
 function buildParentLetter(m, extra){
@@ -1531,12 +1548,32 @@ async function nlCapture(node){
   try{ c=await html2canvas(node,{scale:2,backgroundColor:pdfCapBg('#13181d'),useCORS:true,logging:false,windowWidth:node.scrollWidth}); }
   finally{ if(light) node.classList.remove('pdf-light'); }
   return c; }
+// 페이지 경계가 내용 중간이면 위쪽 '여백(빈 줄)'을 찾아 거기서 자름 → 박스가 두 장에 걸쳐 잘리지 않음
+function findBlankRow_(ctx, w, fromY, toY){
+  try{
+    const ref=ctx.getImageData(2,2,1,1).data;                 // 좌상단 = 배경(여백) 색
+    const band=ctx.getImageData(0,fromY,w,toY-fromY).data, H=toY-fromY, step=Math.max(4,Math.floor(w/60));
+    for(let ry=H-1; ry>=0; ry--){
+      let blank=true;
+      for(let x=0;x<w;x+=step){ const i=(ry*w+x)*4;
+        if(Math.abs(band[i]-ref[0])>10||Math.abs(band[i+1]-ref[1])>10||Math.abs(band[i+2]-ref[2])>10){ blank=false; break; } }
+      if(blank) return fromY+ry;
+    }
+  }catch(e){}
+  return -1;
+}
 // 캔버스를 A4 여러 장으로 잘라 PDF에 추가
 function addCanvasPaged(pdf, canvas, startNewPage){
   const imgW=210, pageH=297, pxPerMm=canvas.width/imgW, pageHpx=Math.floor(pageH*pxPerMm);
+  const fctx=canvas.getContext('2d');
   let y=0, idx=0;
   while(y<canvas.height){
-    const sliceH=Math.min(pageHpx, canvas.height-y);
+    let sliceH=Math.min(pageHpx, canvas.height-y);
+    if(y+sliceH < canvas.height){                              // 마지막 장이 아니면 여백에서 자르기 시도
+      const minH=Math.floor(pageHpx*0.72);                     // 너무 짧게 자르지 않도록 하한
+      const cut=findBlankRow_(fctx, canvas.width, y+minH, y+sliceH);
+      if(cut>y+minH) sliceH=cut-y;
+    }
     const c2=document.createElement('canvas'); c2.width=canvas.width; c2.height=sliceH;
     const cx=c2.getContext('2d'); cx.fillStyle=pdfPageFillStyle(); cx.fillRect(0,0,c2.width,c2.height);
     cx.drawImage(canvas,0,y,canvas.width,sliceH,0,0,canvas.width,sliceH);
