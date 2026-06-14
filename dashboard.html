@@ -185,6 +185,27 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 @keyframes pdfspin{to{transform:rotate(360deg)}}
 @media print{ body{background:#fff}.tabs,.rep-toolbar,.no-print,h1,.sub{display:none!important}.repcard{break-inside:avoid;page-break-after:always;border:1px solid #ccc;background:#fff} }
 @media (max-width:640px){ .rc-row1{grid-template-columns:1fr}.rspark{width:100%}.rdonut-wrap{flex-direction:column;align-items:flex-start} }
+/* ── 주차별 과제 현황 아코디언 ── */
+.wk-course{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.92rem;letter-spacing:1px;margin:14px 0 8px}
+.wk-acc{border:1px solid var(--border-line);border-radius:8px;margin-bottom:8px;background:var(--bg-dark);overflow:hidden}
+.wk-acc>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'Noto Serif KR',serif;color:var(--cream);font-size:0.9rem;user-select:none}
+.wk-acc>summary::-webkit-details-marker{display:none}
+.wk-acc>summary::before{content:'▸';color:var(--text-muted);font-size:0.8rem;transition:transform .15s}
+.wk-acc[open]>summary::before{transform:rotate(90deg)}
+.wk-acc>summary:hover{background:var(--bg-card)}
+.wk-cnt{font-size:0.74rem;font-weight:700;padding:2px 9px;border-radius:9px;font-family:'Noto Sans KR',sans-serif}
+.wk-cnt.resp{background:rgba(214,138,138,.18);color:#e0a3a3}
+.wk-cnt.part{background:rgba(214,169,106,.18);color:#d6a96a}
+.wk-cnt.done{background:rgba(159,208,173,.18);color:#9fd0ad}
+.wk-grp{padding:10px 16px;border-top:1px solid var(--border-line)}
+.wk-glab{display:inline-block;font-size:0.72rem;font-weight:700;padding:2px 9px;border-radius:9px;margin-bottom:8px}
+.wk-glab.resp{background:rgba(214,138,138,.2);color:#e0a3a3}
+.wk-glab.part{background:rgba(214,169,106,.2);color:#d6a96a}
+.wk-glab.done{background:rgba(159,208,173,.2);color:#9fd0ad}
+.wk-chips{display:flex;flex-wrap:wrap;gap:6px}
+.wk-chip{font-size:0.82rem;color:var(--cream);background:var(--bg-card);border:1px solid var(--border-line);border-radius:7px;padding:4px 10px;line-height:1.5}
+.wk-chip .wk-rate{color:var(--text-secondary);font-size:0.76rem;font-weight:600}
+.wk-chip .wk-due{color:var(--text-muted);font-size:0.74rem}
 </style>
 </head>
 <body>
@@ -850,7 +871,23 @@ function fmtKST(iso){ // UTC 타임스탬프 → KST 24시간제 'YYYY-MM-DD HH:
   const p=n=>String(n).padStart(2,'0');
   return k.getUTCFullYear()+'-'+p(k.getUTCMonth()+1)+'-'+p(k.getUTCDate())+' '+p(k.getUTCHours())+':'+p(k.getUTCMinutes());
 }
-function dDayText(due){ // 'YYYY-MM-DD' → D-표시 (브라우저 today 기준)
+function kstDateStr(v){ // ISO/타임스탬프 또는 yyyy-mm-dd → KST 'yyyy-mm-dd'
+  if(!v) return '';
+  if(/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  const d=new Date(v); if(isNaN(d.getTime())) return String(v).substring(0,10);
+  const k=new Date(d.getTime()+9*3600*1000); const p=n=>String(n).padStart(2,'0');
+  return k.getUTCFullYear()+'-'+p(k.getUTCMonth()+1)+'-'+p(k.getUTCDate());
+}
+function normNameR(s){ return String(s||'').replace(/[\s\[\]（）()｛｝{}]/g,''); }   // 이름 정규화(매칭용)
+function isTestName(nm){ const n=normNameR(nm); return n.indexOf('실험용')>=0||n.indexOf('테스트')>=0||n.toLowerCase()==='test'; }
+function ensureRosterForReports(){   // 미응답 분류용 명단 1회 로드 후 재렌더
+  if(SMS.loaded||SMS._loading) return;
+  if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ SMS.loaded=true; return; }
+  SMS._loading=true;
+  fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; });
+}
+function dDayText(due){ // ISO/'YYYY-MM-DD' → D-표시 (KST 기준)
+  due=kstDateStr(due);
   if(!due) return '';
   const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(due); if(!m) return due;
   const t=new Date(); t.setHours(0,0,0,0);
@@ -1091,6 +1128,51 @@ function fallbackStrengthArea(areaAgg){
   if(!out.length&&arr.length){ const x=arr[0]; out.push({name:x.a+' 영역', diag:x.a+' 영역이 그나마 가장 안정적입니다(정답률 '+Math.round(x.acc*100)+'%). 여기를 발판으로 약점을 끌어올리면 됩니다.'}); }
   return out;
 }
+function wkGrp_(title, arr, cls, showRate){
+  if(!arr.length) return '';
+  const items=arr.map(x=>{
+    let extra='';
+    if(cls==='part'){ extra=' <span class="wk-rate">해결 '+(x.dr!=null?x.dr:0)+'%</span>'+(x.due?' <span class="wk-due">완수 '+esc(dDayText(x.due))+'</span>':''); }
+    else if(cls==='done'&&showRate){ extra=' <span class="wk-rate">'+(x.dr!=null?x.dr:0)+'%</span>'; }
+    return '<span class="wk-chip">'+esc(x.name)+extra+'</span>';
+  }).join('');
+  return '<div class="wk-grp"><span class="wk-glab '+cls+'">'+title+' '+arr.length+'</span><div class="wk-chips">'+items+'</div></div>';
+}
+function weekStatusPanel(master){
+  const rosterByCourse={};
+  (SMS.roster||[]).forEach(r=>{ const cid=String(r.courseId||''); if(!cid||isTestName(r.name)) return; const k=normNameR(r.name); if(!k) return; (rosterByCourse[cid]=rosterByCourse[cid]||new Map()).set(k, String(r.name).trim()); });
+  const courses = REP.course!=='all' ? [REP.course] : Array.from(new Set(master.map(m=>m.courseId)));
+  let out='';
+  courses.forEach(cid=>{
+    const byWeek={};
+    master.filter(m=>m.courseId===cid && !isTestName(m.name)).forEach(m=>{
+      m.seq.forEach((w,i)=>{ const pw=m.perWeek[i]; if(!pw) return; const dr=pwDoneRate(pw);
+        (byWeek[w]=byWeek[w]||new Map()).set(normNameR(m.name), {name:m.name, dr, due:pw.dueDate}); });
+    });
+    const weeks=Object.keys(byWeek).map(Number).sort((a,b)=>b-a);
+    if(!weeks.length) return;
+    const rmap=rosterByCourse[cid];
+    let cHtml='';
+    weeks.forEach((w,wi)=>{
+      const sub=byWeek[w], universe=new Map();
+      if(rmap) rmap.forEach((nm,k)=>universe.set(k,nm));
+      sub.forEach((v,k)=>universe.set(k,v.name));
+      const done=[],part=[],resp=[];
+      universe.forEach((nm,k)=>{ const s=sub.get(k);
+        if(!s){ resp.push({name:nm}); return; }
+        if(s.dr!=null && s.dr<71) part.push(s); else done.push(s);
+      });
+      part.sort((a,b)=>(a.dr||0)-(b.dr||0)); done.sort((a,b)=>(b.dr||0)-(a.dr||0)); resp.sort((a,b)=>String(a.name).localeCompare(b.name));
+      cHtml+='<details class="wk-acc"'+(wi===0?' open':'')+'><summary>'+esc(weekShort(w))
+        +' <span class="wk-cnt resp">미응답 '+resp.length+'</span><span class="wk-cnt part">미완료 '+part.length+'</span><span class="wk-cnt done">완료 '+done.length+'</span></summary>'
+        +wkGrp_('미응답',resp,'resp')+wkGrp_('미완료',part,'part')+wkGrp_('완료',done,'done')+'</details>';
+    });
+    out+=(REP.course==='all'?'<div class="wk-course">'+esc(COURSE_NAME[cid]||cid)+'</div>':'')+cHtml;
+  });
+  if(!out) return '';
+  const rn = SMS.loaded?'':' <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(명단 불러오는 중 — 미응답 곧 정확해짐)</span>';
+  return '<div class="miss-panel" style="border-left-color:var(--gold);border-color:rgba(212,180,131,.3)"><div class="miss-title" style="color:var(--gold)">📋 주차별 과제 현황 <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(미응답=제출없음 · 미완료=해결 71%↓ · 완료=71%↑)</span>'+rn+'</div>'+out+'</div>';
+}
 function renderReports(){
   const root=document.getElementById('reportRoot'), note=document.getElementById('repNote');
   let master=REP.master;
@@ -1115,35 +1197,9 @@ function renderReports(){
       missHtml+='<div class="miss-panel"><div class="miss-title">⚠ '+esc(COURSE_NAME[cid]||cid)+' · '+wk+'주차 미제출 '+missing.length+'명 (독려 코멘트)</div>'+rows+'</div>';
     });
   }
-  // ── 미완자 관리판 (완수 점검 데이터 기반) ──
-  let undoneHtml='';
-  (function(){
-    const tw=REP.week;
-    const getPw = m => { if(tw==='latest') return m.perWeek[m.perWeek.length-1]; const idx=m.seq.indexOf(+tw); return idx>=0?m.perWeek[idx]:null; };
-    const rows=[]; let okCnt=0, subCnt=0, lessCnt=0, noneCnt=0;
-    master.forEach(m=>{ const pw=getPw(m); if(!pw) return; const dr=pwDoneRate(pw); if(dr==null) return; subCnt++;
-      if(dr>=71){ okCnt++; return; }                       // 71~100% : 문자 X
-      const band = dr<10 ? '안함' : '덜함';                  // ~10% 안함 / 10~70% 덜함
-      if(band==='안함') noneCnt++; else lessCnt++;
-      rows.push({name:m.name, dr, band, due:pw.dueDate, pledge:pw.pledge, reason:pw.reason, wl:weekShort(pw.week)});
-    });
-    if(subCnt>0){
-      note.innerHTML += ' · '+(tw==='latest'?'최근 주차':weekShort(tw))+' 해결 71%↑ <b style="color:#9fd0ad">'+okCnt+'</b> · 덜함 <b style="color:#d6a96a">'+lessCnt+'</b> · 안함 <b style="color:#e0a3a3">'+noneCnt+'</b> (/'+subCnt+'명)';
-    }
-    if(rows.length){
-      const today=new Date(); today.setHours(0,0,0,0);
-      const over = r => { if(!r.due) return -1; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(r.due); if(!m) return -1; const d=new Date(+m[1],+m[2]-1,+m[3]); d.setHours(0,0,0,0); return d<today?1:0; };
-      rows.sort((a,b)=> a.dr-b.dr || over(b)-over(a));       // 해결 정도 낮은 순(안함 먼저)
-      let body='';
-      rows.forEach(r=>{ const ov=over(r)===1; const bc = r.band==='안함'?'#e0a3a3':'#d6a96a';
-        body+='<div class="miss-row"><div class="miss-name">'+esc(r.name)
-          +' <span style="display:inline-block;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:9px;background:'+(r.band==='안함'?'rgba(214,138,138,.2)':'rgba(214,169,106,.2)')+';color:'+bc+'">'+r.band+'</span>'
-          +' <span style="color:'+bc+';font-weight:600">해결 '+r.dr+'%</span> <span style="color:var(--text-muted);font-size:0.78rem">'+esc(r.wl)+'</span></div>'
-          +'<div class="tc" style="color:var(--text-secondary)">'+(r.due?('완수 예정 <b style="color:'+(ov?'#e0a3a3':'var(--cream)')+'">'+esc(dDayText(r.due))+'</b>'):'<span style="color:var(--text-muted)">완수 예정일 미입력</span>')+(r.pledge?' · 약속: '+esc(r.pledge):'')+(r.reason?' · 사유: '+esc(String(r.reason).split('(')[0].trim()):'')+'</div></div>';
-      });
-      undoneHtml='<div class="miss-panel"><div class="miss-title">⚠ 과제 미완 관리 — '+(tw==='latest'?'최근 주차':weekShort(tw))+' · 덜함 '+lessCnt+' / 안함 '+noneCnt+'명 <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(과제 해결 정도 70% 이하 · 안함 먼저)</span></div>'+body+'</div>';
-    }
-  })();
+  // ── 주차별 과제 현황 (아코디언: 미응답/미완료/완료) ──
+  ensureRosterForReports();   // 미응답 분류용 명단 로드(1회) → 완료 시 자동 재렌더
+  let undoneHtml=weekStatusPanel(master);
 
   // ── 순위 계산: 수업별, 코멘트 대상 주차의 정답률 기준 ──
   const trate=m=>{ const tw=REP.week; if(tw==='latest') return m.rates[m.rates.length-1]; const idx=m.seq.indexOf(+tw); return idx>=0?m.rates[idx]:null; };
