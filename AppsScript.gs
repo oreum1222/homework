@@ -41,15 +41,45 @@ function doPost(e){
   if (params.action === 'sendMessages') return handleSend_(params);
   if (params.action === 'markSent')     return handleMarkSent_(params);
   if (params.action === 'oathSend')     return handleOathSend_(params);
+  if (params.action === 'markDone')     return handleMarkDone_(params);   // 강사 수동 완료(예외)처리
   return handleSubmit_(params);   // 기본: 학생 제출 누적
 }
 function doGet(e){
   var action = (e && e.parameter && e.parameter.action) || 'list';
-  if (action === 'roster')  return json_(readRoster_());
-  if (action === 'pending') return json_(readPending_());
-  if (action === 'list')    return json_(readAll_());
-  if (action === 'sendlog') return json_(readLog_((e&&e.parameter&&e.parameter.date)||''));
+  if (action === 'roster')    return json_(readRoster_());
+  if (action === 'pending')   return json_(readPending_());
+  if (action === 'list')      return json_(readAll_());
+  if (action === 'sendlog')   return json_(readLog_((e&&e.parameter&&e.parameter.date)||''));
+  if (action === 'overrides') return json_(readOverrides_());
   return json_({ ok:true, msg:'오름 숙제 진단 백엔드 정상 작동 중' });
+}
+// ── 수동 완료(예외)처리: 강사가 특정 (수업·주차·학생)을 완료로 표시 → 화면·자동발송 모두 완료 취급 ──
+var OVERRIDE_SHEET = '수동완료';
+var OVERRIDE_HEADERS = ['courseId','week','name','time','by'];
+function overrideKey_(cid, wk, nm){ return String(cid)+'|'+String(wk)+'|'+normName_(nm); }
+function readOverrides_(){
+  try{
+    var sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(OVERRIDE_SHEET);
+    if(!sh) return [];
+    var v=sh.getDataRange().getValues(); if(v.length<2) return [];
+    var out=[];
+    for(var i=1;i<v.length;i++){ if(String(v[i][0])==='') continue; out.push({courseId:String(v[i][0]), week:String(v[i][1]), name:String(v[i][2])}); }
+    return out;
+  }catch(e){ return []; }
+}
+function handleMarkDone_(params){
+  try{
+    var cid=String(params.courseId||''), wk=String(params.week||''), nm=String(params.name||''), on=String(params.on||'1')==='1';
+    if(!cid||!wk||!nm) return json_({ok:false, error:'courseId/week/name 필요'});
+    var ss=SpreadsheetApp.getActiveSpreadsheet();
+    var sh=ss.getSheetByName(OVERRIDE_SHEET);
+    if(!sh){ sh=ss.insertSheet(OVERRIDE_SHEET); sh.appendRow(OVERRIDE_HEADERS); sh.setFrozenRows(1); }
+    var v=sh.getDataRange().getValues(), key=overrideKey_(cid,wk,nm), found=-1;
+    for(var i=1;i<v.length;i++){ if(overrideKey_(v[i][0],v[i][1],v[i][2])===key){ found=i; break; } }
+    if(on){ if(found<0) sh.appendRow([cid,wk,nm,new Date(),params.by||'']); return json_({ok:true, on:true}); }
+    if(found>=0) sh.deleteRow(found+1);
+    return json_({ok:true, on:false});
+  }catch(e){ return json_({ok:false, error:String(e)}); }
 }
 // 발송로그 조회(읽기 전용) — date='yyyy-MM-dd'(Asia/Seoul) 주면 그날 것만. 번호는 마스킹 저장됨.
 function readLog_(dateStr){
@@ -382,6 +412,8 @@ function go3Classify_(){
   var weeks=Object.keys(weekSet).map(Number).sort(function(a,b){return b-a;});
   if(!weeks.length) return { week:0, list:[] };
   var latest=weeks[0], recent=weeks.slice(0,3);
+  var ovr={};   // 강사 수동 완료(예외)처리 — 최신 주차분은 발송 제외
+  readOverrides_().forEach(function(o){ if(String(o.courseId)===GO3_COURSE && String(o.week)===String(latest)) ovr[normName_(o.name)]=1; });
   var byNW={}, firstW={};   // normName -> { week: bestSolveRate }, 그리고 첫 제출 주차
   subs.forEach(function(r){ if(String(r.courseId)!==GO3_COURSE || go3IsTest_(r.name)) return; var w=Number(r.week)||0; if(!w) return;
     var nn=normName_(r.name), sr=go3SolveOf_(r);
@@ -395,6 +427,7 @@ function go3Classify_(){
     var consent=String(p.consent||'').toUpperCase();
     if(!name || (!gp&&!sp)) return;
     if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
+    if(ovr[normName_(name)]) return;   // 수동 완료(예외)처리됨 → 발송 안 함
     var rec=byNW[normName_(name)]||{};
     var minW=(firstW[normName_(name)]!=null)?firstW[normName_(name)]:Infinity;   // 첫 제출 이전(등록 전)은 미제출로 안 셈
     function badAt(w){ if(w<minW) return false; if(!(w in rec)) return true; return rec[w]<71; }
