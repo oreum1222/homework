@@ -398,8 +398,9 @@ function go3Hold_(){
 }
 function go3ClearHold_(){ try{ var sh=go3ControlSheet_(); if(sh) sh.getRange('B1').setValue(''); }catch(e){} }
 
-// 테스트 계정(실험용 등)은 집계에서 제외 — 최신주차·미제출 오염 방지
-function go3IsTest_(name){ var n=String(normName_(name)||''); return n.indexOf('실험용')>=0 || n.indexOf('테스트')>=0 || n.toLowerCase()==='test'; }
+// 테스트 계정(실험용 등) + 제외 명단(다른 반 학생 등)은 집계·발송에서 완전 제외
+var GO3_EXCLUDE = ['심재영'];   // 다른 반 학생 등 — 추가하려면 정규화된 이름을 여기에
+function go3IsTest_(name){ var n=String(normName_(name)||''); if(GO3_EXCLUDE.indexOf(n)>=0) return true; return n.indexOf('실험용')>=0 || n.indexOf('테스트')>=0 || n.toLowerCase()==='test'; }
 function go3SolveOf_(r){
   var s=String(r['과제해결정도']||'').replace('%','').replace(/\s/g,'');
   if(s!=='' && !isNaN(parseFloat(s))){ var v=parseFloat(s); if(v<=1) v=v*100; return v; }  // 분수(0~1) 저장분은 퍼센트로 환산
