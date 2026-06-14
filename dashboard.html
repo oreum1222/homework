@@ -206,6 +206,10 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .wk-chip{font-size:0.82rem;color:var(--cream);background:var(--bg-card);border:1px solid var(--border-line);border-radius:7px;padding:4px 10px;line-height:1.5}
 .wk-chip .wk-rate{color:var(--text-secondary);font-size:0.76rem;font-weight:600}
 .wk-chip .wk-due{color:var(--text-muted);font-size:0.74rem}
+.wk-chip.wk-click{cursor:pointer;transition:border-color .12s,background .12s}
+.wk-chip.wk-click:hover{border-color:var(--gold);background:rgba(212,180,131,.12)}
+.wk-chip.wk-ov{border-color:rgba(159,208,173,.5)}
+.wk-chip .wk-ex{color:#9fd0ad;font-size:0.72rem;font-weight:700;margin-left:2px}
 </style>
 </head>
 <body>
@@ -880,11 +884,24 @@ function kstDateStr(v){ // ISO/타임스탬프 또는 yyyy-mm-dd → KST 'yyyy-m
 }
 function normNameR(s){ return String(s||'').replace(/[\s\[\]（）()｛｝{}]/g,''); }   // 이름 정규화(매칭용)
 function isTestName(nm){ const n=normNameR(nm); return n.indexOf('실험용')>=0||n.indexOf('테스트')>=0||n.toLowerCase()==='test'; }
-function ensureRosterForReports(){   // 미응답 분류용 명단 1회 로드 후 재렌더
-  if(SMS.loaded||SMS._loading) return;
-  if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ SMS.loaded=true; return; }
-  SMS._loading=true;
-  fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; });
+var OVR={loaded:false,_loading:false,set:new Set()};   // 수동 완료(예외)처리 키 집합: 'courseId|week|normName'
+function jsesc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function ensureReportData(){   // 미응답 분류용 명단 + 예외처리 1회 로드 후 재렌더
+  if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ SMS.loaded=true; OVR.loaded=true; return; }
+  if(!SMS.loaded && !SMS._loading){ SMS._loading=true;
+    fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; }); }
+  if(!OVR.loaded && !OVR._loading){ OVR._loading=true;
+    fetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>{ const a=Array.isArray(d)?d:[]; OVR.set=new Set(a.map(o=>String(o.courseId)+'|'+String(o.week)+'|'+normNameR(o.name))); OVR.loaded=true; OVR._loading=false; renderReports(); }).catch(()=>{ OVR.loaded=true; OVR._loading=false; }); }
+}
+function wkSetDone(cid, w, name, on){   // 강사 클릭 → 완료(예외)처리 토글 (시트 저장 + 화면 즉시 반영)
+  if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ alert('SCRIPT_URL 미설정으로 저장할 수 없습니다.'); return; }
+  const key=cid+'|'+w+'|'+normNameR(name);
+  if(on) OVR.set.add(key); else OVR.set.delete(key);   // 낙관적 반영
+  renderReports();
+  const body='action=markDone&courseId='+encodeURIComponent(cid)+'&week='+encodeURIComponent(w)+'&name='+encodeURIComponent(name)+'&on='+(on?'1':'0');
+  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body})
+    .then(r=>r.json()).then(d=>{ if(!d||!d.ok){ if(on)OVR.set.delete(key); else OVR.set.add(key); renderReports(); alert('완료 처리 저장 실패: '+((d&&d.error)||'')); } })
+    .catch(e=>{ if(on)OVR.set.delete(key); else OVR.set.add(key); renderReports(); alert('완료 처리 저장 실패: '+e.message); });
 }
 function dDayText(due){ // ISO/'YYYY-MM-DD' → D-표시 (KST 기준)
   due=kstDateStr(due);
@@ -1128,13 +1145,19 @@ function fallbackStrengthArea(areaAgg){
   if(!out.length&&arr.length){ const x=arr[0]; out.push({name:x.a+' 영역', diag:x.a+' 영역이 그나마 가장 안정적입니다(정답률 '+Math.round(x.acc*100)+'%). 여기를 발판으로 약점을 끌어올리면 됩니다.'}); }
   return out;
 }
-function wkGrp_(title, arr, cls, showRate){
+function wkGrp_(title, arr, cls, cid, w){
   if(!arr.length) return '';
   const items=arr.map(x=>{
-    let extra='';
-    if(cls==='part'){ extra=' <span class="wk-rate">해결 '+(x.dr!=null?x.dr:0)+'%</span>'+(x.due?' <span class="wk-due">완수 '+esc(dDayText(x.due))+'</span>':''); }
-    else if(cls==='done'&&showRate){ extra=' <span class="wk-rate">'+(x.dr!=null?x.dr:0)+'%</span>'; }
-    return '<span class="wk-chip">'+esc(x.name)+extra+'</span>';
+    let extra='', click='', klass='wk-chip';
+    if(cls==='resp' || cls==='part'){
+      if(cls==='part') extra=' <span class="wk-rate">해결 '+(x.dr!=null?x.dr:0)+'%</span>'+(x.due?' <span class="wk-due">완수 '+esc(dDayText(x.due))+'</span>':'');
+      click=' onclick="wkSetDone(\''+jsesc(cid)+'\','+w+',\''+jsesc(x.name)+'\',1)" title="클릭 → 완료(예외) 처리"';
+      klass+=' wk-click';
+    } else if(cls==='done'){
+      if(x.ov){ extra=' <span class="wk-ex">예외✓</span>'; click=' onclick="wkSetDone(\''+jsesc(cid)+'\','+w+',\''+jsesc(x.name)+'\',0)" title="클릭 → 예외 해제"'; klass+=' wk-click wk-ov'; }
+      else if(x.dr!=null) extra=' <span class="wk-rate">'+x.dr+'%</span>';
+    }
+    return '<span class="'+klass+'"'+click+'>'+esc(x.name)+extra+'</span>';
   }).join('');
   return '<div class="wk-grp"><span class="wk-glab '+cls+'">'+title+' '+arr.length+'</span><div class="wk-chips">'+items+'</div></div>';
 }
@@ -1159,13 +1182,14 @@ function weekStatusPanel(master){
       sub.forEach((v,k)=>universe.set(k,v.name));
       const done=[],part=[],resp=[];
       universe.forEach((nm,k)=>{ const s=sub.get(k);
+        if(OVR.set.has(cid+'|'+w+'|'+k)){ done.push({name:(s?s.name:nm), dr:(s?s.dr:null), ov:true}); return; }   // 강사 예외처리 → 완료
         if(!s){ resp.push({name:nm}); return; }
-        if(s.dr!=null && s.dr<71) part.push(s); else done.push(s);
+        if(s.dr!=null && s.dr<71) part.push({name:s.name,dr:s.dr,due:s.due}); else done.push({name:s.name,dr:s.dr,ov:false});
       });
       part.sort((a,b)=>(a.dr||0)-(b.dr||0)); done.sort((a,b)=>(b.dr||0)-(a.dr||0)); resp.sort((a,b)=>String(a.name).localeCompare(b.name));
       cHtml+='<details class="wk-acc"'+(wi===0?' open':'')+'><summary>'+esc(weekShort(w))
         +' <span class="wk-cnt resp">미응답 '+resp.length+'</span><span class="wk-cnt part">미완료 '+part.length+'</span><span class="wk-cnt done">완료 '+done.length+'</span></summary>'
-        +wkGrp_('미응답',resp,'resp')+wkGrp_('미완료',part,'part')+wkGrp_('완료',done,'done')+'</details>';
+        +wkGrp_('미응답',resp,'resp',cid,w)+wkGrp_('미완료',part,'part',cid,w)+wkGrp_('완료',done,'done',cid,w)+'</details>';
     });
     out+=(REP.course==='all'?'<div class="wk-course">'+esc(COURSE_NAME[cid]||cid)+'</div>':'')+cHtml;
   });
@@ -1198,7 +1222,7 @@ function renderReports(){
     });
   }
   // ── 주차별 과제 현황 (아코디언: 미응답/미완료/완료) ──
-  ensureRosterForReports();   // 미응답 분류용 명단 로드(1회) → 완료 시 자동 재렌더
+  ensureReportData();   // 명단+예외처리 로드(1회) → 완료 시 자동 재렌더
   let undoneHtml=weekStatusPanel(master);
 
   // ── 순위 계산: 수업별, 코멘트 대상 주차의 정답률 기준 ──
