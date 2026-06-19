@@ -1059,7 +1059,7 @@ function rSpark(m){
     const rate=m.rates[i], x=pad+i*(bw+gap), bh=(rate/100)*(H-24), y=H-bh-16;
     bars+=`<rect x="${x.toFixed(0)}" y="${y.toFixed(1)}" width="${bw.toFixed(0)}" height="${bh.toFixed(1)}" rx="2" fill="${rRateCol(rate)}" opacity=".9"/>`;
     bars+=`<text x="${(x+bw/2).toFixed(0)}" y="${(y-3).toFixed(0)}" text-anchor="middle" class="rspk-v">${rate}</text>`;
-    bars+=`<text x="${(x+bw/2).toFixed(0)}" y="${H-2}" text-anchor="middle" class="rspk-x">${w}주</text>`;
+    bars+=`<text x="${(x+bw/2).toFixed(0)}" y="${H-2}" text-anchor="middle" class="rspk-x">${esc(weekShort(w).replace('주차','주'))}</text>`;
   });
   const base=H-(80/100)*(H-24)-16;
   return `<svg viewBox="0 0 ${W} ${H}" class="rspark"><line x1="${pad}" y1="${base.toFixed(1)}" x2="${W-pad}" y2="${base.toFixed(1)}" stroke="#4a5a3a" stroke-dasharray="3 3"/>${bars}</svg>`;
