@@ -208,8 +208,8 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .wk-chip .wk-due{color:var(--text-muted);font-size:0.74rem}
 .wk-chip.wk-click{cursor:pointer;transition:border-color .12s,background .12s}
 .wk-chip.wk-click:hover{border-color:var(--gold);background:rgba(212,180,131,.12)}
-.wk-chip.wk-ov{border-color:rgba(159,208,173,.5)}
-.wk-chip .wk-ex{color:#9fd0ad;font-size:0.72rem;font-weight:700;margin-left:2px}
+.wk-chip.wk-ov{border-color:rgba(138,160,176,.45);border-style:dashed;opacity:.78}
+.wk-chip .wk-ex{color:#8aa0b0;font-size:0.72rem;font-weight:700;margin-left:2px}
 </style>
 </head>
 <body>
@@ -894,15 +894,15 @@ function ensureReportData(){   // 미응답 분류용 명단 + 예외처리 1회
   if(!OVR.loaded && !OVR._loading){ OVR._loading=true;
     fetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>{ const a=Array.isArray(d)?d:[]; OVR.set=new Set(a.map(o=>String(o.courseId)+'|'+String(o.week)+'|'+normNameR(o.name))); OVR.loaded=true; OVR._loading=false; renderReports(); }).catch(()=>{ OVR.loaded=true; OVR._loading=false; }); }
 }
-function wkSetDone(cid, w, name, on){   // 강사 클릭 → 완료(예외)처리 토글 (시트 저장 + 화면 즉시 반영)
+function wkSetEx(cid, w, name, on){   // 강사 클릭 → 예외(보류·결석)처리 토글: 미응답 분류 유지 + 문자만 제외. 시트 저장.
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ alert('SCRIPT_URL 미설정으로 저장할 수 없습니다.'); return; }
   const key=cid+'|'+w+'|'+normNameR(name);
   if(on) OVR.set.add(key); else OVR.set.delete(key);   // 낙관적 반영
   renderReports();
   const body='action=markDone&courseId='+encodeURIComponent(cid)+'&week='+encodeURIComponent(w)+'&name='+encodeURIComponent(name)+'&on='+(on?'1':'0');
   fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body})
-    .then(r=>r.json()).then(d=>{ if(!d||!d.ok){ if(on)OVR.set.delete(key); else OVR.set.add(key); renderReports(); alert('완료 처리 저장 실패: '+((d&&d.error)||'')); } })
-    .catch(e=>{ if(on)OVR.set.delete(key); else OVR.set.add(key); renderReports(); alert('완료 처리 저장 실패: '+e.message); });
+    .then(r=>r.json()).then(d=>{ if(!d||!d.ok){ if(on)OVR.set.delete(key); else OVR.set.add(key); renderReports(); alert('예외 처리 저장 실패: '+((d&&d.error)||'')); } })
+    .catch(e=>{ if(on)OVR.set.delete(key); else OVR.set.add(key); renderReports(); alert('예외 처리 저장 실패: '+e.message); });
 }
 function dDayText(due){ // ISO/'YYYY-MM-DD' → D-표시 (KST 기준)
   due=kstDateStr(due);
@@ -1150,14 +1150,10 @@ function wkGrp_(title, arr, cls, cid, w){
   if(!arr.length) return '';
   const items=arr.map(x=>{
     let extra='', click='', klass='wk-chip';
-    if(cls==='resp' || cls==='part'){
-      if(cls==='part') extra=' <span class="wk-rate">해결 '+(x.dr!=null?x.dr:0)+'%</span>'+(x.due?' <span class="wk-due">완수 '+esc(dDayText(x.due))+'</span>':'');
-      click=' onclick="wkSetDone(\''+jsesc(cid)+'\','+w+',\''+jsesc(x.name)+'\',1)" title="클릭 → 완료(예외) 처리"';
-      klass+=' wk-click';
-    } else if(cls==='done'){
-      if(x.ov){ extra=' <span class="wk-ex">예외✓</span>'; click=' onclick="wkSetDone(\''+jsesc(cid)+'\','+w+',\''+jsesc(x.name)+'\',0)" title="클릭 → 예외 해제"'; klass+=' wk-click wk-ov'; }
-      else if(x.dr!=null) extra=' <span class="wk-rate">'+x.dr+'%</span>';
-    }
+    if(cls==='part') extra=' <span class="wk-rate">해결 '+(x.dr!=null?x.dr:0)+'%</span>'+(x.due?' <span class="wk-due">완수 '+esc(dDayText(x.due))+'</span>':'');
+    else if(cls==='done' && x.dr!=null) extra=' <span class="wk-rate">'+x.dr+'%</span>';
+    if(x.ov){ extra+=' <span class="wk-ex">예외</span>'; click=' onclick="wkSetEx(\''+jsesc(cid)+'\','+w+',\''+jsesc(x.name)+'\',0)" title="클릭 → 예외 해제"'; klass+=' wk-click wk-ov'; }
+    else if(cls==='resp'||cls==='part'){ click=' onclick="wkSetEx(\''+jsesc(cid)+'\','+w+',\''+jsesc(x.name)+'\',1)" title="클릭 → 예외 처리(보강·결석 등 보류 · 문자 제외, 미응답 유지)"'; klass+=' wk-click'; }
     return '<span class="'+klass+'"'+click+'>'+esc(x.name)+extra+'</span>';
   }).join('');
   return '<div class="wk-grp"><span class="wk-glab '+cls+'">'+title+' '+arr.length+'</span><div class="wk-chips">'+items+'</div></div>';
@@ -1182,21 +1178,22 @@ function weekStatusPanel(master){
       if(rmap) rmap.forEach((nm,k)=>universe.set(k,nm));
       sub.forEach((v,k)=>universe.set(k,v.name));
       const done=[],part=[],resp=[];
-      universe.forEach((nm,k)=>{ const s=sub.get(k);
-        if(OVR.set.has(cid+'|'+w+'|'+k)){ done.push({name:(s?s.name:nm), dr:(s?s.dr:null), ov:true}); return; }   // 강사 예외처리 → 완료
-        if(!s){ resp.push({name:nm}); return; }
-        if(s.dr!=null && s.dr<71) part.push({name:s.name,dr:s.dr,due:s.due}); else done.push({name:s.name,dr:s.dr,ov:false});
+      universe.forEach((nm,k)=>{ const s=sub.get(k); const ov=OVR.set.has(cid+'|'+w+'|'+k);   // 예외=보류·결석(문자 제외), 분류는 그대로 유지
+        if(!s){ resp.push({name:nm, ov}); return; }
+        if(s.dr!=null && s.dr<71) part.push({name:s.name,dr:s.dr,due:s.due, ov}); else done.push({name:s.name,dr:s.dr, ov});
       });
-      part.sort((a,b)=>(a.dr||0)-(b.dr||0)); done.sort((a,b)=>(b.dr||0)-(a.dr||0)); resp.sort((a,b)=>String(a.name).localeCompare(b.name));
+      resp.sort((a,b)=>(a.ov?1:0)-(b.ov?1:0) || String(a.name).localeCompare(b.name));   // 예외는 뒤로(문자 대상 먼저)
+      part.sort((a,b)=>(a.dr||0)-(b.dr||0)); done.sort((a,b)=>(b.dr||0)-(a.dr||0));
+      const respEx=resp.filter(x=>x.ov).length;
       cHtml+='<details class="wk-acc"'+(wi===0?' open':'')+'><summary>'+esc(weekShort(w))
-        +' <span class="wk-cnt resp">미응답 '+resp.length+'</span><span class="wk-cnt part">미완료 '+part.length+'</span><span class="wk-cnt done">완료 '+done.length+'</span></summary>'
+        +' <span class="wk-cnt resp">미응답 '+resp.length+(respEx?' · 예외 '+respEx:'')+'</span><span class="wk-cnt part">미완료 '+part.length+'</span><span class="wk-cnt done">완료 '+done.length+'</span></summary>'
         +wkGrp_('미응답',resp,'resp',cid,w)+wkGrp_('미완료',part,'part',cid,w)+wkGrp_('완료',done,'done',cid,w)+'</details>';
     });
     out+=(REP.course==='all'?'<div class="wk-course">'+esc(COURSE_NAME[cid]||cid)+'</div>':'')+cHtml;
   });
   if(!out) return '';
   const rn = SMS.loaded?'':' <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(명단 불러오는 중 — 미응답 곧 정확해짐)</span>';
-  return '<div class="miss-panel" style="border-left-color:var(--gold);border-color:rgba(212,180,131,.3)"><div class="miss-title" style="color:var(--gold)">📋 주차별 과제 현황 <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(미응답=제출없음 · 미완료=해결 71%↓ · 완료=71%↑)</span>'+rn+'</div>'+out+'</div>';
+  return '<div class="miss-panel" style="border-left-color:var(--gold);border-color:rgba(212,180,131,.3)"><div class="miss-title" style="color:var(--gold)">📋 주차별 과제 현황 <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(미응답=제출없음 · 미완료=해결 71%↓ · 완료=71%↑ · 이름 클릭=예외처리[보류·결석, 문자 제외])</span>'+rn+'</div>'+out+'</div>';
 }
 function renderReports(){
   const root=document.getElementById('reportRoot'), note=document.getElementById('repNote');
