@@ -397,8 +397,9 @@ function val(r,kEng,kKor){ let v=r[kKor]; if(v===undefined||v==='') v=r[kEng]; r
 // 주차값(평면 8 / 월별 합성 101 등) → 사람이 읽는 라벨
 var WLAB={};
 function buildWLAB(){ WLAB={}; (ALL_DATA||[]).forEach(r=>{ const w=val(r,'week','주차'); const l=val(r,'weekLabel','주차명'); if(w && l) WLAB[w]=l; }); }
-function weekDisp(w){ return WLAB[w] || (w+'주차'); }
-function weekShort(w){ const l=WLAB[w]; return l ? l.split('·')[0].trim() : (w+'주차'); }
+function decodeWk_(w){ w=+w||0; if(w>=100){ const wk=w%100; if(wk>=1) return wk+'주차'; } return w+'주차'; }  // 합성주차(월×100+주차) → 'N주차'
+function weekDisp(w){ return WLAB[w] || decodeWk_(w); }
+function weekShort(w){ const l=WLAB[w]; return l ? l.split('·')[0].trim() : decodeWk_(w); }
 
 function populateSelectors(){
   const cs=document.getElementById('courseSelect'), cur=cs.value;
