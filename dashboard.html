@@ -745,7 +745,7 @@ function nlCount(){
   var over=n>NL_MAX, near=!over&&n>=NL_MAX-100;
   el.style.color=over?'#d9534f':(near?'#c98a3a':'var(--text-muted)'); el.style.fontWeight=over?'700':'400';
   var w=document.getElementById('nlWarn'); if(w && !over){ w.style.display='none'; }
-  else if(w && over){ w.textContent='⚠ 한 쪽('+NL_MAX+'자)을 넘었습니다 — PDF 2페이지에서 잘릴 수 있어요.'; w.style.display='inline'; }
+  else if(w && over){ w.innerHTML='⚠ 한 쪽('+NL_MAX+'자)을 넘었습니다 — PDF 2페이지에서 잘릴 수 있어요. <button class="cmt-btn" style="margin-left:8px;padding:3px 11px;vertical-align:middle" onclick="nlTrim900()">900자 내로 정리</button>'; w.style.display='block'; }
 }
 // ── 회차별 정답률 막대 (프리미엄 네이비) ──
 function nlBarSVG(m){
