@@ -418,7 +418,6 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
       <div class="section">
         <div class="section-title">관찰 문장 체크
           <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem;margin-left:8px">대분류를 눌러 펼치고, 해당하는 문장을 체크하세요</span>
-          <label style="float:right;font-weight:400;font-size:0.82rem;cursor:pointer"><input type="checkbox" id="nlLong" onchange="nlAssemble()" style="accent-color:#5fc6a3"> 긴 문장으로</label>
         </div>
         <div id="nlCards" style="margin-bottom:12px"></div>
         <div id="nlChecklist"></div>
@@ -428,6 +427,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center" class="no-print">
           <button class="cmt-btn" onclick="nlAssemble()">체크 항목으로 초안 다시 만들기</button>
           <button class="cmt-btn" onclick="document.getElementById('nlComment').value='';nlCount()">비우기</button>
+          <label style="font-weight:400;font-size:0.82rem;cursor:pointer;color:var(--text-secondary);display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="nlLong" onchange="nlAssemble()" style="accent-color:#5fc6a3"> 긴 문장으로</label>
           <span id="nlCount" style="margin-left:auto;font-size:0.82rem;color:var(--text-muted)">0 / 700자</span>
         </div>
         <textarea id="nlComment" class="cmt-area" style="min-height:220px" placeholder="관찰 문장을 체크하면 여기에 초안이 만들어집니다." oninput="nlCount()"></textarea>
