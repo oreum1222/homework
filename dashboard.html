@@ -629,11 +629,19 @@ function smsLoadPending(){
   const box=document.getElementById('smsPendingBox'), msg=document.getElementById('smsPendingMsg');
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ msg.textContent='SCRIPT_URL 미설정'; return; }
   msg.textContent='불러오는 중…';
-  fetch(SCRIPT_URL+'?action=pending&t='+Date.now()).then(r=>r.json()).then(d=>{
-    SMS.pending=Array.isArray(d)?d:[];
-    msg.textContent='대기 '+SMS.pending.length+'건';
+  // 예외(보류·결석) 명단 먼저 확보 → 대기함에서 제외
+  const ovrP = OVR.loaded ? Promise.resolve() : fetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>setOVR_(Array.isArray(d)?d:[])).catch(()=>{});
+  ovrP.then(()=>fetch(SCRIPT_URL+'?action=pending&t='+Date.now()).then(r=>r.json()).then(d=>{
+    const raw=Array.isArray(d)?d:[];
+    SMS.pending=raw.filter(p=>{
+      if(isTestName(p.name)) return false;                                   // 테스트 계정 제외
+      if(OVR.byName.has(String(p.courseId||'')+'|'+normNameR(p.name||''))) return false;   // 예외(보류·결석) 제외
+      return true;
+    });
+    const excl=raw.length-SMS.pending.length;
+    msg.textContent='대기 '+SMS.pending.length+'건'+(excl?' · 예외·테스트 '+excl+'건 제외':'');
     smsRenderPending();
-  }).catch(e=>{ msg.textContent='불러오기 실패: '+e.message; });
+  })).catch(e=>{ msg.textContent='불러오기 실패: '+e.message; });
 }
 function smsRenderPending(){
   const box=document.getElementById('smsPendingBox');
@@ -886,14 +894,15 @@ function kstDateStr(v){ // ISO/타임스탬프 또는 yyyy-mm-dd → KST 'yyyy-m
 function normNameR(s){ return String(s||'').replace(/[\s\[\]（）()｛｝{}]/g,''); }   // 이름 정규화(매칭용)
 var EXCLUDE_NAMES=['심재영'];   // 다른 반 학생 등 — 집계·화면에서 완전 제외
 function isTestName(nm){ const n=normNameR(nm); if(EXCLUDE_NAMES.indexOf(n)>=0) return true; return n.indexOf('실험용')>=0||n.indexOf('테스트')>=0||n.toLowerCase()==='test'; }
-var OVR={loaded:false,_loading:false,set:new Set()};   // 수동 완료(예외)처리 키 집합: 'courseId|week|normName'
+var OVR={loaded:false,_loading:false,set:new Set(),byName:new Set()};   // 예외처리: set='courseId|week|normName', byName='courseId|normName'
+function setOVR_(arr){ OVR.set=new Set(); OVR.byName=new Set(); (arr||[]).forEach(o=>{ const cid=String(o.courseId||''), nm=normNameR(o.name); OVR.set.add(cid+'|'+String(o.week)+'|'+nm); OVR.byName.add(cid+'|'+nm); }); OVR.loaded=true; }
 function jsesc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 function ensureReportData(){   // 미응답 분류용 명단 + 예외처리 1회 로드 후 재렌더
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ SMS.loaded=true; OVR.loaded=true; return; }
   if(!SMS.loaded && !SMS._loading){ SMS._loading=true;
     fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; }); }
   if(!OVR.loaded && !OVR._loading){ OVR._loading=true;
-    fetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>{ const a=Array.isArray(d)?d:[]; OVR.set=new Set(a.map(o=>String(o.courseId)+'|'+String(o.week)+'|'+normNameR(o.name))); OVR.loaded=true; OVR._loading=false; renderReports(); }).catch(()=>{ OVR.loaded=true; OVR._loading=false; }); }
+    fetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>{ setOVR_(Array.isArray(d)?d:[]); OVR._loading=false; renderReports(); }).catch(()=>{ OVR.loaded=true; OVR._loading=false; }); }
 }
 function wkSetEx(cid, w, name, on){   // 강사 클릭 → 예외(보류·결석)처리 토글: 미응답 분류 유지 + 문자만 제외. 시트 저장.
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ alert('SCRIPT_URL 미설정으로 저장할 수 없습니다.'); return; }
