@@ -598,15 +598,18 @@ function switchTab(t){
 
 // ════════════════════════ 가정통신문 작성 ════════════════════════
 var NLW={dict:null,loading:false,course:'all',student:'',checks:{},data:{},_sent:{},_dataLines:[]};
-function nlInit(){
-  const cs=document.getElementById('nlCourse');
-  if(cs && !cs._filled){
-    const cids=Array.from(new Set((REP.master||[]).map(m=>m.courseId)));
-    cs.innerHTML='<option value="all">전체 수업</option>'+cids.map(cid=>'<option value="'+cid+'">'+esc(COURSE_NAME[cid]||cid)+'</option>').join('');
-    cs._filled=true;
-  }
-  ensureReportData();
+function nlRefreshSelects_(){   // REP.master/SMS.roster 도착 후 강좌·학생 셀렉트 갱신
+  const cs=document.getElementById('nlCourse'); if(!cs) return;
+  const cids=Array.from(new Set([].concat((REP.master||[]).map(m=>m.courseId),(SMS.roster||[]).map(r=>r.courseId)).filter(c=>c&&c!=='courseId')));
+  cs.innerHTML='<option value="all">전체 수업</option>'+cids.map(cid=>'<option value="'+cid+'"'+(NLW.course===cid?' selected':'')+'>'+esc(COURSE_NAME[cid]||cid)+'</option>').join('');
+  cs._filled=true;
   nlRenderStudents();
+}
+function nlInit(){
+  // 데이터가 아직이면 불러오기(다른 탭 안 거쳐도 동작)
+  if((!ALL_DATA||!ALL_DATA.length) && (!REP.master||!REP.master.length) && typeof loadData==='function') loadData();
+  ensureReportData();
+  nlRefreshSelects_();
   if(NLW.dict){ nlRenderCards(); nlRenderChecklist(); return; }
   if(NLW.loading) return;
   NLW.loading=true;
@@ -616,7 +619,7 @@ function nlOnCourse(){ NLW.course=document.getElementById('nlCourse').value; nlR
 function nlRenderStudents(){
   const sel=document.getElementById('nlStudent'); if(!sel) return;
   const names=new Set();
-  (SMS.roster||[]).forEach(r=>{ if((NLW.course==='all'||String(r.courseId)===NLW.course)&&!isTestName(r.name)){ const n=String(r.name).trim(); if(n) names.add(n); } });
+  (SMS.roster||[]).forEach(r=>{ if(String(r.courseId)==='courseId'||String(r.name)==='name') return; if((NLW.course==='all'||String(r.courseId)===NLW.course)&&!isTestName(r.name)){ const n=String(r.name).trim(); if(n) names.add(n); } });
   (REP.master||[]).forEach(m=>{ if((NLW.course==='all'||m.courseId===NLW.course)&&!isTestName(m.name)) names.add(m.name); });
   const arr=Array.from(names).sort((a,b)=>a.localeCompare(b)), cur=NLW.student;
   sel.innerHTML='<option value="">— 학생 선택 —</option>'+arr.map(n=>'<option value="'+esc(n)+'"'+(n===cur?' selected':'')+'>'+esc(n)+'</option>').join('');
@@ -1245,7 +1248,7 @@ function jsesc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 function ensureReportData(){   // 미응답 분류용 명단 + 예외처리 1회 로드 후 재렌더
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ SMS.loaded=true; OVR.loaded=true; return; }
   if(!SMS.loaded && !SMS._loading){ SMS._loading=true;
-    fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; }); }
+    fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); if(typeof nlRefreshSelects_==='function' && document.getElementById('nlCourse')) nlRefreshSelects_(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; }); }
   if(!OVR.loaded && !OVR._loading){ OVR._loading=true;
     fetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>{ setOVR_(Array.isArray(d)?d:[]); OVR._loading=false; renderReports(); }).catch(()=>{ OVR.loaded=true; OVR._loading=false; }); }
 }
@@ -1344,6 +1347,7 @@ function buildReports(){
   });
   master.sort((a,b)=>{ if(b.n!==a.n) return b.n-a.n; return (b.rates[b.rates.length-1]||0)-(a.rates[a.rates.length-1]||0); });
   REP.master=master;
+  if(typeof nlRefreshSelects_==='function' && document.getElementById('nlCourse')) nlRefreshSelects_();   // 가정통신문 탭 학생목록 갱신
   // 전체 주차 목록 → 코멘트 주차 선택 채우기
   const wset=new Set(); master.forEach(m=>m.seq.forEach(w=>wset.add(w)));
   REP.allWeeks=Array.from(wset).sort((a,b)=>a-b);
