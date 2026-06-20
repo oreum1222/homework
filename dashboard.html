@@ -430,6 +430,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
           <label style="font-weight:400;font-size:0.82rem;cursor:pointer;color:var(--text-secondary);display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="nlLong" onchange="nlAssemble()" style="accent-color:#5fc6a3"> 긴 문장으로</label>
           <span id="nlCount" style="margin-left:auto;font-size:0.82rem;color:var(--text-muted)">0 / 900자</span>
         </div>
+        <div id="nlWarn" style="display:none;font-size:0.82rem;color:#d9534f;font-weight:600;margin-bottom:8px" class="no-print"></div>
         <textarea id="nlComment" class="cmt-area" style="min-height:220px" placeholder="관찰 문장을 체크하면 여기에 초안이 만들어집니다." oninput="nlCount()"></textarea>
       </div>
       <div class="section">
@@ -662,7 +663,18 @@ function nlRenderChecklist(){
   }).join('');
 }
 function nlToggle(id, el){
-  if(el && el.type==='checkbox') NLW.checks[id]=el.checked; else NLW.checks[id]=!NLW.checks[id];
+  var want = el ? (el.type==='checkbox' ? el.checked : !NLW.checks[id]) : !NLW.checks[id];
+  if(want){
+    NLW.checks[id]=true;
+    if(nlAssembleText_().length > NL_MAX){          // 사전 제재: 더하면 한 쪽 초과 → 추가 취소
+      NLW.checks[id]=false;
+      if(el && el.type==='checkbox') el.checked=false;
+      if(id.indexOf('card:')===0) nlRenderCards();
+      else if(el){ var l=el.closest('.nl-kw'); if(l) l.classList.remove('on'); }
+      nlFlashLimit_();
+      return;
+    }
+  } else { NLW.checks[id]=false; }
   if(id.indexOf('card:')===0) nlRenderCards();
   else if(el){ const lab=el.closest('.nl-kw'); if(lab) lab.classList.toggle('on',!!NLW.checks[id]); }
   nlAssemble();
@@ -683,25 +695,37 @@ function nlCheckedOrdered_(){
   (NLW.dict.categories||[]).forEach((cat,ci)=>cat.subs.forEach((sub,si)=>sub.items.forEach((it,ii)=>push('k:'+ci+'.'+si+'.'+ii))));
   return out;
 }
-function nlAssemble(){
-  const ta=document.getElementById('nlComment'); if(!ta||!NLW._sent) return;
+// 체크 항목으로 조립된 코멘트 텍스트만 반환(길이 사전 계산·텍스트영역 갱신 공용)
+function nlAssembleText_(){
+  if(!NLW._sent) return '';
   const name=NLW.student||'ㅇㅇ', long=(document.getElementById('nlLong')||{}).checked;
   const ids=nlCheckedOrdered_();
-  // 기본=흐름 문장(flow, 어미 다양), '긴 문장으로'=상세 단락(long)
   const sents=ids.map(id=>{ const e=NLW._sent[id]; if(!e) return '';
     const t = long ? (e.long||e.short||e.flow) : (e.flow||e.short||e.long);
     return (t||'').trim(); }).filter(Boolean).map(t=>t.replace(/ㅇㅇ/g,name));
   let body=sents.length?nlWeave_(sents,name):'';
   const rem=ids.map(id=>(NLW._sent[id]||{}).remedy).filter(Boolean)[0];
   if(rem) body+=(body?' ':'')+rem.replace(/ㅇㅇ/g,name);
-  ta.value=body;
+  return body;
+}
+function nlAssemble(){
+  const ta=document.getElementById('nlComment'); if(!ta) return;
+  ta.value=nlAssembleText_();
   nlCount();
+}
+function nlFlashLimit_(){
+  var w=document.getElementById('nlWarn'); if(!w) return;
+  w.textContent='⚠ 한 쪽('+NL_MAX+'자)을 넘어 더 담을 수 없어요. 다른 항목을 빼거나 코멘트를 줄이세요.';
+  w.style.display='inline'; clearTimeout(w._t); w._t=setTimeout(function(){ w.style.display='none'; }, 4500);
 }
 var NL_MAX=900;   // 2페이지 '종합 의견' 권장 글자 수(한 쪽 · 700~900 모두 한 장에 들어감)
 function nlCount(){
   var ta=document.getElementById('nlComment'), el=document.getElementById('nlCount'); if(!ta||!el) return;
   var n=(ta.value||'').length; el.textContent=n+' / '+NL_MAX+'자';
-  var over=n>NL_MAX; el.style.color=over?'#d9534f':'var(--text-muted)'; el.style.fontWeight=over?'700':'400';
+  var over=n>NL_MAX, near=!over&&n>=NL_MAX-100;
+  el.style.color=over?'#d9534f':(near?'#c98a3a':'var(--text-muted)'); el.style.fontWeight=over?'700':'400';
+  var w=document.getElementById('nlWarn'); if(w && !over){ w.style.display='none'; }
+  else if(w && over){ w.textContent='⚠ 한 쪽('+NL_MAX+'자)을 넘었습니다 — PDF 2페이지에서 잘릴 수 있어요.'; w.style.display='inline'; }
 }
 // ── 회차별 정답률 막대 (프리미엄 네이비) ──
 function nlBarSVG(m){
@@ -794,6 +818,7 @@ function nlMakePdf(){
   if(!m){ alert('이 학생의 제출 데이터를 찾지 못했습니다. (데이터가 쌓이면 그래프가 생성됩니다)'); return; }
   var comment=(document.getElementById('nlComment').value||'').trim();
   if(!comment && !confirm('종합 코멘트가 비어 있습니다. 그래도 생성할까요?')) return;
+  if(comment.length>NL_MAX && !confirm('종합 의견이 '+comment.length+'자로 한 쪽 권장 분량('+NL_MAX+'자)을 넘습니다. 2페이지에서 일부가 잘릴 수 있어요. 그래도 생성할까요?')) return;
   var host=document.getElementById('nlHost'); host.innerHTML=nlBuildLetterPages(NLW.student,m,comment);
   repOverlay(NLW.student+' 가정통신문 생성 중…');
   var pages=host.querySelectorAll('.nlp-page');
