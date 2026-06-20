@@ -210,6 +210,17 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .wk-chip.wk-click:hover{border-color:var(--gold);background:rgba(212,180,131,.12)}
 .wk-chip.wk-ov{border-color:rgba(138,160,176,.45);border-style:dashed;opacity:.78}
 .wk-chip .wk-ex{color:#8aa0b0;font-size:0.72rem;font-weight:700;margin-left:2px}
+/* ── 가정통신문 작성 ── */
+.nl-chips{display:flex;flex-wrap:wrap;gap:7px}
+.nl-dchip,.nl-kw{display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--cream);background:var(--bg-card);border:1px solid var(--border-line);border-radius:7px;padding:5px 11px;cursor:pointer;transition:border-color .12s,background .12s}
+.nl-dchip input,.nl-kw input{accent-color:#5fc6a3;cursor:pointer}
+.nl-dchip:hover,.nl-kw:hover{border-color:var(--gold)}
+.nl-kw.on{background:rgba(95,198,163,.12);border-color:#5fc6a3}
+.nl-card{font-size:0.82rem;color:var(--cream);background:var(--bg-card);border:1px solid var(--border-line);border-radius:14px;padding:5px 13px;cursor:pointer;transition:all .12s}
+.nl-card:hover{border-color:var(--gold)}
+.nl-card.on{background:var(--gold);color:var(--bg-dark);font-weight:700;border-color:var(--gold)}
+.nlc-sub{margin:10px 0}
+.nlc-sub-t{font-size:0.8rem;color:#cbb88a;margin-bottom:6px;font-weight:600}
 </style>
 </head>
 <body>
@@ -235,6 +246,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
     <button class="tab on" id="tabList" onclick="switchTab('list')">제출 목록</button>
     <button class="tab" id="tabReport" onclick="switchTab('report')">학생별 개별 리포트</button>
     <button class="tab" id="tabSms" onclick="switchTab('sms')">문자 발송</button>
+    <button class="tab" id="tabNl" onclick="switchTab('nl')">가정통신문 작성</button>
   </div>
 
   <!-- 제출 목록 -->
@@ -338,6 +350,48 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
     <div class="section">
       <div class="section-title">발송 결과</div>
       <div id="smsResult"><div class="empty">아직 발송 내역이 없습니다.</div></div>
+    </div>
+  </div>
+
+  <!-- 가정통신문 작성 -->
+  <div id="nlPane" style="display:none">
+    <div class="section">
+      <div class="section-title">학생 선택</div>
+      <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+        <select id="nlCourse" onchange="nlOnCourse()" style="min-width:160px"></select>
+        <select id="nlStudent" onchange="nlSelectStudent(this.value)" style="min-width:200px"></select>
+        <span id="nlStuMsg" style="color:var(--text-muted);font-size:0.82rem"></span>
+      </div>
+    </div>
+    <div id="nlBody" style="display:none">
+      <div class="section">
+        <div class="section-title">통신문에 넣을 자료 <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(체크한 항목이 통신문 상단 요약에 들어갑니다)</span></div>
+        <div id="nlData"></div>
+      </div>
+      <div class="section">
+        <div class="section-title">관찰 문장 체크
+          <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem;margin-left:8px">대분류를 눌러 펼치고, 해당하는 문장을 체크하세요</span>
+          <label style="float:right;font-weight:400;font-size:0.82rem;cursor:pointer"><input type="checkbox" id="nlLong" onchange="nlAssemble()" style="accent-color:#5fc6a3"> 긴 문장으로</label>
+        </div>
+        <div id="nlCards" style="margin-bottom:12px"></div>
+        <div id="nlChecklist"></div>
+      </div>
+      <div class="section">
+        <div class="section-title">종합 코멘트 <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(자동 초안 — 매끄럽게 다듬어 쓰세요)</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px" class="no-print">
+          <button class="cmt-btn" onclick="nlAssemble()">체크 항목으로 초안 다시 만들기</button>
+          <button class="cmt-btn" onclick="document.getElementById('nlComment').value=''">비우기</button>
+        </div>
+        <textarea id="nlComment" class="cmt-area" style="min-height:220px" placeholder="관찰 문장을 체크하면 여기에 초안이 만들어집니다."></textarea>
+      </div>
+      <div class="section">
+        <div class="section-title">가정통신문 PDF</div>
+        <div class="row" style="gap:10px;align-items:center">
+          <label style="display:inline-flex;align-items:center;gap:7px;font-size:0.88rem;cursor:pointer"><input type="checkbox" id="nlPdfLight" style="accent-color:#5fc6a3"> 인쇄용(밝게)</label>
+          <button onclick="nlMakePdf()" style="background:var(--gold);color:var(--bg-dark);font-weight:700;border:none">가정통신문 PDF 저장</button>
+          <span id="nlPdfMsg" style="color:var(--text-muted);font-size:0.82rem"></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -484,12 +538,129 @@ document.addEventListener('input',e=>{
 });
 
 function switchTab(t){
-  const panes={list:'listPane',report:'reportPane',sms:'smsPane'};
+  const panes={list:'listPane',report:'reportPane',sms:'smsPane',nl:'nlPane'};
   Object.keys(panes).forEach(k=>{ const el=document.getElementById(panes[k]); if(el) el.style.display=(k===t)?'':'none'; });
   document.getElementById('tabList').classList.toggle('on',t==='list');
   document.getElementById('tabReport').classList.toggle('on',t==='report');
   const ts=document.getElementById('tabSms'); if(ts) ts.classList.toggle('on',t==='sms');
+  const tn=document.getElementById('tabNl'); if(tn) tn.classList.toggle('on',t==='nl');
   if(t==='sms') smsInit();
+  if(t==='nl') nlInit();
+}
+
+// ════════════════════════ 가정통신문 작성 ════════════════════════
+var NLW={dict:null,loading:false,course:'all',student:'',checks:{},data:{},_sent:{},_dataLines:[]};
+function nlInit(){
+  const cs=document.getElementById('nlCourse');
+  if(cs && !cs._filled){
+    const cids=Array.from(new Set((REP.master||[]).map(m=>m.courseId)));
+    cs.innerHTML='<option value="all">전체 수업</option>'+cids.map(cid=>'<option value="'+cid+'">'+esc(COURSE_NAME[cid]||cid)+'</option>').join('');
+    cs._filled=true;
+  }
+  ensureReportData();
+  nlRenderStudents();
+  if(NLW.dict){ nlRenderCards(); nlRenderChecklist(); return; }
+  if(NLW.loading) return;
+  NLW.loading=true;
+  fetch('data/observ-dict.json?t='+Date.now()).then(r=>r.json()).then(d=>{ NLW.dict=d; NLW.loading=false; nlRenderCards(); nlRenderChecklist(); }).catch(e=>{ NLW.loading=false; const cl=document.getElementById('nlChecklist'); if(cl) cl.innerHTML='<div class="error">관찰문장 사전 로드 실패: '+esc(e.message)+'</div>'; });
+}
+function nlOnCourse(){ NLW.course=document.getElementById('nlCourse').value; nlRenderStudents(); }
+function nlRenderStudents(){
+  const sel=document.getElementById('nlStudent'); if(!sel) return;
+  const names=new Set();
+  (SMS.roster||[]).forEach(r=>{ if((NLW.course==='all'||String(r.courseId)===NLW.course)&&!isTestName(r.name)){ const n=String(r.name).trim(); if(n) names.add(n); } });
+  (REP.master||[]).forEach(m=>{ if((NLW.course==='all'||m.courseId===NLW.course)&&!isTestName(m.name)) names.add(m.name); });
+  const arr=Array.from(names).sort((a,b)=>a.localeCompare(b)), cur=NLW.student;
+  sel.innerHTML='<option value="">— 학생 선택 —</option>'+arr.map(n=>'<option value="'+esc(n)+'"'+(n===cur?' selected':'')+'>'+esc(n)+'</option>').join('');
+  document.getElementById('nlStuMsg').textContent=arr.length+'명';
+}
+function nlFindMaster(name){ const ms=(REP.master||[]); return ms.find(m=>normNameR(m.name)===normNameR(name)&&(NLW.course==='all'||m.courseId===NLW.course))||ms.find(m=>normNameR(m.name)===normNameR(name)); }
+function nlSelectStudent(name){
+  NLW.student=name||''; NLW.checks={}; NLW.data={};
+  document.getElementById('nlBody').style.display=name?'':'none';
+  if(!name) return;
+  nlRenderData(); nlRenderCards(); nlRenderChecklist(); nlAssemble();
+}
+function nlRenderData(){
+  const box=document.getElementById('nlData'); const m=nlFindMaster(NLW.student); NLW._dataLines=[];
+  if(!m){ box.innerHTML='<div class="empty" style="font-size:0.85rem">제출 데이터가 없어 자료 요약은 생략됩니다(관찰 문장만으로 작성).</div>'; return; }
+  const lines=[], trend={상승:'상승세',하락:'하락',유지:'유지'}[m.trend]||'';
+  lines.push({id:'avg',t:'평균 정답률 '+m.avgRate+'%'+(trend?' · 추세 '+trend:'')});
+  const areas=Object.entries(m.areaAgg||{}).map(([a,v])=>({a,acc:v.total?Math.round((v.total-v.wrong)/v.total*100):0,wrong:v.wrong,total:v.total})).filter(x=>x.total>=2).sort((x,y)=>x.acc-y.acc);
+  if(areas.length){ const w=areas[0]; lines.push({id:'weak',t:'약점 영역: '+w.a+' ('+w.total+'문제 중 '+w.wrong+' 오답)'}); }
+  if(areas.length>1){ const s=areas[areas.length-1]; lines.push({id:'strong',t:'강점 영역: '+s.a+' (정답률 '+s.acc+'%)'}); }
+  lines.push({id:'submit',t:'제출 '+m.n+'주차 · 누적 오답 '+m.totalWrong+'개'});
+  NLW._dataLines=lines;
+  box.innerHTML='<div class="nl-chips">'+lines.map(l=>'<label class="nl-dchip"><input type="checkbox" '+(NLW.data[l.id]?'checked':'')+' onchange="NLW.data[\''+l.id+'\']=this.checked"> '+esc(l.t)+'</label>').join('')+'</div>';
+}
+function nlBuildSent(){
+  NLW._sent={};
+  (NLW.dict.cards||[]).forEach((c,i)=>{ NLW._sent['card:'+i]={short:c.short,long:c.long,remedy:''}; });
+  (NLW.dict.categories||[]).forEach((cat,ci)=>cat.subs.forEach((sub,si)=>sub.items.forEach((it,ii)=>{ NLW._sent['k:'+ci+'.'+si+'.'+ii]={short:it.short,long:it.long,remedy:it.remedy}; })));
+}
+function nlRenderCards(){
+  const box=document.getElementById('nlCards'); if(!box||!NLW.dict) return;
+  box.innerHTML='<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px">빠른 문장카드 (클릭 = 코멘트에 추가)</div><div class="nl-chips">'
+    +(NLW.dict.cards||[]).map((c,i)=>'<button class="nl-card'+(NLW.checks['card:'+i]?' on':'')+'" onclick="nlToggle(\'card:'+i+'\',this)">'+esc(c.name)+'</button>').join('')+'</div>';
+}
+function nlRenderChecklist(){
+  const box=document.getElementById('nlChecklist'); if(!box||!NLW.dict) return;
+  nlBuildSent();
+  box.innerHTML=(NLW.dict.categories||[]).map((cat,ci)=>{
+    const inner=cat.subs.map((sub,si)=>'<div class="nlc-sub"><div class="nlc-sub-t">'+esc(sub.sub)+'</div><div class="nl-chips">'
+      +sub.items.map((it,ii)=>{ const id='k:'+ci+'.'+si+'.'+ii; return '<label class="nl-kw'+(NLW.checks[id]?' on':'')+'" title="'+esc(it.interp)+'"><input type="checkbox" '+(NLW.checks[id]?'checked':'')+' onchange="nlToggle(\''+id+'\',this)"> '+esc(it.kw)+'</label>'; }).join('')
+      +'</div></div>').join('');
+    const cnt=cat.subs.reduce((a,s)=>a+s.items.length,0);
+    return '<details class="wk-acc"><summary>'+esc(cat.cat)+' <span class="wk-cnt resp">'+cnt+'</span></summary><div style="padding:4px 14px 12px">'+inner+'</div></details>';
+  }).join('');
+}
+function nlToggle(id, el){
+  if(el && el.type==='checkbox') NLW.checks[id]=el.checked; else NLW.checks[id]=!NLW.checks[id];
+  if(id.indexOf('card:')===0) nlRenderCards();
+  else if(el){ const lab=el.closest('.nl-kw'); if(lab) lab.classList.toggle('on',!!NLW.checks[id]); }
+  nlAssemble();
+}
+function nlWeave_(sents,name){
+  if(!sents.length) return '';
+  const conn=['또한 ','그리고 ','특히 ','무엇보다 '];
+  const re=new RegExp('^'+name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*학생은\\s*');
+  return sents.map((s,i)=> i===0 ? s : (re.test(s)? conn[(i-1)%conn.length]+s.replace(re,'') : s)).join(' ');
+}
+function nlAssemble(){
+  const ta=document.getElementById('nlComment'); if(!ta||!NLW._sent) return;
+  const name=NLW.student||'ㅇㅇ', long=(document.getElementById('nlLong')||{}).checked;
+  const ids=Object.keys(NLW.checks).filter(id=>NLW.checks[id]);
+  const sents=ids.map(id=>{ const e=NLW._sent[id]; if(!e) return ''; return ((long?(e.long||e.short):(e.short||e.long))||'').trim(); }).filter(Boolean).map(t=>t.replace(/ㅇㅇ/g,name));
+  let body=nlWeave_(sents,name);
+  const rem=ids.map(id=>(NLW._sent[id]||{}).remedy).filter(Boolean)[0];
+  if(rem) body+=(body?' ':'')+rem.replace(/ㅇㅇ/g,name);
+  ta.value=body;
+}
+function nlMakePdf(){
+  if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
+  if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
+  const comment=(document.getElementById('nlComment').value||'').trim();
+  if(!comment && !confirm('종합 코멘트가 비어 있습니다. 그래도 생성할까요?')) return;
+  const lines=(NLW._dataLines||[]).filter(l=>NLW.data[l.id]).map(l=>l.t);
+  PDF_LIGHT=document.getElementById('nlPdfLight').checked;
+  const host=document.getElementById('nlHost'); host.innerHTML=nlBuildLetter(NLW.student,lines,comment);
+  repOverlay(NLW.student+' 가정통신문 생성 중…');
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>new Promise(r=>setTimeout(r,160))).then(()=>nlCapture(host.firstChild)).then(canvas=>{
+    const jsPDF=getJsPDF(), pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    addCanvasPaged(pdf,canvas,false);
+    pdf.save('가정통신문_'+NLW.student+(PDF_LIGHT?'_인쇄용':'')+'.pdf');
+  }).catch(e=>alert('가정통신문 생성 오류: '+(e.message||e))).then(()=>{ host.innerHTML=''; repHideOverlay(); });
+}
+function nlBuildLetter(name, dataLines, comment){
+  const logo=LOGO_URL?'<img src="'+LOGO_URL+'" class="nl-logo">':'';
+  const dataSec=dataLines.length?'<div class="nl-sec"><div class="nl-sec-t">학습 현황</div><ul class="rdlist">'+dataLines.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>':'';
+  return '<div class="nl"><div class="nl-inner">'
+    +'<div class="nl-head">'+logo+'<div class="nl-title">가정통신문</div><div class="nl-sub">'+esc(name)+' 학생 · '+esc(BRAND)+'</div></div>'
+    +'<div class="nl-greet">안녕하세요, '+esc(name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 학생의 최근 학습 모습을 전해 드립니다.</div>'
+    +dataSec
+    +'<div class="nl-sec"><div class="nl-comment"><div class="nl-comment-t">선생님 종합 의견</div>'+esc(comment)+'</div></div>'
+    +'<div class="nl-foot">'+esc(TEACHER)+' · '+esc(BRAND)+'</div>'
+    +'</div></div>';
 }
 
 // ════════════════════════ 문자 발송 ════════════════════════
