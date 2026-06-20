@@ -387,7 +387,6 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
       <div class="section">
         <div class="section-title">가정통신문 PDF</div>
         <div class="row" style="gap:10px;align-items:center">
-          <label style="display:inline-flex;align-items:center;gap:7px;font-size:0.88rem;cursor:pointer"><input type="checkbox" id="nlPdfLight" style="accent-color:#5fc6a3"> 인쇄용(밝게)</label>
           <button onclick="nlMakePdf()" style="background:var(--gold);color:var(--bg-dark);font-weight:700;border:none">가정통신문 PDF 저장</button>
           <span id="nlPdfMsg" style="color:var(--text-muted);font-size:0.82rem"></span>
         </div>
@@ -405,7 +404,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 <script src="config.js"></script>
 <script src="data/courses.js"></script>
 <script>
-let SCRIPT_URL=null, DASH_PASSWORD=null, BRAND='오름 국어 연구소', TEACHER='가경T', LOGO_URL='';
+let SCRIPT_URL=null, DASH_PASSWORD=null, BRAND='오름 국어 연구소', TEACHER='가경T', LOGO_URL='', LOGO_NAVY_URL='';
 const COURSES = window.COURSE_LIST || [];
 const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 let ALL_DATA = [];
@@ -413,7 +412,7 @@ let ALL_DATA = [];
 function loadConfig(){
   return new Promise(resolve=>{
     const c = window.OREUM_HW_CONFIG;
-    if(c){ SCRIPT_URL=c.SCRIPT_URL||null; DASH_PASSWORD=c.DASH_PASSWORD||null; BRAND=c.BRAND||BRAND; TEACHER=c.TEACHER||TEACHER; LOGO_URL=c.LOGO_URL||''; }
+    if(c){ SCRIPT_URL=c.SCRIPT_URL||null; DASH_PASSWORD=c.DASH_PASSWORD||null; BRAND=c.BRAND||BRAND; TEACHER=c.TEACHER||TEACHER; LOGO_URL=c.LOGO_URL||''; LOGO_NAVY_URL=c.LOGO_NAVY_URL||''; }
     document.getElementById('brandSub').textContent = TEACHER+' · '+BRAND;
     var _cl=document.querySelector('.corner-logo');
     if(_cl){ if(LOGO_URL) _cl.src=LOGO_URL; else _cl.style.display='none'; }
@@ -655,7 +654,7 @@ function nlMakePdf(){
   const comment=(document.getElementById('nlComment').value||'').trim();
   if(!comment && !confirm('종합 코멘트가 비어 있습니다. 그래도 생성할까요?')) return;
   const lines=(NLW._dataLines||[]).filter(l=>NLW.data[l.id]).map(l=>l.t);
-  PDF_LIGHT=document.getElementById('nlPdfLight').checked;
+  PDF_LIGHT=true;   // 가정통신문은 항상 고급 아이보리 디자인
   const host=document.getElementById('nlHost'); host.innerHTML=nlBuildLetter(NLW.student,lines,comment);
   repOverlay(NLW.student+' 가정통신문 생성 중…');
   (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>new Promise(r=>setTimeout(r,160))).then(()=>nlCapture(host.firstChild)).then(canvas=>{
@@ -665,14 +664,50 @@ function nlMakePdf(){
   }).catch(e=>alert('가정통신문 생성 오류: '+(e.message||e))).then(()=>{ host.innerHTML=''; repHideOverlay(); });
 }
 function nlBuildLetter(name, dataLines, comment){
-  const logo=LOGO_URL?'<img src="'+LOGO_URL+'" class="nl-logo">':'';
-  const dataSec=dataLines.length?'<div class="nl-sec"><div class="nl-sec-t">학습 현황</div><ul class="rdlist">'+dataLines.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>':'';
-  return '<div class="nl"><div class="nl-inner">'
-    +'<div class="nl-head">'+logo+'<div class="nl-title">가정통신문</div><div class="nl-sub">'+esc(name)+' 학생 · '+esc(BRAND)+'</div></div>'
-    +'<div class="nl-greet">안녕하세요, '+esc(name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 학생의 최근 학습 모습을 전해 드립니다.</div>'
-    +dataSec
-    +'<div class="nl-sec"><div class="nl-comment"><div class="nl-comment-t">선생님 종합 의견</div>'+esc(comment)+'</div></div>'
-    +'<div class="nl-foot">'+esc(TEACHER)+' · '+esc(BRAND)+'</div>'
+  // ── 고급 아이보리 가정통신문 (자체 색상·인라인 스타일, 테마 토글 영향 없음) ──
+  const NAVY='#1c2c52', INK='#34383f', GOLD='#b08d57', PAPER='#f4efe4', HAIR='rgba(28,44,82,0.12)';
+  const logo=LOGO_NAVY_URL||LOGO_URL||'';
+  const d=new Date();
+  const dDot=d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate()+'.';
+  const dKo=d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일';
+  const sechead=(t)=>'<div style="display:flex;align-items:center;gap:11px;margin-bottom:15px">'
+    +'<span style="width:3px;height:16px;background:'+GOLD+';display:inline-block;border-radius:2px"></span>'
+    +'<span style="font-family:\'Noto Serif KR\',serif;font-size:1.0rem;font-weight:700;color:'+NAVY+';letter-spacing:2px">'+t+'</span></div>';
+  const dataSec=dataLines.length
+    ? '<div style="margin-bottom:30px">'+sechead('학습 현황')
+      +'<div style="border-top:1px solid '+HAIR+'">'+dataLines.map(t=>'<div style="font-size:0.92rem;color:'+INK+';padding:11px 4px;border-bottom:1px solid '+HAIR+';line-height:1.6"><span style="color:'+GOLD+';margin-right:9px">◦</span>'+esc(t)+'</div>').join('')+'</div></div>'
+    : '';
+  const wm = logo ? '<img src="'+logo+'" style="position:absolute;left:50%;top:55%;width:540px;transform:translate(-50%,-50%);opacity:0.045;pointer-events:none">' : '';
+  const logoImg = logo ? '<img src="'+logo+'" style="width:236px;height:auto;display:block;margin:4px auto 20px">'
+                       : '<div style="font-family:\'Noto Serif KR\',serif;font-size:1.5rem;color:'+NAVY+';font-weight:700;margin-bottom:14px">'+esc(BRAND)+'</div>';
+  return '<div style="width:760px;background:'+PAPER+';padding:62px 64px 50px;font-family:\'Noto Sans KR\',sans-serif;color:'+INK+';position:relative;box-sizing:border-box">'
+    // 이중 프레임
+    +'<div style="position:absolute;left:20px;top:20px;right:20px;bottom:20px;border:1px solid rgba(28,44,82,0.22);pointer-events:none"></div>'
+    +'<div style="position:absolute;left:26px;top:26px;right:26px;bottom:26px;border:1px solid rgba(176,141,87,0.40);pointer-events:none"></div>'
+    +wm
+    // 헤더
+    +'<div style="text-align:center;position:relative;z-index:1">'+logoImg
+      +'<div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:7px">'
+        +'<span style="height:1px;width:50px;background:'+GOLD+';display:inline-block"></span>'
+        +'<span style="font-family:\'Noto Serif KR\',serif;font-size:1.42rem;font-weight:700;color:'+NAVY+';letter-spacing:11px;padding-left:11px">가정통신문</span>'
+        +'<span style="height:1px;width:50px;background:'+GOLD+';display:inline-block"></span></div>'
+      +'<div style="font-size:0.68rem;letter-spacing:5px;color:#a4926f">HOME LEARNING LETTER</div></div>'
+    // 수신 · 날짜
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin:36px 0 12px;font-size:0.85rem;color:#5c616b;position:relative;z-index:1">'
+      +'<span><b style="color:'+NAVY+';font-weight:600;font-size:0.95rem">'+esc(name)+' 학생 학부모님</b> 귀하</span><span>'+dDot+'</span></div>'
+    +'<div style="height:1px;background:rgba(28,44,82,0.16);margin-bottom:26px;position:relative;z-index:1"></div>'
+    // 인사
+    +'<p style="font-size:0.95rem;line-height:1.95;color:#3c414a;margin-bottom:30px;position:relative;z-index:1">안녕하세요, '+esc(name)+' 학생 학부모님.<br>'+esc(BRAND)+'입니다. 한 주간 '+esc(name)+' 학생의 학습 모습을 정성껏 살펴 아래와 같이 전해 드립니다.</p>'
+    +'<div style="position:relative;z-index:1">'+dataSec
+    // 선생님 종합 의견
+    +'<div style="margin-bottom:36px">'+sechead('선생님 종합 의견')
+      +'<div style="font-size:0.95rem;line-height:2.0;color:'+INK+';white-space:pre-wrap;background:rgba(255,255,255,0.5);border:1px solid rgba(28,44,82,0.1);border-left:2px solid '+GOLD+';border-radius:2px;padding:24px 26px">'+esc(comment)+'</div></div>'
+    // 서명
+    +'<div style="text-align:right;margin-top:42px">'
+      +'<div style="font-size:0.85rem;color:#5c616b;margin-bottom:9px">'+dKo+'</div>'
+      +'<div style="font-family:\'Noto Serif KR\',serif;font-size:1.05rem;color:'+NAVY+';font-weight:700;letter-spacing:1px">'+esc(BRAND)+'　'+esc(TEACHER)+' <span style="font-size:0.92rem;color:#5c616b;font-weight:400">드림</span></div></div>'
+    // 푸터
+    +'<div style="text-align:center;margin-top:30px;padding-top:18px;border-top:1px solid rgba(28,44,82,0.12);font-size:0.7rem;letter-spacing:4px;color:#a4926f">'+esc(BRAND)+'</div>'
     +'</div></div>';
 }
 
