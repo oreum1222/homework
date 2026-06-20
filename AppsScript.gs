@@ -388,6 +388,12 @@ function go3ControlSheet_(){
     sh.getRange('A1').setValue('발송보류(Y=중지)'); sh.getRange('B1').setValue('');
     sh.getRange('A2').setValue('설명'); sh.getRange('B2').setValue('B1칸에 Y 입력 시 이번 주 학생·학부모 문자 모두 발송 보류. 발송(또는 보류) 처리 후 자동으로 비워집니다.');
     sh.setColumnWidth(1,160); sh.setColumnWidth(2,520); }
+  // 이번 주 제외 명단 칸 — D1 머리글, D2부터 이름 1명씩 (없으면 셋업)
+  if(!String(sh.getRange('D1').getValue()||'').trim()){
+    sh.getRange('D1').setValue('이번 주 제외 명단(이름)');
+    sh.getRange('E1').setValue('D2 아래로 이름을 한 명씩 적으면, 그 학생은 이번 주 학생·학부모 문자에서 제외됩니다(전체 중지는 B1=Y). 발송 후 자동으로 비워집니다.');
+    sh.setColumnWidth(4,170); sh.setColumnWidth(5,560);
+  }
   return sh;
 }
 function go3Hold_(){
@@ -396,7 +402,16 @@ function go3Hold_(){
     return v==='Y'||v==='YES'||v.indexOf('중지')>=0||v.indexOf('보류')>=0||v.indexOf('STOP')>=0;
   }catch(e){ return false; }
 }
-function go3ClearHold_(){ try{ var sh=go3ControlSheet_(); if(sh) sh.getRange('B1').setValue(''); }catch(e){} }
+// 「발송제어」 D2:D 의 이름들 → 이번 주 개별 발송 제외 { 정규화이름:1 }
+function go3SkipList_(){
+  var out={};
+  try{ var sh=go3ControlSheet_(); if(!sh) return out;
+    var last=sh.getLastRow(); if(last<2) return out;
+    sh.getRange(2,4,last-1,1).getValues().forEach(function(r){ var nm=String(r[0]||'').trim(); if(nm) out[normName_(nm)]=1; });
+  }catch(e){}
+  return out;
+}
+function go3ClearHold_(){ try{ var sh=go3ControlSheet_(); if(sh){ sh.getRange('B1').setValue(''); var last=sh.getLastRow(); if(last>=2) sh.getRange(2,4,last-1,1).clearContent(); } }catch(e){} }
 
 // 테스트 계정(실험용 등) + 제외 명단(다른 반 학생 등)은 집계·발송에서 완전 제외
 var GO3_EXCLUDE = ['심재영'];   // 다른 반 학생 등 — 추가하려면 정규화된 이름을 여기에
@@ -415,6 +430,7 @@ function go3Classify_(){
   var latest=weeks[0], recent=weeks.slice(0,3);
   var ovr={};   // 강사 수동 완료(예외)처리 — 최신 주차분은 발송 제외
   readOverrides_().forEach(function(o){ if(String(o.courseId)===GO3_COURSE && String(o.week)===String(latest)) ovr[normName_(o.name)]=1; });
+  var skip=go3SkipList_();   // 「발송제어」 D열 이번 주 제외 명단
   var byNW={}, firstW={};   // normName -> { week: bestSolveRate }, 그리고 첫 제출 주차
   subs.forEach(function(r){ if(String(r.courseId)!==GO3_COURSE || go3IsTest_(r.name)) return; var w=Number(r.week)||0; if(!w) return;
     var nn=normName_(r.name), sr=go3SolveOf_(r);
@@ -429,6 +445,7 @@ function go3Classify_(){
     if(!name || (!gp&&!sp)) return;
     if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
     if(ovr[normName_(name)]) return;   // 수동 완료(예외)처리됨 → 발송 안 함
+    if(skip[normName_(name)]) return;  // 「발송제어」 제외 명단(D열) → 이번 주 발송 안 함
     var rec=byNW[normName_(name)]||{};
     var minW=(firstW[normName_(name)]!=null)?firstW[normName_(name)]:Infinity;   // 첫 제출 이전(등록 전)은 미제출로 안 셈
     function badAt(w){ if(w<minW) return false; if(!(w in rec)) return true; return rec[w]<71; }
@@ -526,7 +543,8 @@ function go3MailDigest(){
     +'<div style="margin:12px 0;padding:12px;background:#fff6f6;border:1px solid #f0caca;border-radius:8px;font-size:14px">'
     +'<b>⏰ 발송 예정:</b> 이 검수메일과 같은 날(토) 학생 15:00 · 학부모 16:00<br>'
     +'<b>📩 발송 정책:</b> 미제출 → 학생+학부모 / <b>미완성 → 학부모만</b>(학생 미발송)<br>'
-    +'<b>⛔ 멈추려면:</b> 구글시트 <b>「발송제어」</b> 탭 <b>B1칸</b>에 <b>Y</b> 입력 (학생발송 15:00 전까지) → 학생·학부모 모두 발송 안 됨. <u>회신 불필요</u>.'
+    +'<b>⛔ 전체 멈추려면:</b> 구글시트 <b>「발송제어」</b> 탭 <b>B1칸</b>에 <b>Y</b> 입력 (학생발송 15:00 전까지) → 학생·학부모 모두 발송 안 됨.<br>'
+    +'<b>🙅 일부만 빼려면:</b> 같은 시트 <b>D2칸 아래</b>에 제외할 학생 <b>이름</b>을 적기 (15:00 전까지) → 그 학생만 학생·학부모 발송 제외. <u>회신 불필요</u>.'
     +'</div>'
     +(c.list.length
       ? '<table style="border-collapse:collapse;width:100%;font-size:13px" border="1" cellpadding="6">'
