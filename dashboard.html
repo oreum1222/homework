@@ -221,6 +221,53 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .nl-card.on{background:var(--gold);color:var(--bg-dark);font-weight:700;border-color:var(--gold)}
 .nlc-sub{margin:10px 0}
 .nlc-sub-t{font-size:0.8rem;color:#cbb88a;margin-bottom:6px;font-weight:600}
+/* ══ 가정통신문 프리미엄 (2page 고정 · 아이보리×네이비×골드, 테마 변수 미사용) ══ */
+.nlp-page{width:760px;height:1075px;background:#f7f4ec;color:#2a2e38;font-family:'Noto Sans KR',sans-serif;position:relative;overflow:hidden;box-sizing:border-box}
+.nlp-frame{position:absolute;top:16px;left:16px;right:16px;bottom:16px;border:1px solid rgba(28,44,82,.22)}
+.nlp-frame::after{content:'';position:absolute;top:5px;left:5px;right:5px;bottom:5px;border:1px solid rgba(176,141,87,.4)}
+.nlp-wm{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:520px;opacity:.045}
+.nlp-inner{position:relative;padding:36px 50px}
+.nlp-head{text-align:center;padding-bottom:12px;border-bottom:1px solid rgba(28,44,82,.16);margin-bottom:14px}
+.nlp-logo{width:150px;height:auto;margin:0 auto 8px;display:block}
+.nlp-title{font-family:'Noto Serif KR',serif;font-size:1.5rem;font-weight:700;color:#1c2c52;letter-spacing:11px;margin-bottom:6px;padding-left:11px}
+.nlp-brand{font-size:.75rem;letter-spacing:6px;color:#a4926f}
+.nlp-meta{display:flex;justify-content:space-between;font-size:.79rem;color:#737a88;margin-bottom:13px}
+.nlp-greet{font-size:.88rem;line-height:1.65;color:#3a4154;background:#fffdf8;border:1px solid rgba(28,44,82,.1);border-left:3px solid #b08d57;border-radius:7px;padding:11px 15px;margin-bottom:15px}
+.nlp-sec-t{font-family:'Noto Serif KR',serif;font-size:.9rem;font-weight:700;color:#1c2c52;letter-spacing:2px;margin:0 0 9px;padding-left:10px;border-left:3px solid #b08d57}
+.nlp-stats{display:flex;gap:9px;margin-bottom:15px}
+.nlp-stat{flex:1;background:#fffdf8;border:1px solid rgba(28,44,82,.1);border-radius:8px;padding:10px 8px;text-align:center}
+.nlp-stat .v{font-family:'Noto Serif KR',serif;font-size:1.24rem;font-weight:700;color:#1c2c52;line-height:1}
+.nlp-stat .l{font-size:.67rem;color:#7b8190;margin-top:5px;letter-spacing:.3px}
+.nlp-grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:14px;margin-bottom:14px}
+.nlp-card{background:#fffdf8;border:1px solid rgba(28,44,82,.1);border-radius:10px;padding:12px 15px}
+.nlp-card-t{font-size:.75rem;color:#7b8190;letter-spacing:1px;margin-bottom:8px;text-align:center}
+.nlp-bar-v{font-family:'Noto Serif KR',serif;font-size:13px;fill:#1c2c52;font-weight:700}
+.nlp-bar-x{font-size:11px;fill:#8a8676}
+.nlp-dn-num{font-family:'Noto Serif KR',serif;font-size:21px;fill:#1c2c52;font-weight:700}
+.nlp-dn-lab{font-size:10px;fill:#9a958a}
+.nlp-lg{display:flex;align-items:center;gap:7px;font-size:.8rem;color:#3a4154;margin:5px 0}
+.nlp-lg .d{width:10px;height:10px;border-radius:2px;flex:none}
+.nlp-lg .n{flex:1}
+.nlp-lg .v{color:#737a88;font-weight:600}
+.nlp-tbl{width:100%;border-collapse:collapse;font-size:.82rem}
+.nlp-tbl th{color:#7b8190;text-align:left;padding:6px 8px;font-size:.71rem;letter-spacing:.3px;border-bottom:1px solid rgba(28,44,82,.16);font-weight:600}
+.nlp-tbl td{padding:7px 8px;color:#3a4154;border-bottom:1px solid rgba(28,44,82,.07)}
+.nlp-diag{background:#fffdf8;border:1px solid rgba(28,44,82,.1);border-left:3px solid #b08d57;border-radius:8px;padding:11px 16px;margin-bottom:9px}
+.nlp-diag .h{font-size:.81rem;font-weight:700;color:#1c2c52;margin-bottom:6px;letter-spacing:.5px}
+.nlp-diag ul{margin:0;padding-left:15px}
+.nlp-diag li{font-size:.84rem;color:#3a4154;line-height:1.55;margin-bottom:2px}
+.nlp-diag b{color:#1c2c52}
+.nlp-c-head{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:1px solid rgba(28,44,82,.16);margin-bottom:26px}
+.nlp-c-logo{width:120px;height:auto}
+.nlp-c-htxt{font-family:'Noto Serif KR',serif;color:#1c2c52}
+.nlp-c-htxt .t{font-size:1.05rem;font-weight:700;letter-spacing:4px}
+.nlp-c-htxt .s{font-size:.74rem;color:#a4926f;letter-spacing:2px;margin-top:2px}
+.nlp-comment{font-size:.97rem;line-height:2.0;color:#2f3440;white-space:pre-wrap;text-align:justify}
+.nlp-comment.dense{font-size:.92rem;line-height:1.82}
+.nlp-sign{position:absolute;left:54px;right:54px;bottom:64px;text-align:right}
+.nlp-sign .d{font-size:.86rem;color:#737a88;margin-bottom:14px;letter-spacing:1px}
+.nlp-sign .b{font-family:'Noto Serif KR',serif;font-size:1.04rem;color:#1c2c52;font-weight:700;letter-spacing:1px}
+.nlp-sign .b .seal{display:inline-block;margin-left:10px;width:46px;height:46px;border:1.5px solid rgba(176,141,87,.7);border-radius:50%;color:#b08d57;font-size:.62rem;line-height:46px;text-align:center;vertical-align:middle;letter-spacing:0}
 </style>
 </head>
 <body>
@@ -377,12 +424,13 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
         <div id="nlChecklist"></div>
       </div>
       <div class="section">
-        <div class="section-title">종합 코멘트 <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(자동 초안 — 매끄럽게 다듬어 쓰세요)</span></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px" class="no-print">
+        <div class="section-title">종합 코멘트 <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(2페이지에 단독으로 들어갑니다 · 한 쪽을 넘지 않게 글자 수가 제한됩니다)</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center" class="no-print">
           <button class="cmt-btn" onclick="nlAssemble()">체크 항목으로 초안 다시 만들기</button>
-          <button class="cmt-btn" onclick="document.getElementById('nlComment').value=''">비우기</button>
+          <button class="cmt-btn" onclick="document.getElementById('nlComment').value='';nlCount()">비우기</button>
+          <span id="nlCount" style="margin-left:auto;font-size:0.82rem;color:var(--text-muted)">0 / 700자</span>
         </div>
-        <textarea id="nlComment" class="cmt-area" style="min-height:220px" placeholder="관찰 문장을 체크하면 여기에 초안이 만들어집니다."></textarea>
+        <textarea id="nlComment" class="cmt-area" style="min-height:220px" placeholder="관찰 문장을 체크하면 여기에 초안이 만들어집니다." oninput="nlCount()"></textarea>
       </div>
       <div class="section">
         <div class="section-title">가정통신문 PDF</div>
@@ -647,68 +695,122 @@ function nlAssemble(){
   const rem=ids.map(id=>(NLW._sent[id]||{}).remedy).filter(Boolean)[0];
   if(rem) body+=(body?' ':'')+rem.replace(/ㅇㅇ/g,name);
   ta.value=body;
+  nlCount();
 }
+var NL_MAX=700;   // 2페이지 '종합 의견' 권장 글자 수(한 쪽)
+function nlCount(){
+  var ta=document.getElementById('nlComment'), el=document.getElementById('nlCount'); if(!ta||!el) return;
+  var n=(ta.value||'').length; el.textContent=n+' / '+NL_MAX+'자';
+  var over=n>NL_MAX; el.style.color=over?'#d9534f':'var(--text-muted)'; el.style.fontWeight=over?'700':'400';
+}
+// ── 회차별 정답률 막대 (프리미엄 네이비) ──
+function nlBarSVG(m){
+  var seq=m.seq||[], rates=m.rates||[]; if(!seq.length) return '<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:34px 0">데이터 없음</div>';
+  var W=300,H=112,padX=14,padTop=20,padBot=24,n=seq.length;
+  var bw=Math.min(48,(W-2*padX)/n-12), gap=n>1?(W-2*padX-bw*n)/(n-1):0, plotH=H-padTop-padBot;
+  var yOf=function(v){return padTop+plotH*(1-v/100);}, b80=yOf(80), bars='';
+  bars+='<line x1="'+padX+'" y1="'+b80.toFixed(1)+'" x2="'+(W-padX)+'" y2="'+b80.toFixed(1)+'" stroke="rgba(176,141,87,.55)" stroke-dasharray="3 3"/>';
+  seq.forEach(function(w,i){ var r=rates[i]||0, x=padX+i*(bw+gap), y=yOf(r), bh=padTop+plotH-y;
+    bars+='<rect x="'+x.toFixed(0)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(0)+'" height="'+Math.max(bh,2).toFixed(1)+'" rx="3" fill="#2f4374"/>';
+    bars+='<text x="'+(x+bw/2).toFixed(0)+'" y="'+(y-5).toFixed(0)+'" text-anchor="middle" class="nlp-bar-v">'+r+'</text>';
+    bars+='<text x="'+(x+bw/2).toFixed(0)+'" y="'+(H-8)+'" text-anchor="middle" class="nlp-bar-x">'+esc(weekShort(w).replace('주차','주'))+'</text>'; });
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+bars+'</svg>';
+}
+// ── 영역별 오답 비중 도넛 ──
+function nlDonutSVG(m){
+  var pal=['#2f4374','#7fae93','#c2a25e','#c08763','#6a86b8','#a98aa8'];
+  var ent=Object.entries(m.areaAgg||{}).filter(function(e){return e[1].wrong>0;}).map(function(e,i){return {a:e[0],w:e[1].wrong,c:pal[i%pal.length]};});
+  var tq=Object.values(m.areaAgg||{}).reduce(function(a,v){return a+(v.total||0);},0);
+  var tw=Object.values(m.areaAgg||{}).reduce(function(a,v){return a+(v.wrong||0);},0);
+  var overall=tq?Math.round((tq-tw)/tq*100):0;
+  if(!ent.length) return '<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:34px 0">누적 오답 없음<br>전 영역 안정적입니다</div>';
+  var tot=ent.reduce(function(a,e){return a+e.w;},0)||1, R=50,CX=62,CY=62,SW=19,C=2*Math.PI*R, off=0, arcs='';
+  ent.forEach(function(e){ var fr=e.w/tot, dash=C*fr, g=C-dash;
+    arcs+='<circle cx="'+CX+'" cy="'+CY+'" r="'+R+'" fill="none" stroke="'+e.c+'" stroke-width="'+SW+'" stroke-dasharray="'+dash.toFixed(2)+' '+g.toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+CX+' '+CY+')"/>'; off+=dash; });
+  var svg='<svg viewBox="0 0 124 124" style="width:104px;height:104px;flex:none"><circle cx="'+CX+'" cy="'+CY+'" r="'+R+'" fill="none" stroke="#eee7d6" stroke-width="'+SW+'"/>'+arcs
+    +'<text x="'+CX+'" y="'+(CY-2)+'" text-anchor="middle" class="nlp-dn-num">'+overall+'%</text><text x="'+CX+'" y="'+(CY+14)+'" text-anchor="middle" class="nlp-dn-lab">정답률</text></svg>';
+  var leg=ent.map(function(e){ return '<div class="nlp-lg"><span class="d" style="background:'+e.c+'"></span><span class="n">'+esc(e.a)+'</span><span class="v">'+e.w+'개 · '+Math.round(e.w/tot*100)+'%</span></div>'; }).join('');
+  return '<div style="display:flex;align-items:center;gap:12px">'+svg+'<div style="flex:1">'+leg+'</div></div>';
+}
+// ── 영역별 정답률 표 (상위 5) ──
+function nlAreaTbl(m){
+  var rows=Object.entries(m.areaAgg||{}).map(function(e){var v=e[1];return {a:e[0],total:v.total,correct:v.total-v.wrong,wrong:v.wrong,acc:v.total?Math.round((v.total-v.wrong)/v.total*100):0};})
+    .filter(function(x){return x.total>0;}).sort(function(x,y){return x.acc-y.acc||y.wrong-x.wrong;}).slice(0,4);
+  if(!rows.length) return '';
+  var tag=function(a){ return a>=90?'<span style="color:#5a8f6e">강점</span>':(a>=70?'<span style="color:#b08d57">양호</span>':'<span style="color:#c0563f">보강</span>'); };
+  var h='<table class="nlp-tbl"><thead><tr><th>영역</th><th>맞음/문항</th><th>정답률</th><th>평가</th></tr></thead><tbody>';
+  rows.forEach(function(r){ h+='<tr><td>'+esc(r.a)+'</td><td>'+r.correct+' / '+r.total+'</td><td style="font-weight:700;color:#1c2c52">'+r.acc+'%</td><td>'+tag(r.acc)+'</td></tr>'; });
+  return h+'</tbody></table>';
+}
+function nlTrendTxt(m){ if(!m||m.n<2) return '—'; return m.trend||'유지'; }
+// ── 1페이지: 데이터 면 ──
+function nlBuildPage1(name, m){
+  var logo=LOGO_NAVY_URL||LOGO_URL||'';
+  var d=new Date(), dDot=d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate()+'.';
+  var head='<div class="nlp-head">'+(logo?'<img class="nlp-logo" src="'+logo+'">':'')
+    +'<div class="nlp-title">가정통신문</div><div class="nlp-brand">'+esc(BRAND)+'</div></div>'
+    +'<div class="nlp-meta"><span><b style="color:#1c2c52">'+esc(name)+' 학생 학부모님</b> 귀하</span><span>'+dDot+'</span></div>';
+  var stats='<div class="nlp-stats">'
+    +'<div class="nlp-stat"><div class="v">'+(m.avgRate!=null?m.avgRate+'%':'—')+'</div><div class="l">평균 정답률</div></div>'
+    +'<div class="nlp-stat"><div class="v">'+nlTrendTxt(m)+'</div><div class="l">정답률 추세</div></div>'
+    +'<div class="nlp-stat"><div class="v">'+(m.n||0)+'<span style="font-size:.8rem">회</span></div><div class="l">제출 회차</div></div>'
+    +'<div class="nlp-stat"><div class="v">'+(m.totalWrong||0)+'<span style="font-size:.8rem">개</span></div><div class="l">누적 오답</div></div></div>';
+  var charts='<div class="nlp-sec-t">학습 분석</div><div class="nlp-grid2">'
+    +'<div class="nlp-card"><div class="nlp-card-t">회차별 정답률</div>'+nlBarSVG(m)+'</div>'
+    +'<div class="nlp-card"><div class="nlp-card-t">영역별 오답 비중</div>'+nlDonutSVG(m)+'</div></div>';
+  var tbl=nlAreaTbl(m); var tblSec=tbl?('<div class="nlp-sec-t">영역별 정답률</div><div style="margin-bottom:18px">'+tbl+'</div>'):'';
+  // 진단(약점) — rIntegrated 상위 2~3 / 강점
+  var weak=(typeof rIntegrated==='function'?rIntegrated(m):[]).slice(0,2);
+  var diagWeak=weak.length?'<div class="nlp-diag"><div class="h">진단 — 보완이 필요한 부분</div><ul>'+weak.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div>':'';
+  var str=(m.strengths&&m.strengths.length)?m.strengths:(typeof fallbackStrengthArea==='function'?fallbackStrengthArea(m.areaAgg):[]);
+  var diagStr=str.length?'<div class="nlp-diag" style="border-left-color:#7fae93"><div class="h" style="color:#3f7a59">강점</div><ul>'+str.slice(0,2).map(function(s){return '<li><b>'+esc(s.name||s.a)+'</b>'+(s.diag?' — '+esc(s.diag):'')+'</li>';}).join('')+'</ul></div>':'';
+  var diagSec=(diagWeak||diagStr)?('<div class="nlp-sec-t">학습 진단</div>'+diagWeak+diagStr):'';
+  return '<div class="nlp-page"><div class="nlp-frame"></div>'+(logo?'<img class="nlp-wm" src="'+logo+'">':'')
+    +'<div class="nlp-inner">'+head+stats+charts+tblSec+diagSec+'</div></div>';
+}
+// ── 2페이지: 종합 의견 면 ──
+function nlBuildPage2(name, comment){
+  var logo=LOGO_NAVY_URL||LOGO_URL||'';
+  var d=new Date(), dKo=d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일';
+  var dense=(comment||'').length>NL_MAX?' dense':'';
+  var chead='<div class="nlp-c-head">'+(logo?'<img class="nlp-c-logo" src="'+logo+'">':'')
+    +'<div class="nlp-c-htxt"><div class="t">가정통신문</div><div class="s">'+esc(BRAND)+'</div></div></div>';
+  var sign='<div class="nlp-sign"><div class="d">'+dKo+'</div>'
+    +'<div class="b">'+esc(BRAND)+'　'+esc(TEACHER)+' <span style="font-size:.88rem;color:#737a88;font-weight:400">드림</span>'
+    +'<span class="seal">직인</span></div></div>';
+  var greet='<div class="nlp-greet" style="margin-bottom:22px">안녕하세요, '+esc(name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 한 주간 '+esc(name)+' 학생의 학습 모습을 정성껏 살펴 아래와 같이 전해 드립니다.</div>';
+  return '<div class="nlp-page"><div class="nlp-frame"></div>'+(logo?'<img class="nlp-wm" src="'+logo+'">':'')
+    +'<div class="nlp-inner">'+chead+greet
+    +'<div class="nlp-sec-t" style="margin-bottom:18px">'+esc(name)+' 학생 · 선생님 종합 의견</div>'
+    +'<div class="nlp-comment'+dense+'">'+esc(comment||'')+'</div>'+sign+'</div></div>';
+}
+function nlBuildLetterPages(name, m, comment){
+  return '<div id="nlPages">'+nlBuildPage1(name,m)+nlBuildPage2(name,comment)+'</div>';
+}
+function nlCap_(node){ return html2canvas(node,{scale:2,backgroundColor:'#f7f4ec',useCORS:true,logging:false,windowWidth:node.scrollWidth,windowHeight:node.scrollHeight}); }
 function nlMakePdf(){
   if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
   if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
-  const comment=(document.getElementById('nlComment').value||'').trim();
+  var m=nlFindMaster(NLW.student);
+  if(!m){ alert('이 학생의 제출 데이터를 찾지 못했습니다. (데이터가 쌓이면 그래프가 생성됩니다)'); return; }
+  var comment=(document.getElementById('nlComment').value||'').trim();
   if(!comment && !confirm('종합 코멘트가 비어 있습니다. 그래도 생성할까요?')) return;
-  const lines=(NLW._dataLines||[]).filter(l=>NLW.data[l.id]).map(l=>l.t);
-  PDF_LIGHT=true;   // 가정통신문은 항상 고급 아이보리 디자인
-  const host=document.getElementById('nlHost'); host.innerHTML=nlBuildLetter(NLW.student,lines,comment);
+  var host=document.getElementById('nlHost'); host.innerHTML=nlBuildLetterPages(NLW.student,m,comment);
   repOverlay(NLW.student+' 가정통신문 생성 중…');
-  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>new Promise(r=>setTimeout(r,160))).then(()=>nlCapture(host.firstChild)).then(canvas=>{
-    const jsPDF=getJsPDF(), pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    addCanvasPaged(pdf,canvas,false);
-    pdf.save('가정통신문_'+NLW.student+(PDF_LIGHT?'_인쇄용':'')+'.pdf');
-  }).catch(e=>alert('가정통신문 생성 오류: '+(e.message||e))).then(()=>{ host.innerHTML=''; repHideOverlay(); });
-}
-function nlBuildLetter(name, dataLines, comment){
-  // ── 고급 아이보리 가정통신문 (자체 색상·인라인 스타일, 테마 토글 영향 없음) ──
-  const NAVY='#1c2c52', INK='#34383f', GOLD='#b08d57', PAPER='#f4efe4', HAIR='rgba(28,44,82,0.12)';
-  const logo=LOGO_NAVY_URL||LOGO_URL||'';
-  const d=new Date();
-  const dDot=d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate()+'.';
-  const dKo=d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일';
-  const sechead=(t)=>'<div style="display:flex;align-items:center;gap:11px;margin-bottom:15px">'
-    +'<span style="width:3px;height:16px;background:'+GOLD+';display:inline-block;border-radius:2px"></span>'
-    +'<span style="font-family:\'Noto Serif KR\',serif;font-size:1.0rem;font-weight:700;color:'+NAVY+';letter-spacing:2px">'+t+'</span></div>';
-  const dataSec=dataLines.length
-    ? '<div style="margin-bottom:30px">'+sechead('학습 현황')
-      +'<div style="border-top:1px solid '+HAIR+'">'+dataLines.map(t=>'<div style="font-size:0.92rem;color:'+INK+';padding:11px 4px;border-bottom:1px solid '+HAIR+';line-height:1.6"><span style="color:'+GOLD+';margin-right:9px">◦</span>'+esc(t)+'</div>').join('')+'</div></div>'
-    : '';
-  const wm = logo ? '<img src="'+logo+'" style="position:absolute;left:50%;top:55%;width:540px;transform:translate(-50%,-50%);opacity:0.045;pointer-events:none">' : '';
-  const logoImg = logo ? '<img src="'+logo+'" style="width:236px;height:auto;display:block;margin:4px auto 20px">'
-                       : '<div style="font-family:\'Noto Serif KR\',serif;font-size:1.5rem;color:'+NAVY+';font-weight:700;margin-bottom:14px">'+esc(BRAND)+'</div>';
-  return '<div style="width:760px;background:'+PAPER+';padding:62px 64px 50px;font-family:\'Noto Sans KR\',sans-serif;color:'+INK+';position:relative;box-sizing:border-box">'
-    // 이중 프레임
-    +'<div style="position:absolute;left:20px;top:20px;right:20px;bottom:20px;border:1px solid rgba(28,44,82,0.22);pointer-events:none"></div>'
-    +'<div style="position:absolute;left:26px;top:26px;right:26px;bottom:26px;border:1px solid rgba(176,141,87,0.40);pointer-events:none"></div>'
-    +wm
-    // 헤더
-    +'<div style="text-align:center;position:relative;z-index:1">'+logoImg
-      +'<div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:7px">'
-        +'<span style="height:1px;width:50px;background:'+GOLD+';display:inline-block"></span>'
-        +'<span style="font-family:\'Noto Serif KR\',serif;font-size:1.42rem;font-weight:700;color:'+NAVY+';letter-spacing:11px;padding-left:11px">가정통신문</span>'
-        +'<span style="height:1px;width:50px;background:'+GOLD+';display:inline-block"></span></div>'
-      +'<div style="font-size:0.78rem;letter-spacing:6px;color:#a4926f">'+esc(BRAND)+'</div></div>'
-    // 수신 · 날짜
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin:36px 0 12px;font-size:0.85rem;color:#5c616b;position:relative;z-index:1">'
-      +'<span><b style="color:'+NAVY+';font-weight:600;font-size:0.95rem">'+esc(name)+' 학생 학부모님</b> 귀하</span><span>'+dDot+'</span></div>'
-    +'<div style="height:1px;background:rgba(28,44,82,0.16);margin-bottom:26px;position:relative;z-index:1"></div>'
-    // 인사
-    +'<p style="font-size:0.95rem;line-height:1.95;color:#3c414a;margin-bottom:30px;position:relative;z-index:1">안녕하세요, '+esc(name)+' 학생 학부모님.<br>'+esc(BRAND)+'입니다. 한 주간 '+esc(name)+' 학생의 학습 모습을 정성껏 살펴 아래와 같이 전해 드립니다.</p>'
-    +'<div style="position:relative;z-index:1">'+dataSec
-    // 선생님 종합 의견
-    +'<div style="margin-bottom:36px">'+sechead('선생님 종합 의견')
-      +'<div style="font-size:0.95rem;line-height:2.0;color:'+INK+';white-space:pre-wrap;background:rgba(255,255,255,0.5);border:1px solid rgba(28,44,82,0.1);border-left:2px solid '+GOLD+';border-radius:2px;padding:24px 26px">'+esc(comment)+'</div></div>'
-    // 서명
-    +'<div style="text-align:right;margin-top:42px">'
-      +'<div style="font-size:0.85rem;color:#5c616b;margin-bottom:9px">'+dKo+'</div>'
-      +'<div style="font-family:\'Noto Serif KR\',serif;font-size:1.05rem;color:'+NAVY+';font-weight:700;letter-spacing:1px">'+esc(BRAND)+'　'+esc(TEACHER)+' <span style="font-size:0.92rem;color:#5c616b;font-weight:400">드림</span></div></div>'
-    // 푸터
-    +'<div style="text-align:center;margin-top:30px;padding-top:18px;border-top:1px solid rgba(28,44,82,0.12);font-size:0.7rem;letter-spacing:4px;color:#a4926f">'+esc(BRAND)+'</div>'
-    +'</div></div>';
+  var pages=host.querySelectorAll('.nlp-page');
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(function(){return new Promise(function(r){setTimeout(r,180);});})
+    .then(function(){ return nlCap_(pages[0]); })
+    .then(function(c0){
+      var jsPDF=getJsPDF(), pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+      pdf.setFillColor(247,244,236); pdf.rect(0,0,210,297,'F');
+      pdf.addImage(c0.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,297);
+      return nlCap_(pages[1]).then(function(c1){
+        pdf.addPage(); pdf.setFillColor(247,244,236); pdf.rect(0,0,210,297,'F');
+        pdf.addImage(c1.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,297);
+        pdf.save('가정통신문_'+NLW.student+'.pdf');
+      });
+    }).catch(function(e){ alert('가정통신문 생성 오류: '+(e.message||e)); })
+    .then(function(){ host.innerHTML=''; repHideOverlay(); });
 }
 
 // ════════════════════════ 문자 발송 ════════════════════════
