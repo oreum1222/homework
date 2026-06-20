@@ -718,8 +718,25 @@ function nlAssemble(){
 }
 function nlFlashLimit_(){
   var w=document.getElementById('nlWarn'); if(!w) return;
-  w.textContent='⚠ 한 쪽('+NL_MAX+'자)을 넘어 더 담을 수 없어요. 다른 항목을 빼거나 코멘트를 줄이세요.';
-  w.style.display='inline'; clearTimeout(w._t); w._t=setTimeout(function(){ w.style.display='none'; }, 4500);
+  w.innerHTML='⚠ 한 쪽('+NL_MAX+'자)을 넘어 더 담을 수 없어요. 다른 항목을 빼거나 코멘트를 줄이세요.';
+  w.style.display='block'; clearTimeout(w._t); w._t=setTimeout(function(){ nlCount(); }, 4500);
+}
+// 문장 끝에서 깔끔히 잘라 max자 이내로
+function nlClip_(t,max){
+  if(t.length<=max) return t;
+  var cut=t.slice(0,max), best=-1;
+  ['다.','요.','다!','다?','.'].forEach(function(mk){ var p=cut.lastIndexOf(mk); if(p>=0){ var end=p+mk.length; if(end>best) best=end; } });
+  return (best>max*0.5 ? cut.slice(0,best) : cut).trim();
+}
+// 900자 내로 정리: 긴 문장이면 짧은 흐름으로 전환 → 그래도 넘으면 문장 끝에서 컷
+function nlTrim900(){
+  var ta=document.getElementById('nlComment'); if(!ta) return;
+  var lng=document.getElementById('nlLong');
+  var hasChecks=Object.keys(NLW.checks||{}).some(function(k){return NLW.checks[k];});
+  if(hasChecks && lng && lng.checked){ lng.checked=false; ta.value=nlAssembleText_(); }
+  var t=(ta.value||'').trim();
+  if(t.length>NL_MAX) t=nlClip_(t,NL_MAX);
+  ta.value=t; nlCount();
 }
 var NL_MAX=900;   // 2페이지 '종합 의견' 권장 글자 수(한 쪽 · 700~900 모두 한 장에 들어감)
 function nlCount(){
@@ -735,13 +752,31 @@ function nlBarSVG(m){
   var seq=m.seq||[], rates=m.rates||[]; if(!seq.length) return '<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:34px 0">데이터 없음</div>';
   var W=300,H=112,padX=14,padTop=20,padBot=24,n=seq.length;
   var bw=Math.min(48,(W-2*padX)/n-12), gap=n>1?(W-2*padX-bw*n)/(n-1):0, plotH=H-padTop-padBot;
+  var pwByWeek={}; (m.perWeek||[]).forEach(function(pw){ pwByWeek[pw.week]=pw; });
+  var labOf=function(w){ var pw=pwByWeek[w], s=(pw&&pw.area)?String(pw.area):weekShort(w).replace('주차','주'); return s.length>6?s.slice(0,6):s; };
   var yOf=function(v){return padTop+plotH*(1-v/100);}, b80=yOf(80), bars='';
   bars+='<line x1="'+padX+'" y1="'+b80.toFixed(1)+'" x2="'+(W-padX)+'" y2="'+b80.toFixed(1)+'" stroke="rgba(176,141,87,.55)" stroke-dasharray="3 3"/>';
   seq.forEach(function(w,i){ var r=rates[i]||0, x=padX+i*(bw+gap), y=yOf(r), bh=padTop+plotH-y;
     bars+='<rect x="'+x.toFixed(0)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(0)+'" height="'+Math.max(bh,2).toFixed(1)+'" rx="3" fill="#2f4374"/>';
     bars+='<text x="'+(x+bw/2).toFixed(0)+'" y="'+(y-5).toFixed(0)+'" text-anchor="middle" class="nlp-bar-v">'+r+'</text>';
-    bars+='<text x="'+(x+bw/2).toFixed(0)+'" y="'+(H-8)+'" text-anchor="middle" class="nlp-bar-x">'+esc(weekShort(w).replace('주차','주'))+'</text>'; });
+    bars+='<text x="'+(x+bw/2).toFixed(0)+'" y="'+(H-8)+'" text-anchor="middle" class="nlp-bar-x">'+esc(labOf(w))+'</text>'; });
   return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+bars+'</svg>';
+}
+// ── 단원(주차 영역)별 정답률 가로막대 — 도넛(세부영역 18개) 대체, 부모용 ──
+function nlUnitAgg_(m){
+  var map={};
+  (m.perWeek||[]).forEach(function(pw){ var u=pw.area||'기타'; if(!map[u]) map[u]={unit:u,rates:[],wrong:0}; if(pw.rate!=null) map[u].rates.push(pw.rate); map[u].wrong+=(pw.wrongN||0); });
+  return Object.keys(map).map(function(u){ var x=map[u]; return {unit:u, rate:x.rates.length?Math.round(x.rates.reduce(function(a,b){return a+b;},0)/x.rates.length):0, wrong:x.wrong}; });
+}
+function nlUnitBars_(m){
+  var units=nlUnitAgg_(m).sort(function(a,b){return a.rate-b.rate;});
+  if(!units.length) return '<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:30px 0">단원 데이터 없음</div>';
+  return '<div style="display:flex;flex-direction:column;gap:10px;padding:6px 2px">'+units.map(function(u){
+    var col=u.rate>=90?'#5a8f6e':(u.rate>=75?'#c2a25e':'#c08763');
+    return '<div><div style="display:flex;justify-content:space-between;align-items:baseline;font-size:.82rem;color:#3a4154;margin-bottom:4px"><span>'+esc(u.unit)+'</span>'
+      +'<span style="color:#1c2c52;font-weight:700">'+u.rate+'%<span style="color:#9a958a;font-weight:400;font-size:.74rem"> · 오답 '+u.wrong+'</span></span></div>'
+      +'<div style="height:8px;background:#eee7d6;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+u.rate+'%;background:'+col+';border-radius:4px"></div></div></div>';
+  }).join('')+'</div>';
 }
 // ── 영역별 오답 비중 도넛 ──
 function nlDonutSVG(m){
@@ -784,8 +819,8 @@ function nlBuildPage1(name, m){
     +'<div class="nlp-stat"><div class="v">'+(m.totalWrong||0)+'<span style="font-size:.8rem">개</span></div><div class="l">누적 오답</div></div></div>';
   var charts='<div class="nlp-sec-t">학습 분석</div><div class="nlp-grid2">'
     +'<div class="nlp-card"><div class="nlp-card-t">회차별 정답률</div>'+nlBarSVG(m)+'</div>'
-    +'<div class="nlp-card"><div class="nlp-card-t">영역별 오답 비중</div>'+nlDonutSVG(m)+'</div></div>';
-  var tbl=nlAreaTbl(m); var tblSec=tbl?('<div class="nlp-sec-t">영역별 정답률</div><div style="margin-bottom:18px">'+tbl+'</div>'):'';
+    +'<div class="nlp-card"><div class="nlp-card-t">단원별 정답률</div>'+nlUnitBars_(m)+'</div></div>';
+  var tblSec='';
   // 진단(약점) — rIntegrated 상위 2~3 / 강점
   var weak=(typeof rIntegrated==='function'?rIntegrated(m):[]).slice(0,2);
   var diagWeak=weak.length?'<div class="nlp-diag"><div class="h">진단 — 보완이 필요한 부분</div><ul>'+weak.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div>':'';
