@@ -262,9 +262,9 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .nlp-c-htxt{font-family:'Noto Serif KR',serif;color:#1c2c52}
 .nlp-c-htxt .t{font-size:1.05rem;font-weight:700;letter-spacing:4px}
 .nlp-c-htxt .s{font-size:.74rem;color:#a4926f;letter-spacing:2px;margin-top:2px}
+.nlp-inner2{display:flex;flex-direction:column;height:1075px}
 .nlp-comment{font-size:.97rem;line-height:2.0;color:#2f3440;white-space:pre-wrap;text-align:justify}
-.nlp-comment.dense{font-size:.92rem;line-height:1.82}
-.nlp-sign{position:absolute;left:54px;right:54px;bottom:64px;text-align:right}
+.nlp-sign{margin-top:auto;padding-top:24px;text-align:right}
 .nlp-sign .d{font-size:.86rem;color:#737a88;margin-bottom:14px;letter-spacing:1px}
 .nlp-sign .b{font-family:'Noto Serif KR',serif;font-size:1.04rem;color:#1c2c52;font-weight:700;letter-spacing:1px}
 .nlp-sign .b .seal{display:inline-block;margin-left:10px;width:46px;height:46px;border:1.5px solid rgba(176,141,87,.7);border-radius:50%;color:#b08d57;font-size:.62rem;line-height:46px;text-align:center;vertical-align:middle;letter-spacing:0}
@@ -428,7 +428,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
           <button class="cmt-btn" onclick="nlAssemble()">체크 항목으로 초안 다시 만들기</button>
           <button class="cmt-btn" onclick="document.getElementById('nlComment').value='';nlCount()">비우기</button>
           <label style="font-weight:400;font-size:0.82rem;cursor:pointer;color:var(--text-secondary);display:inline-flex;align-items:center;gap:5px"><input type="checkbox" id="nlLong" onchange="nlAssemble()" style="accent-color:#5fc6a3"> 긴 문장으로</label>
-          <span id="nlCount" style="margin-left:auto;font-size:0.82rem;color:var(--text-muted)">0 / 700자</span>
+          <span id="nlCount" style="margin-left:auto;font-size:0.82rem;color:var(--text-muted)">0 / 900자</span>
         </div>
         <textarea id="nlComment" class="cmt-area" style="min-height:220px" placeholder="관찰 문장을 체크하면 여기에 초안이 만들어집니다." oninput="nlCount()"></textarea>
       </div>
@@ -697,7 +697,7 @@ function nlAssemble(){
   ta.value=body;
   nlCount();
 }
-var NL_MAX=700;   // 2페이지 '종합 의견' 권장 글자 수(한 쪽)
+var NL_MAX=900;   // 2페이지 '종합 의견' 권장 글자 수(한 쪽 · 700~900 모두 한 장에 들어감)
 function nlCount(){
   var ta=document.getElementById('nlComment'), el=document.getElementById('nlCount'); if(!ta||!el) return;
   var n=(ta.value||'').length; el.textContent=n+' / '+NL_MAX+'자';
@@ -772,7 +772,6 @@ function nlBuildPage1(name, m){
 function nlBuildPage2(name, comment){
   var logo=LOGO_NAVY_URL||LOGO_URL||'';
   var d=new Date(), dKo=d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일';
-  var dense=(comment||'').length>NL_MAX?' dense':'';
   var chead='<div class="nlp-c-head">'+(logo?'<img class="nlp-c-logo" src="'+logo+'">':'')
     +'<div class="nlp-c-htxt"><div class="t">가정통신문</div><div class="s">'+esc(BRAND)+'</div></div></div>';
   var sign='<div class="nlp-sign"><div class="d">'+dKo+'</div>'
@@ -780,9 +779,9 @@ function nlBuildPage2(name, comment){
     +'<span class="seal">직인</span></div></div>';
   var greet='<div class="nlp-greet" style="margin-bottom:22px">안녕하세요, '+esc(name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 한 주간 '+esc(name)+' 학생의 학습 모습을 정성껏 살펴 아래와 같이 전해 드립니다.</div>';
   return '<div class="nlp-page"><div class="nlp-frame"></div>'+(logo?'<img class="nlp-wm" src="'+logo+'">':'')
-    +'<div class="nlp-inner">'+chead+greet
+    +'<div class="nlp-inner nlp-inner2">'+chead+greet
     +'<div class="nlp-sec-t" style="margin-bottom:18px">'+esc(name)+' 학생 · 선생님 종합 의견</div>'
-    +'<div class="nlp-comment'+dense+'">'+esc(comment||'')+'</div>'+sign+'</div></div>';
+    +'<div class="nlp-comment">'+esc(comment||'')+'</div>'+sign+'</div></div>';
 }
 function nlBuildLetterPages(name, m, comment){
   return '<div id="nlPages">'+nlBuildPage1(name,m)+nlBuildPage2(name,comment)+'</div>';
