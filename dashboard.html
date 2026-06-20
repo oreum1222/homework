@@ -595,8 +595,8 @@ function nlRenderData(){
 }
 function nlBuildSent(){
   NLW._sent={};
-  (NLW.dict.cards||[]).forEach((c,i)=>{ NLW._sent['card:'+i]={short:c.short,long:c.long,remedy:''}; });
-  (NLW.dict.categories||[]).forEach((cat,ci)=>cat.subs.forEach((sub,si)=>sub.items.forEach((it,ii)=>{ NLW._sent['k:'+ci+'.'+si+'.'+ii]={short:it.short,long:it.long,remedy:it.remedy}; })));
+  (NLW.dict.cards||[]).forEach((c,i)=>{ NLW._sent['card:'+i]={short:c.short,long:c.long,flow:c.flow,theme:c.theme||('card:'+i),remedy:''}; });
+  (NLW.dict.categories||[]).forEach((cat,ci)=>cat.subs.forEach((sub,si)=>sub.items.forEach((it,ii)=>{ NLW._sent['k:'+ci+'.'+si+'.'+ii]={short:it.short,long:it.long,flow:it.flow,theme:it.theme||it.kw,remedy:it.remedy}; })));
 }
 function nlRenderCards(){
   const box=document.getElementById('nlCards'); if(!box||!NLW.dict) return;
@@ -620,18 +620,31 @@ function nlToggle(id, el){
   else if(el){ const lab=el.closest('.nl-kw'); if(lab) lab.classList.toggle('on',!!NLW.checks[id]); }
   nlAssemble();
 }
+// 주어("OOO 학생은")는 맨 앞에 한 번만. 나머지는 주어 생략 문장으로 자연스럽게 이어붙임.
 function nlWeave_(sents,name){
   if(!sents.length) return '';
-  const conn=['또한 ','그리고 ','특히 ','무엇보다 '];
-  const re=new RegExp('^'+name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*학생은\\s*');
-  return sents.map((s,i)=> i===0 ? s : (re.test(s)? conn[(i-1)%conn.length]+s.replace(re,'') : s)).join(' ');
+  const nm=name||'ㅇㅇ';
+  const re=new RegExp('^(?:'+nm.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'|ㅇㅇ)\\s*학생은\\s*');
+  const body=sents.map(s=>s.replace(re,'').trim()).filter(Boolean).join(' ');
+  return body ? (nm+' 학생은 '+body) : '';
+}
+// 체크된 항목을 사전 순서(카드→수업→숙제→조교)로, theme로 중복 제거해 반환
+function nlCheckedOrdered_(){
+  const out=[], seen={};
+  const push=id=>{ if(!NLW.checks[id]) return; const e=NLW._sent[id]||{}; const th=e.theme||id; if(seen[th]) return; seen[th]=1; out.push(id); };
+  (NLW.dict.cards||[]).forEach((c,i)=>push('card:'+i));
+  (NLW.dict.categories||[]).forEach((cat,ci)=>cat.subs.forEach((sub,si)=>sub.items.forEach((it,ii)=>push('k:'+ci+'.'+si+'.'+ii))));
+  return out;
 }
 function nlAssemble(){
   const ta=document.getElementById('nlComment'); if(!ta||!NLW._sent) return;
   const name=NLW.student||'ㅇㅇ', long=(document.getElementById('nlLong')||{}).checked;
-  const ids=Object.keys(NLW.checks).filter(id=>NLW.checks[id]);
-  const sents=ids.map(id=>{ const e=NLW._sent[id]; if(!e) return ''; return ((long?(e.long||e.short):(e.short||e.long))||'').trim(); }).filter(Boolean).map(t=>t.replace(/ㅇㅇ/g,name));
-  let body=nlWeave_(sents,name);
+  const ids=nlCheckedOrdered_();
+  // 기본=흐름 문장(flow, 어미 다양), '긴 문장으로'=상세 단락(long)
+  const sents=ids.map(id=>{ const e=NLW._sent[id]; if(!e) return '';
+    const t = long ? (e.long||e.short||e.flow) : (e.flow||e.short||e.long);
+    return (t||'').trim(); }).filter(Boolean).map(t=>t.replace(/ㅇㅇ/g,name));
+  let body=sents.length?nlWeave_(sents,name):'';
   const rem=ids.map(id=>(NLW._sent[id]||{}).remedy).filter(Boolean)[0];
   if(rem) body+=(body?' ':'')+rem.replace(/ㅇㅇ/g,name);
   ta.value=body;
