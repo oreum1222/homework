@@ -330,15 +330,16 @@ function weeklyDigest(){
   if(sh.getLastRow()>1) sh.getRange(2,1,sh.getLastRow()-1,PENDING_HEADERS.length).clearContent();
   if(pending.length) sh.getRange(2,1,pending.length,pending[0].length).setValues(pending);
 
-  // 교사 메일 알림
+  // 교사 메일 알림(현황 안내용 — 발송은 토요일 자동발송/문자 발송 탭에서)
   try{
     var to=Session.getEffectiveUser().getEmail();
     if(to){
       MailApp.sendEmail(to,
-        '[숙제시스템] '+weekLabel+' 자동발송 대기 '+pending.length+'건',
-        weekLabel+' 자동발송 대기가 준비됐습니다.\n'
-        +'· 미완 독려: '+undoneN+'명\n· 주간 요약: '+sumN+'명\n\n'
-        +'대시보드 → 문자 발송 → "자동발송 대기함"에서 검토 후 발송하세요.\n');
+        '[숙제시스템] '+weekLabel+' 과제 현황 — 미완 '+undoneN+'명 / 제출 '+sumN+'명',
+        weekLabel+' 과제 현황 알림입니다.\n'
+        +'· 미완(미제출·미완수): '+undoneN+'명\n· 제출: '+sumN+'명\n\n'
+        +'고3 정규반은 토요일 자동발송(검수메일 13시 → 학생 15시 → 학부모 16시)으로 안내됩니다.\n'
+        +'그 외·수시 발송은 대시보드 → 문자 발송 탭에서 진행하세요.\n');
     }
   }catch(e){}
   return '대기 '+pending.length+'건 준비(미완 '+undoneN+', 요약 '+sumN+')';
