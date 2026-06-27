@@ -283,28 +283,37 @@ function weeklyDigest(){
     if((Number(r.week)||0)===latest){ byName[normName_(r.name)]=r; if(!weekLabel) weekLabel=String(r.weekLabel||('주차 '+latest)); }
   });
 
+  // 예외(보류·결석) 처리된 최신 주차분은 대기함에서 제외
+  var ovr={}; try{ readOverrides_().forEach(function(o){ if(String(o.week)===String(latest)) ovr[normName_(o.name)]=1; }); }catch(e){}
   var pending=[], undoneN=0, sumN=0;
   roster.forEach(function(p){
     var name=String(p.name||'').trim();
+    if(!name || go3IsTest_(name)) return;                                   // 테스트·제외 계정
+    if(ovr[normName_(name)]) return;                                        // 예외(보류·결석)
     var gp=digits_(p.guardianPhone||''), sp=digits_(p.studentPhone||'');   // 학부모/학생 번호
     var consent=String(p.consent||'').toUpperCase();
-    if(!name || (!gp && !sp)) return;
+    if(!gp && !sp) return;
     if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
     var sub=byName[normName_(name)];
     var doneLabel = sub ? String(sub['완수상태']||'') : '';
-    // 과제 해결 정도(%) 우선, 없으면 완수상태 라벨 환산
+    // 과제 해결 정도(%) — 분수(0~1) 저장분은 ×100, 없으면 완수상태 라벨 환산
     var sStr = sub ? String(sub['과제해결정도']||'').replace('%','').replace(/\s/g,'') : '';
-    var solveRate = (sStr!=='' && !isNaN(parseFloat(sStr))) ? parseFloat(sStr)
-                    : (DONE_MAP[doneLabel]!=null ? DONE_MAP[doneLabel] : null);
+    var solveRate=null;
+    if(sStr!=='' && !isNaN(parseFloat(sStr))){ solveRate=parseFloat(sStr); if(solveRate<=1) solveRate*=100; }
+    else if(DONE_MAP[doneLabel]!=null) solveRate=DONE_MAP[doneLabel];
     var rate = sub ? String(sub['정답률']||'') : '';
     var doneTxt = (solveRate==null)?'-':(Math.round(solveRate)+'%');
     var rateTxt = rate===''? '-' : (String(rate).indexOf('%')>=0?rate:rate+'%');
 
-    // '덜함'(과제 해결 10~70%) 독려 → 학생에게 (학생 번호 없으면 학부모로 대체)
-    if(sub && solveRate!=null && solveRate>=10 && solveRate<=70){
+    // 완수 판정: 과제 해결 71%↑ 또는 '전부 끝냄/대부분' → 완수자(독려 제외)
+    var completed = sub && ((solveRate!=null && solveRate>=71) || doneLabel.indexOf('전부')>=0 || doneLabel.indexOf('대부분')>=0);
+    // 미완 독려 → 미제출이거나 완수 못 한 학생만, 학생에게(없으면 학부모)
+    if(!completed){
       var toU = sp || gp;
       if(toU){
-        var t='['+BRAND_NAME+'] '+name+' 학생, 이번 '+weekLabel+' 과제 해결 정도가 '+doneTxt+'입니다. 약속한 기한까지 꼭 마무리합시다. ('+TEACHER_NAME+')';
+        var t = (!sub)
+          ? '['+BRAND_NAME+'] '+name+' 학생, 이번 '+weekLabel+' 과제 제출 기록이 아직 없습니다. 약속한 기한까지 꼭 마무리 부탁드립니다. ('+TEACHER_NAME+')'
+          : '['+BRAND_NAME+'] '+name+' 학생, 이번 '+weekLabel+' 과제 해결 정도가 '+doneTxt+'입니다. 약속한 기한까지 꼭 마무리합시다. ('+TEACHER_NAME+')';
         pending.push([new Date(),'undone',name,toU,p.courseId||'',weekLabel,t,'대기']); undoneN++;
       }
     }
