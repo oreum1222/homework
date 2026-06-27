@@ -18,7 +18,7 @@
   --border-soft:rgba(95,198,163,0.22);--border-line:rgba(232,238,240,0.09);
   --danger:#d98a8a;--ok:#5fc6a3;
 }
-*{box-sizing:border-box;word-break:keep-all;overflow-wrap:break-word;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px}
 /* ── 인쇄용(라이트) PDF 테마: 아이보리 × 딥그린 — 캡처 시 카드/뉴스레터에 일시 적용 ── */
 .pdf-light{
@@ -1164,12 +1164,24 @@ function smsLoadPending(){
     SMS.pending=raw.filter(p=>{
       if(isTestName(p.name)) return false;                                   // 테스트 계정 제외
       if(OVR.byName.has(String(p.courseId||'')+'|'+normNameR(p.name||''))) return false;   // 예외(보류·결석) 제외
+      if(String(p.scenario||'')==='undone' && smsCompleted_(p.courseId,p.name)) return false;  // 이미 완수(과제해결 71%↑)한 학생은 미완 독려 제외
       return true;
     });
     const excl=raw.length-SMS.pending.length;
-    msg.textContent='대기 '+SMS.pending.length+'건'+(excl?' · 예외·테스트 '+excl+'건 제외':'');
+    msg.textContent='대기 '+SMS.pending.length+'건'+(excl?' · 완수·예외·테스트 '+excl+'건 제외':'');
     smsRenderPending();
   })).catch(e=>{ msg.textContent='불러오기 실패: '+e.message; });
+}
+// 해당 학생이 그 수업에서 이미 과제를 완수(과제해결정도 71%↑ 또는 '전부 끝냄')했는지 — 미완 독려 제외용
+function smsCompleted_(courseId, name){
+  const nn=normNameR(name), cid=String(courseId||'');
+  let subs=(ALL_DATA||[]).filter(r=> normNameR(val(r,'name','이름'))===nn && (!cid || String(r.courseId)===cid));
+  if(!subs.length) return false;                              // 미제출 → 미완(독려 유지)
+  subs=subs.slice().sort((a,b)=> (Number(b.week)||0)-(Number(a.week)||0) || String(val(b,'timestamp','')).localeCompare(String(val(a,'timestamp',''))));
+  const r=subs[0];
+  let s=String(val(r,'과제해결정도','')).replace('%','').replace(/\s/g,'');
+  if(s!=='' && !isNaN(parseFloat(s))){ let v=parseFloat(s); if(v<=1) v*=100; return v>=71; }
+  return String(val(r,'완수상태',''))==='전부 끝냄';
 }
 function smsRenderPending(){
   const box=document.getElementById('smsPendingBox');
