@@ -59,8 +59,12 @@ window.COURSE_LIST = [
     name: '한티 MEXX 종합반 고1 고전문법',
     grade: '고1',
     period: '한티 MEXX 종합반',
-    desc: '고1 고전문법 — 교재 확정 후 주차·문항 공개 예정.',
-    weeks: []
+    desc: '고1 고전문법 — 3주 과정(주당 약 35문항). 틀린 문항을 교재 번호 그대로 체크하세요.',
+    weeks: [
+      { week: 1, file: 'data/hw-hanti-jong-h1-gojeonbeop-w1.json', label: '1주차 · 1~35', area: '고전 문법', status: 'active' },
+      { week: 2, file: 'data/hw-hanti-jong-h1-gojeonbeop-w2.json', label: '2주차 · 36~70', area: '고전 문법', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-jong-h1-gojeonbeop-w3.json', label: '3주차 · 71~92 + 수능 1~12', area: '고전 문법', status: 'active' }
+    ]
   },
   {
     id: 'hanti-dan-h1-gojeonmunhak',
