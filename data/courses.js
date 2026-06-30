@@ -81,8 +81,13 @@ window.COURSE_LIST = [
     name: '한티 MEXX 단과 고1 고전 문법',
     grade: '고1',
     period: '한티 MEXX 단과',
-    desc: '고1 고전 문법 — 교재 확정 후 주차·문항 공개 예정.',
-    weeks: []
+    desc: '고1 고전 문법 — 4주 과정(주당 26문항). 틀린 문항을 교재 번호 그대로 체크하세요.',
+    weeks: [
+      { week: 1, file: 'data/hw-hanti-dan-h1-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
+      { week: 2, file: 'data/hw-hanti-dan-h1-gojeonbeop-w2.json', label: '2주차 · 27~52', area: '고전 문법', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-dan-h1-gojeonbeop-w3.json', label: '3주차 · 53~78', area: '고전 문법', status: 'active' },
+      { week: 4, file: 'data/hw-hanti-dan-h1-gojeonbeop-w4.json', label: '4주차 · 79~92 + 수능 1~12', area: '고전 문법', status: 'active' }
+    ]
   },
   {
     id: 'hanti-dan-h2-hwaeon',
