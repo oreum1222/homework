@@ -374,7 +374,7 @@ function renderCourses(){
     const activeN = isMonthly ? c.months.filter(m=>m.status!=='tentative').length : (c.weeks||[]).filter(w=>w.status!=='tentative').length;
     card.appendChild(el('div',{class:'card-top'},
       el('div',{class:'card-meta-left'},
-        el('span',{class:'card-num'}, 'COURSE '+String(idx+1).padStart(2,'0')),
+        el('span',{class:'card-num'}, '강좌 '+String(idx+1).padStart(2,'0')),
         el('span',{class:'card-grade'}, c.grade||'전체'),
         el('span',{class:'card-status '+statusClass('active')}, (c.period||'운영중'))
       ),

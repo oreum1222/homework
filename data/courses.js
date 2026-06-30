@@ -41,19 +41,46 @@ window.COURSE_LIST = [
     ]
   },
 
+  // ═══ 한티 MEXX (여름 강의) — 교재 확정 후 weeks에 주차+data/hw-<id>-w<n>.json 채워 넣기 (비어 있으면 '준비 중') ═══
   {
-    id: 'summer-grammar',
-    name: '현대문법',
-    grade: '고등',
-    desc: '2026 썸머스쿨 · 현대문법 — 주차별 문법 영역 총정리 과제.',
-    period: '2026 썸머스쿨',
-    // roster: ['홍길동','김영희'],   // (선택) 수강생 명단 → 미제출자 자동 체크
-    weeks: [
-      { week: 1, file: 'data/hw-summer-grammar-w1.json', label: '1주차 · 품사편', area: '품사', status: 'active' },
-      { week: 2, file: 'data/hw-summer-grammar-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
-      { week: 7, file: 'data/hw-summer-grammar-w7.json', label: '7주차 · 음운의 정의와 체계', area: '음운 체계', status: 'active' },
-      { week: 8, file: 'data/hw-summer-grammar-w8.json', label: '8주차 · 음운 변동', area: '음운 변동', status: 'active' },
-    ]
+    id: 'hanti-jong-m3-hyeonbeop',
+    name: '한티 MEXX 종합반 중3 현대문법',
+    grade: '중3',
+    period: '한티 MEXX 종합반',
+    desc: '중3 현대문법 — 교재 확정 후 주차·문항 공개 예정.',
+    weeks: []
+  },
+  {
+    id: 'hanti-jong-h1-gojeonbeop',
+    name: '한티 MEXX 종합반 고1 고전문법',
+    grade: '고1',
+    period: '한티 MEXX 종합반',
+    desc: '고1 고전문법 — 교재 확정 후 주차·문항 공개 예정.',
+    weeks: []
+  },
+  {
+    id: 'hanti-dan-h1-gojeonmunhak',
+    name: '한티 MEXX 단과 고1 고전 문학',
+    grade: '고1',
+    period: '한티 MEXX 단과',
+    desc: '고1 고전 문학 — 교재 확정 후 주차·문항 공개 예정.',
+    weeks: []
+  },
+  {
+    id: 'hanti-dan-h1-gojeonbeop',
+    name: '한티 MEXX 단과 고1 고전 문법',
+    grade: '고1',
+    period: '한티 MEXX 단과',
+    desc: '고1 고전 문법 — 교재 확정 후 주차·문항 공개 예정.',
+    weeks: []
+  },
+  {
+    id: 'hanti-dan-h2-hwaeon',
+    name: '한티 MEXX 단과 고2 화법과 언어',
+    grade: '고2',
+    period: '한티 MEXX 단과',
+    desc: '고2 화법과 언어 — 교재 확정 후 주차·문항 공개 예정.',
+    weeks: []
   },
 
   // ┌─ 새 수업 추가 예시 (주석 해제해서 사용) ─────────────────────────
