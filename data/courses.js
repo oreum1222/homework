@@ -50,8 +50,8 @@ window.COURSE_LIST = [
     desc: '중3 현대문법 — 3주 과정(품사 · 문장성분 · 형태소와 단어).',
     weeks: [
       { week: 1, file: 'data/hw-hanti-jong-m3-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
-      { week: 2, label: '2주차 · 문장성분', area: '문장성분', status: 'tentative' },
-      { week: 3, label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'tentative' }
+      { week: 2, file: 'data/hw-hanti-jong-m3-hyeonbeop-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-jong-m3-hyeonbeop-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' }
     ]
   },
   {
@@ -83,8 +83,14 @@ window.COURSE_LIST = [
     name: '한티 MEXX 단과 고2 화법과 언어',
     grade: '고2',
     period: '한티 MEXX 단과',
-    desc: '고2 화법과 언어 — 교재 확정 후 주차·문항 공개 예정.',
-    weeks: []
+    desc: '고2 화법과 언어 — 언어(문법) 5주 과정(품사 · 문장성분 · 형태소와 단어 · 음운의 체계 · 음운의 변동).',
+    weeks: [
+      { week: 1, file: 'data/hw-hanti-dan-h2-hwaeon-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
+      { week: 2, file: 'data/hw-hanti-dan-h2-hwaeon-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-dan-h2-hwaeon-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' },
+      { week: 4, file: 'data/hw-hanti-dan-h2-hwaeon-w4.json', label: '4주차 · 음운의 체계', area: '음운의 체계', status: 'active' },
+      { week: 5, file: 'data/hw-hanti-dan-h2-hwaeon-w5.json', label: '5주차 · 음운의 변동', area: '음운의 변동', status: 'active' }
+    ]
   },
 
   // ┌─ 새 수업 추가 예시 (주석 해제해서 사용) ─────────────────────────
