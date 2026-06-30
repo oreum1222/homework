@@ -67,8 +67,14 @@ window.COURSE_LIST = [
     name: '한티 MEXX 단과 고1 고전 문학',
     grade: '고1',
     period: '한티 MEXX 단과',
-    desc: '고1 고전 문학 — 교재 확정 후 주차·문항 공개 예정.',
-    weeks: []
+    desc: '고1 고전 문학 — 5주 과정. 작품(세트)별로 틀린 문항을 교재 번호 그대로 체크하세요.',
+    weeks: [
+      { week: 1, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w1.json', label: '1주차 · 고대가요와 향가', area: '고대가요·향가', status: 'active' },
+      { week: 2, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w2.json', label: '2주차 · 고려가요와 경기체가', area: '고려가요·경기체가', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w3.json', label: '3주차 · 한시와 가사', area: '한시·가사', status: 'active' },
+      { week: 4, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w4.json', label: '4주차 · 가사와 시조', area: '가사·시조', status: 'active' },
+      { week: 5, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w5.json', label: '5주차 · 시조', area: '시조', status: 'active' }
+    ]
   },
   {
     id: 'hanti-dan-h1-gojeonbeop',
