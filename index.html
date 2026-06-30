@@ -483,7 +483,7 @@ function renderWeeks(courseId, monthKey){
     if(tentative) card.style.opacity='0.6';
     card.appendChild(el('div',{class:'card-top'},
       el('div',{class:'card-meta-left'},
-        el('span',{class:'card-num'}, 'WEEK '+String(w.week).padStart(2,'0')),
+        el('span',{class:'card-num'}, '주차 '+String(w.week).padStart(2,'0')),
         w.area ? el('span',{class:'card-grade'}, w.area) : null,
         el('span',{class:'card-status '+statusClass(w.status)}, statusLabel(w.status)),
         w.date ? el('span',{class:'card-date'}, '검사일 '+w.date) : null
@@ -540,7 +540,7 @@ function renderDiag(){
     el('p',{class:'diag-sub'}, '4단계 진단 — 기본 정보 → 오답 마킹 → 과제 점검 → 진단 리포트')
   ));
   if(STATE.step==='oath'){
-    root.appendChild(el('div',{class:'step-bar'}, stepEl(1,'기본 정보'), el('div',{class:'step active'}, el('span',{class:'step-num'},'STEP 2'), el('span',{class:'step-label'},'각서 작성'))));
+    root.appendChild(el('div',{class:'step-bar'}, stepEl(1,'기본 정보'), el('div',{class:'step active'}, el('span',{class:'step-num'},'2단계'), el('span',{class:'step-label'},'각서 작성'))));
     renderOath();
     window.scrollTo(0,0); return;
   }
@@ -549,9 +549,9 @@ function renderDiag(){
   // 순수 체크리스트형(오답 없음): 기본정보 → 완료 체크 → 결과 (3단계)
   if(cl && !mk){
     root.appendChild(el('div',{class:'step-bar'},
-      el('div',{class:STATE.step===1?'step active':'step done'}, el('span',{class:'step-num'},'STEP 1'), el('span',{class:'step-label'},'기본 정보')),
-      el('div',{class:STATE.step===2?'step active':(STATE.step>2?'step done':'step')}, el('span',{class:'step-num'},'STEP 2'), el('span',{class:'step-label'},'완료 체크')),
-      el('div',{class:STATE.step===4?'step active':'step'}, el('span',{class:'step-num'},'STEP 3'), el('span',{class:'step-label'},'진단 결과'))
+      el('div',{class:STATE.step===1?'step active':'step done'}, el('span',{class:'step-num'},'1단계'), el('span',{class:'step-label'},'기본 정보')),
+      el('div',{class:STATE.step===2?'step active':(STATE.step>2?'step done':'step')}, el('span',{class:'step-num'},'2단계'), el('span',{class:'step-label'},'완료 체크')),
+      el('div',{class:STATE.step===4?'step active':'step'}, el('span',{class:'step-num'},'3단계'), el('span',{class:'step-label'},'진단 결과'))
     ));
     if(STATE.step===1) renderStep1();
     else if(STATE.step===2) renderChecklist();
@@ -559,7 +559,7 @@ function renderDiag(){
     window.scrollTo(0,0); return;
   }
   // 일반 흐름 (+이매진 있으면 오답 마킹 다음에 '이매진 체크' 단계 삽입)
-  const sEl=(num,label,active,done)=>el('div',{class:active?'step active':(done?'step done':'step')}, el('span',{class:'step-num'},'STEP '+num), el('span',{class:'step-label'},label));
+  const sEl=(num,label,active,done)=>el('div',{class:active?'step active':(done?'step done':'step')}, el('span',{class:'step-num'},num+'단계'), el('span',{class:'step-label'},label));
   const isImg = STATE.step==='imagine';
   const bar=[];
   if(cl){
@@ -581,7 +581,7 @@ function renderDiag(){
 }
 function stepEl(n,label){
   const cls = STATE.step===n?'step active':(STATE.step>n?'step done':'step');
-  return el('div',{class:cls}, el('span',{class:'step-num'},'STEP '+n), el('span',{class:'step-label'},label));
+  return el('div',{class:cls}, el('span',{class:'step-num'},n+'단계'), el('span',{class:'step-label'},label));
 }
 
 // ─── Step 1: 기본 정보 ───
