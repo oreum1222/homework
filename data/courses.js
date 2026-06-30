@@ -47,8 +47,12 @@ window.COURSE_LIST = [
     name: '한티 MEXX 종합반 중3 현대문법',
     grade: '중3',
     period: '한티 MEXX 종합반',
-    desc: '중3 현대문법 — 교재 확정 후 주차·문항 공개 예정.',
-    weeks: []
+    desc: '중3 현대문법 — 3주 과정(품사 · 문장성분 · 형태소와 단어).',
+    weeks: [
+      { week: 1, file: 'data/hw-hanti-jong-m3-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
+      { week: 2, label: '2주차 · 문장성분', area: '문장성분', status: 'tentative' },
+      { week: 3, label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'tentative' }
+    ]
   },
   {
     id: 'hanti-jong-h1-gojeonbeop',
