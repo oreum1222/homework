@@ -1066,11 +1066,12 @@ function smsBuildTargets(){
     return { name:n, courseId:String(r.courseId||(m&&m.courseId)||''), phone:phone, consent:consentOK(r.consent), inRoster:!!rByName[n], m:m, checked:false };
   }).sort((a,b)=> (a.name>b.name?1:-1));
 }
+function donePct(m){ if(!m) return null; let d=lastNonNull(m.doneSeq); if(d==null||d===''||isNaN(d)) return null; return Math.round(Number(d)); }   // doneSeq는 pwDoneRate에서 0~100로 정규화됨
 function smsRenderTargets(){
   const box=document.getElementById('smsTargets');
   if(!SMS.targets.length){ box.innerHTML='<div class="empty">대상이 없습니다. ‘명단 새로고침’ 또는 제출 목록을 먼저 불러오세요.</div>'; smsUpdateMeta(); return; }
   let rows=SMS.targets.map((t,i)=>{
-    const done=t.m?lastNonNull(t.m.doneSeq):null;
+    const done=donePct(t.m);
     const sendable=!!t.phone && t.consent;
     const phoneCell = t.phone ? (t.phone.replace(/(\d{3})(\d{3,4})(\d{4})/,'$1-$2-$3')) : '<span style="color:#d68a8a">명단에 번호 없음</span>';
     const cons = t.phone ? (t.consent?'<span style="color:#9fd0ad">동의</span>':'<span style="color:#d68a8a">미동의</span>') : '—';
@@ -1095,7 +1096,7 @@ function smsAutoSelect(){
   const sc=document.getElementById('smsScenario').value;
   SMS.targets.forEach(t=>{
     if(!(t.phone&&t.consent)){ t.checked=false; return; }
-    if(sc==='undone'){ const d=t.m?lastNonNull(t.m.doneSeq):null; t.checked=(d!=null&&d>=10&&d<=70); }   // '덜함' 10~70% 만
+    if(sc==='undone'){ const d=donePct(t.m); t.checked=(d==null||d<71); }   // 미제출(무데이터)+미완(<71%) 선택, 완수(71%↑) 제외
     else { t.checked=true; }
   });
   smsRenderTargets();
@@ -1104,7 +1105,7 @@ function smsApplyTemplate(){ const sc=document.getElementById('smsScenario').val
 function smsInsert(tok){ const ta=document.getElementById('smsText'); const s=ta.selectionStart||ta.value.length, e=ta.selectionEnd||ta.value.length; ta.value=ta.value.slice(0,s)+tok+ta.value.slice(e); ta.focus(); ta.selectionStart=ta.selectionEnd=s+tok.length; smsUpdateMeta(); }
 function smsSubst(text,t){
   const m=t.m; const wk=(m&&m.seq&&m.seq.length)?weekShort(m.seq[m.seq.length-1]):'이번 주';
-  const done=m?lastNonNull(m.doneSeq):null;
+  const done=donePct(m);
   return String(text)
     .replace(/#\{이름\}/g,t.name||'')
     .replace(/#\{주차\}/g,wk)
@@ -1408,7 +1409,7 @@ function repWrongs(s){ return s?String(s).split(',').map(x=>x.trim()).filter(Boo
 function repTrend(rates){ if(rates.length<2) return '단일'; const d=rates[rates.length-1]-rates[0]; return d>=8?'상승':d<=-8?'하락':'유지'; }
 function doneRateFromLabel(l){ return {'전부 끝냄':100,'대부분(70% 이상)':85,'절반쯤':50,'조금만(30% 이하)':25,'아직 시작 못 함':0}[l]; }
 function pwDoneRate(pw){
-  if(pw && pw.solveRate!=null && !isNaN(pw.solveRate)) return pw.solveRate;   // 실제 과제 해결 정도 우선
+  if(pw && pw.solveRate!=null && !isNaN(pw.solveRate)){ let v=Number(pw.solveRate); if(v<=1) v*=100; return Math.round(v); }   // 실제 과제 해결 정도(소수면 %로 환산)
   if(pw && pw.doneLabel){ const v=doneRateFromLabel(pw.doneLabel); if(v!=null) return v; }
   const sd=(pw&&pw.studyDiag)||[];
   if(sd.some(d=>(d.label||'')==='과제 완수')) return 100;
