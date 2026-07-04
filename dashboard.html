@@ -1094,10 +1094,20 @@ function smsToggle(i,v){ if(SMS.targets[i]) SMS.targets[i].checked=v; smsUpdateM
 function smsToggleAll(v){ SMS.targets.forEach(t=>{ if(t.phone&&t.consent) t.checked=v; }); smsRenderTargets(); }
 function smsAutoSelect(){
   const sc=document.getElementById('smsScenario').value;
+  // '미제출·미완'은 완수율(REP.master) 없이는 완수/미완 구분 불가 → 먼저 확보
+  if(sc==='undone' && !(REP.master&&REP.master.length)){
+    if(ALL_DATA&&ALL_DATA.length&&typeof buildReports==='function'){ buildReports(); smsBuildTargets(); }
+    else if(typeof loadData==='function'){ alert('완수율 데이터를 불러오는 중입니다. 잠시 후 ‘조건 대상 자동선택’을 다시 눌러 주세요.'); loadData(); return; }
+  }
+  const masterReady=!!(REP.master&&REP.master.length);
+  const isTest=n=>/(실험|테스트|샘플|test)/i.test(n||'');
   SMS.targets.forEach(t=>{
-    if(!(t.phone&&t.consent)){ t.checked=false; return; }
-    if(sc==='undone'){ const d=donePct(t.m); t.checked=(d==null||d<71); }   // 미제출(무데이터)+미완(<71%) 선택, 완수(71%↑) 제외
-    else { t.checked=true; }
+    if(!(t.phone&&t.consent)||isTest(t.name)){ t.checked=false; return; }
+    if(sc==='undone'){
+      const d=donePct(t.m);
+      // 완수(71%↑)=제외 · 미완(데이터 있고 <71%)=선택 · 미제출(데이터 없음)=완수율 로드된 경우에만 선택
+      t.checked = (d!=null) ? (d<71) : masterReady;
+    } else { t.checked=true; }
   });
   smsRenderTargets();
 }
