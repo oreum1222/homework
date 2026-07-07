@@ -1282,7 +1282,7 @@ function submitResult(isManual){
     name: s.name, school: s.school, grade: s.grade,
     원점수: r.rawPts, 만점: r.totalPts,
     정답률: r.rate, 맞은개수: r.correct, 틀린개수: r.wrongN, 총문항: r.total,
-    틀린문항: Array.from(STATE.wrong).map(Number).sort((a,b)=>a-b).join(','),
+    틀린문항: Array.from(STATE.wrong).map(Number).sort((a,b)=>a-b).join(', '),   // 콤마+공백: 구글 시트가 '835,836'을 천단위 숫자로 오인해 합치는 것 방지
     핵심패턴: r.patterns.map(p=>p.code+':'+p.name).join('|'),
     강점: r.strengths.map(s2=>s2.code+':'+s2.name).join('|'),
     학습진단: r.studyDiag.map(d=>d.label).join('|'),
