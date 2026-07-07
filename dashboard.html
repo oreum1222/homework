@@ -1659,7 +1659,7 @@ function rDonut(m){
 function rWeekRows(m){
   let rows='';
   m.perWeek.forEach(pw=>{
-    const wrongTxt=pw.wrongs.length?pw.wrongs.map(w=>w+'번').join(', '):'—';
+    const wrongTxt=pw.wrongs.length?pw.wrongs.map(w=>(/^\d{5,}$/.test(w)?'기록오류⚠':w+'번')).join(', '):'—';   // 5자리+ = 옛 시트 숫자오인 손상값
     rows+=`<tr><td class="r-rnd">${esc(weekShort(pw.week))}</td><td class="r-sc" style="color:${rRateCol(pw.rate)}">${pw.rate}% · ${pw.wrongN}틀림</td><td class="r-wrong">${esc(pw.area||'')}</td><td class="r-wrong">${esc(wrongTxt)}</td></tr>`;
   });
   return rows;
