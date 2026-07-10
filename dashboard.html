@@ -482,6 +482,15 @@ const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 // 삭제된(과거) 반 — 제출 이력이 남아 있어 반명만 유지 (드롭다운·리포트에 raw ID 대신 표시)
 const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머)' };
 Object.keys(LEGACY_COURSE_NAME).forEach(k=>{ if(!COURSE_NAME[k]) COURSE_NAME[k]=LEGACY_COURSE_NAME[k]; });
+// 상담 시드 — 이미 상담한 학생 자동 채움(저장분 없을 때만). 키=이름(공백/괄호 무시)
+const NL_CONSULT_SEED = {
+  '한유주':{ curr:"내신 2등급, 수시 최저 3합 6 (영어, 국어, 탐구) → 국어는 2등급 이상 확보가 필요합니다.",
+    goal:"9월 모의평가 2등급, 수능 1등급",
+    plan:"언어(문법) 공부 채우기 — 상상, 바탕, 이감에서 틀렸던 문항 다시 모아 재풀이\n다시 풀면서 스스로 ‘설명할 수 있는지’ 점검\n문장편 다시 공부 (2주차, 4~6주차) + 문장편 기출 다시 풀기\n개념 백지 테스트로 정착 확인" },
+  '차신영':{ curr:"내신 3-1 5등급, 모의 평가원 3등급 / 학평 4등급대(시간 부족 영향). 최저 없음 → 정시 집중. 국어 3 / 수학 4~5 / 영어 1~2 / 탐구 1~2. 장애인 전형(수시보다 정시 확률이 높아 폭넓게 지원).",
+    goal:"국어 2등급",
+    plan:"국어 공부 방법 재설정 — 지문 이해·풀이 루틴 점검\n화작 실수 유형 정리 후 반복 훈련으로 실수 최소화" }
+};
 let ALL_DATA = [];
 
 function loadConfig(){
@@ -666,6 +675,7 @@ function nlSelectStudent(name){
   // 학습 상담과 목표 — 학생별 저장분 자동 로드 (없으면 비움)
   try{ var s2=function(id,v){var e=document.getElementById(id); if(e) e.value=v;};
     var cv=JSON.parse(localStorage.getItem(nlConsultKey_(name))||'{}');
+    if(!(cv.curr||cv.goal||cv.plan)){ var sd=NL_CONSULT_SEED[normNameR(name)]; if(sd) cv=sd; }   // 저장분 없으면 시드
     s2('nlCurr',cv.curr||''); s2('nlGoal',cv.goal||''); s2('nlPlan',cv.plan||'');
   }catch(e){}
 }
