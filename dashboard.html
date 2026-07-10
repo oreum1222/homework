@@ -470,6 +470,9 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 let SCRIPT_URL=null, DASH_PASSWORD=null, BRAND='오름 국어 연구소', TEACHER='가경T', LOGO_URL='', LOGO_NAVY_URL='';
 const COURSES = window.COURSE_LIST || [];
 const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
+// 삭제된(과거) 반 — 제출 이력이 남아 있어 반명만 유지 (드롭다운·리포트에 raw ID 대신 표시)
+const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머)' };
+Object.keys(LEGACY_COURSE_NAME).forEach(k=>{ if(!COURSE_NAME[k]) COURSE_NAME[k]=LEGACY_COURSE_NAME[k]; });
 let ALL_DATA = [];
 
 function loadConfig(){
