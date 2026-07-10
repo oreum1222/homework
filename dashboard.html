@@ -444,6 +444,15 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
             <textarea id="nlPresc" class="cmt-area" style="min-height:90px"></textarea></div>
           <div><div style="font-size:0.82rem;color:#cbb88a;margin-bottom:5px">가정 관찰 포인트 <span style="color:var(--text-muted)">(3면)</span></div>
             <textarea id="nlObs" class="cmt-area" style="min-height:80px"></textarea></div>
+          <div style="border-top:1px solid var(--border-line);padding-top:12px">
+            <div style="font-size:0.82rem;color:#8fb0c9;font-weight:700;margin-bottom:8px">학습 상담과 목표 <span style="color:var(--text-muted);font-weight:400">(3면 · 이번 상담 반영 · 학생별 자동 저장)</span></div>
+            <div style="font-size:0.78rem;color:#cbb88a;margin-bottom:4px">현황</div>
+            <textarea id="nlCurr" class="cmt-area" style="min-height:46px" placeholder="예: 내신 2등급, 최저 3합 6(영어·국어·탐구) → 국어 2등급 이상 확보 필요" oninput="nlSaveConsult()"></textarea>
+            <div style="font-size:0.78rem;color:#cbb88a;margin:8px 0 4px">목표</div>
+            <textarea id="nlGoal" class="cmt-area" style="min-height:38px" placeholder="예: 9월 모평 2등급, 수능 1등급" oninput="nlSaveConsult()"></textarea>
+            <div style="font-size:0.78rem;color:#cbb88a;margin:8px 0 4px">학습 계획 <span style="color:var(--text-muted)">(한 줄에 한 항목)</span></div>
+            <textarea id="nlPlan" class="cmt-area" style="min-height:78px" placeholder="언어 오답 재수집 후 재풀이&#10;문장편 재학습(2주차, 4~6주차) + 기출 재풀이&#10;개념 백지 테스트" oninput="nlSaveConsult()"></textarea>
+          </div>
         </div>
         <div style="font-size:0.78rem;color:var(--text-muted);margin-top:8px">※ 지표·그래프·반 평균·오답 상세·오답 DNA·학습 신호는 제출 데이터에서 자동 생성됩니다. 위 칸과 종합 의견만 다듬으시면 됩니다.</div>
       </div>
@@ -654,7 +663,15 @@ function nlSelectStudent(name){
     s('nlTag',t.tag); s('nlFeat',t.feat); s('nlPresc',t.presc); s('nlObs',t.obs);
     var c=document.getElementById('nlComment'); if(c&&!c.value.trim()){ c.value=t.warm; nlCount(); }
   } }catch(e){}
+  // 학습 상담과 목표 — 학생별 저장분 자동 로드 (없으면 비움)
+  try{ var s2=function(id,v){var e=document.getElementById(id); if(e) e.value=v;};
+    var cv=JSON.parse(localStorage.getItem(nlConsultKey_(name))||'{}');
+    s2('nlCurr',cv.curr||''); s2('nlGoal',cv.goal||''); s2('nlPlan',cv.plan||'');
+  }catch(e){}
 }
+function nlConsultKey_(name){ return 'nlConsult|'+(NLW.course||'')+'|'+normNameR(name||NLW.student||''); }
+function nlSaveConsult(){ try{ if(!NLW.student) return; var g=function(id){var e=document.getElementById(id);return e?e.value:'';};
+  localStorage.setItem(nlConsultKey_(NLW.student), JSON.stringify({curr:g('nlCurr'),goal:g('nlGoal'),plan:g('nlPlan')})); }catch(e){} }
 function nlRenderData(){
   const box=document.getElementById('nlData'); const m=nlFindMaster(NLW.student); NLW._dataLines=[];
   if(!m){ box.innerHTML='<div class="empty" style="font-size:0.85rem">제출 데이터가 없어 자료 요약은 생략됩니다(관찰 문장만으로 작성).</div>'; return; }
@@ -994,7 +1011,13 @@ function nlBuildV3_(d,t){
   var sec=function(h,b){return '<div style="margin-bottom:15px"><div class="nlp-sec-t" style="margin-bottom:8px">'+h+'</div>'+b+'</div>';};
   var presc='<ol style="margin:0;padding-left:20px;font-size:.86rem;color:#3a4154;line-height:1.9">'+t.presc.split('\n').filter(Boolean).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>';
   var obs='<div style="background:#fffdf8;border:1px solid rgba(28,44,82,.1);border-left:3px solid #b08d57;border-radius:9px;padding:14px 17px"><div style="font-weight:700;color:#1c2c52;font-size:.88rem;margin-bottom:9px">가정에서 이렇게 확인해 주세요</div><div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.obs)+'</div></div>';
-  var p3=nlV3Page_(nlV3Head_('학습 해석 · 처방 · 가정 연계',esc(d.name)+' 학생 · '+esc(BRAND))+tag+sec('데이터로 본 학습 특징','<div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.feat)+'</div>')+sec('다음 학습 처방',presc)+sec('학부모님께 드리는 관찰 포인트',obs));
+  var cs=t.consult||{}; var cRow=function(k,v){return '<div style="display:flex;gap:10px;font-size:.85rem;line-height:1.75;margin-bottom:7px"><div style="flex:0 0 60px;color:#2c4a6e;font-weight:700">'+k+'</div><div style="flex:1;color:#26303f">'+v+'</div></div>';};
+  var cRows='';
+  if(cs.curr) cRows+=cRow('현황',esc(cs.curr));
+  if(cs.goal) cRows+=cRow('목표',esc(cs.goal));
+  if(cs.plan){ var pl=String(cs.plan).split('\n').map(function(x){return x.trim();}).filter(Boolean); if(pl.length) cRows+=cRow('학습 계획','<ul style="margin:0;padding-left:16px;line-height:1.7">'+pl.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'); }
+  var consultBlock=cRows?'<div style="margin-bottom:15px;background:#eef2f8;border:1px solid #cdd9ea;border-radius:10px;padding:14px 18px 15px"><div class="nlp-sec-t" style="margin-bottom:11px;color:#1f3a5f;border-bottom:2px solid #2c4a6e;padding-bottom:6px">학습 상담과 목표 <span style="background:#2c4a6e;color:#fff;font-size:.62rem;font-weight:700;border-radius:12px;padding:2px 8px;margin-left:6px;vertical-align:2px">이번 상담 반영</span></div>'+cRows+'</div>':'';
+  var p3=nlV3Page_(nlV3Head_('학습 해석 · 처방 · 가정 연계',esc(d.name)+' 학생 · '+esc(BRAND))+tag+sec('데이터로 본 학습 특징','<div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.feat)+'</div>')+sec('다음 학습 처방',presc)+consultBlock+sec('학부모님께 드리는 관찰 포인트',obs));
   // 4면 종합 의견
   var p4=nlV3Page_(nlV3Head_('가정통신문',esc(BRAND))+'<div class="nlp-greet" style="margin-bottom:22px">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 한 주간 '+esc(d.name)+' 학생의 학습 모습을 살펴 전해 드립니다.</div><div class="nlp-sec-t" style="margin-bottom:18px">'+esc(d.name)+' 학생 · 가경T 종합 의견</div><div class="nlp-comment">'+esc(t.warm)+'</div><div class="nlp-sign"><div class="d">'+ko+'</div><div class="b">'+esc(BRAND)+'　'+esc(TEACHER)+' <span style="font-size:.88rem;color:#737a88;font-weight:400">드림</span></div></div>',true);
   return '<div id="nlPages">'+p1+p2+p3+p4+'</div>';
@@ -1008,6 +1031,7 @@ function nlMakePdf(){
   // 편집칸 값으로 덮어쓰기(있으면)
   var gv=function(id){var e=document.getElementById(id);return e&&e.value.trim()?e.value.trim():null;};
   t.feat=gv('nlFeat')||t.feat; t.presc=gv('nlPresc')||t.presc; t.obs=gv('nlObs')||t.obs; t.tag=gv('nlTag')||t.tag;
+  t.consult={ curr:gv('nlCurr')||'', goal:gv('nlGoal')||'', plan:gv('nlPlan')||'' };   // 학습 상담과 목표(3면)
   t.warm=(document.getElementById('nlComment')&&document.getElementById('nlComment').value.trim())||t.warm;
   var host=document.getElementById('nlHost'); host.innerHTML=nlBuildV3_(d,t);
   repOverlay(NLW.student+' 가정통신문 생성 중…');
