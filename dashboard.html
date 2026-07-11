@@ -1059,6 +1059,14 @@ function nlMakePdf(){
 
 // ════════════════════════ 문자 발송 ════════════════════════
 var SMS={ roster:[], targets:[], loaded:false, pending:[] };
+// 문자 발송 제외 명단 — 영구(perm) / 기한부(until: 그 날짜까지 제외, 이후 자동 복귀)
+const SMS_EXCLUDE_PERM=['김준현','김준희','김태유','남가현','박상범','신정원','고예빈','김수진','방승윤','홍승아'];
+const SMS_EXCLUDE_UNTIL={ '임수아':'2026-08-02', '이서윤':'2026-08-02' };   // 한 달 제외(등록일 기준 약 한 달)
+function smsExcluded_(name){ var n=normNameR(name);
+  if(SMS_EXCLUDE_PERM.some(function(x){return normNameR(x)===n;})) return true;
+  for(var k in SMS_EXCLUDE_UNTIL){ if(normNameR(k)===n){ try{ return new Date() <= new Date(SMS_EXCLUDE_UNTIL[k]+'T23:59:59'); }catch(e){ return true; } } }
+  return false;
+}
 const SMS_TEMPLATES={
   undone:'[#{브랜드}] #{이름} 학생, 이번 #{주차} 과제 해결 정도가 #{완수율}입니다. 약속한 기한까지 꼭 마무리 부탁드립니다. (#{선생님})',
   summary:'[#{브랜드}] #{이름} 학생 #{주차} 과제 결과를 안내드립니다. 평균 정답률 #{정답률}, 과제 해결 정도 #{완수율}. 자세한 내용은 가정통신문을 확인해 주세요. (#{선생님})',
@@ -1097,7 +1105,7 @@ function smsBuildTargets(){
   const rByName={}; SMS.roster.forEach(r=>{ if(course==='all'||String(r.courseId)===course){ rByName[String(r.name).trim()]=r; } });
   const mByName={}; (REP.master||[]).forEach(m=>{ if(course==='all'||m.courseId===course){ mByName[m.name]=m; } });
   const names={}; Object.keys(rByName).forEach(n=>names[n]=1); Object.keys(mByName).forEach(n=>names[n]=1);
-  SMS.targets=Object.keys(names).map(n=>{
+  SMS.targets=Object.keys(names).filter(n=>!smsExcluded_(n)).map(n=>{   // 제외 명단 필터
     const r=rByName[n]||{}, m=mByName[n]||null;
     const phone=digitsJS(r.guardianPhone||r.studentPhone||'');
     return { name:n, courseId:String(r.courseId||(m&&m.courseId)||''), phone:phone, consent:consentOK(r.consent), inRoster:!!rByName[n], m:m, checked:false };
@@ -1211,6 +1219,7 @@ function smsLoadPending(){
     const raw=Array.isArray(d)?d:[];
     SMS.pending=raw.filter(p=>{
       if(isTestName(p.name)) return false;                                   // 테스트 계정 제외
+      if(smsExcluded_(p.name)) return false;                                  // 발송 제외 명단(영구·기한부)
       if(OVR.byName.has(String(p.courseId||'')+'|'+normNameR(p.name||''))) return false;   // 예외(보류·결석) 제외
       if(String(p.scenario||'')==='undone' && smsCompleted_(p.courseId,p.name)) return false;  // 이미 완수(과제해결 71%↑)한 학생은 미완 독려 제외
       return true;
