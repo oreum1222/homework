@@ -105,12 +105,18 @@ body.landing .corner-logo{display:none}
 .section{background:var(--bg-card);border:1px solid var(--border-line);border-radius:6px;padding:36px;margin-bottom:24px}
 .section-title{font-family:'Noto Serif KR',serif;font-weight:500;font-size:1.15rem;color:var(--cream);margin-bottom:8px;letter-spacing:-0.3px}
 .section-desc{color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:28px}
-.form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
-.form-row label{font-size:0.86rem;color:var(--text-secondary);font-weight:400}
+.form-row{display:flex;flex-direction:column;gap:9px;margin-bottom:20px}
+.form-row label{font-size:0.92rem;color:var(--cream);font-weight:600;letter-spacing:-0.2px}
 .form-row label .req{color:var(--gold);margin-left:3px}
-.form-row input[type="text"],.form-row input[type="number"],.form-row select{background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;padding:12px 16px;color:var(--cream);font-family:inherit;font-size:0.95rem;transition:border-color 0.15s}
-.form-row input:focus,.form-row select:focus{outline:none;border-color:var(--gold)}
-.form-row .hint{font-size:0.78rem;color:var(--text-muted);margin-top:4px}
+.form-row input[type="text"],.form-row input[type="number"],.form-row select{background:rgba(255,255,255,.04);border:1px solid var(--border-line);border-radius:11px;padding:14px 16px;color:var(--cream);font-family:inherit;font-size:0.98rem;width:100%;box-sizing:border-box;transition:border-color .15s,box-shadow .15s,background .15s}
+.form-row input:hover,.form-row select:hover{background:rgba(255,255,255,.06)}
+.form-row input::placeholder{color:var(--text-muted);opacity:.75}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:var(--gold);background:rgba(95,198,163,.05);box-shadow:0 0 0 3px rgba(95,198,163,.16)}
+.form-row .hint{font-size:0.78rem;color:var(--text-muted);margin-top:2px}
+.form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-grid2 .form-row{margin-bottom:20px}
+.info-card{border-radius:16px;padding:32px 34px}
+@media(max-width:560px){.form-grid2{grid-template-columns:1fr;gap:0}}
 .radio-group{display:flex;gap:12px;flex-wrap:wrap}
 .radio-pill{flex:1;min-width:140px;padding:13px 16px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;cursor:pointer;text-align:center;transition:all 0.15s;color:var(--text-secondary);font-size:0.92rem}
 .radio-pill input{display:none}
@@ -586,12 +592,14 @@ function stepEl(n,label){
 
 // ─── Step 1: 기본 정보 ───
 function renderStep1(){
-  const form = el('div',{class:'section'},
+  const form = el('div',{class:'section info-card'},
     el('h2',{class:'section-title'},'학생 정보'),
     el('p',{class:'section-desc'},'결과 리포트가 학원 시트에 누적됩니다. 정확히 입력해 주세요.'),
-    formRow('이름','text','name', STATE.student.name),
-    formRow('학교','text','school', STATE.student.school, '예: 산본고'),
-    formRow('학년','select','grade', STATE.student.grade, null, ['고1','고2','고3','N수'])
+    formRow('이름','text','name', STATE.student.name, '예: 홍길동'),
+    el('div',{class:'form-grid2'},
+      formRow('학교','text','school', STATE.student.school, '예: 산본고등학교'),
+      formRow('학년','select','grade', STATE.student.grade, null, ['고1','고2','고3','N수'])
+    )
   );
   // 숙제 함 / 안 함
   const hwRow = el('div',{class:'form-row'}, el('label',{}, '오늘 숙제 했나요?', el('span',{class:'req'},' *')));
@@ -614,10 +622,9 @@ function formRow(label, type, name, value, hint, opts){
     input.value = value || (opts?opts[0]:'');
     if(!STATE.student[name]) STATE.student[name]=input.value;
   } else {
-    input = el('input',{type, name, value:value||'', oninput:e=>{ STATE.student[name]=e.target.value; }});
+    input = el('input',{type, name, value:value||'', placeholder:hint||'', oninput:e=>{ STATE.student[name]=e.target.value; }});
   }
   row.appendChild(input);
-  if(hint) row.appendChild(el('span',{class:'hint'},hint));
   return row;
 }
 function nextFromStep1(){
