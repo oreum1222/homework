@@ -748,7 +748,7 @@ function renderStep2(){
   }
   root.appendChild(el('div',{class:'section'},
     el('h2',{class:'section-title'},'오답 마킹'),
-    el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항이 다루는 <strong>개념(영역)</strong>입니다.'})
+    el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항의 <strong>유형</strong>입니다.'})
   ));
   secs.forEach((sec,si)=>{ root.appendChild(areaBlock(sec, si)); });
   root.appendChild(el('div',{class:'btn-row'},
@@ -782,7 +782,7 @@ function areaBlock(sec, si){
     const item = el('div',{class: STATE.wrong.has(key)?'q-item wrong':'q-item'},
       el('span',{class:'q-num'}, q.label || (q.no+'번')),
       q.three ? el('span',{class:'q-three'},'3점') : null,
-      (q.wr!=null) ? el('span',{class:'q-wr'}, q.wr+'%') : (q.area ? el('span',{class:'q-cc'}, q.area) : null)
+      (q.wr!=null) ? el('span',{class:'q-wr'}, q.wr+'%') : ((q.type||q.area) ? el('span',{class:'q-cc'}, q.type||q.area) : null)
     );
     item.onclick = ()=>{
       if(STATE.notSolved.has(secKey)) return;   // 안 풂이면 마킹 불가
@@ -985,7 +985,7 @@ function computeResult(){
 function computeAreaStat(qs){
   const byArea={};
   qs.forEach(q=>{
-    const a = q.area || '기타';
+    const a = q.type || q.area || '기타';
     if(!byArea[a]) byArea[a]={total:0, wrong:0};
     byArea[a].total++;
     if(STATE.wrong.has(String(q.no))) byArea[a].wrong++;
