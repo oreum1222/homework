@@ -26,7 +26,7 @@ var HEADERS = [
   '완수상태','완수예정일','완수약속','제출시점','미완사유','성실도','제출방식',
   'patternsJson','strengthsJson','areaStatJson','wrongDetailsJson','studyDiagJson','studyAnsJson'
 ];
-var ROSTER_HEADERS = ['courseId','name','school','guardianName','guardianPhone','studentPhone','consent','memo'];
+var ROSTER_HEADERS = ['courseId','name','school','guardianName','guardianPhone','studentPhone','consent','memo','상태'];
 var LOG_HEADERS    = ['timestamp','courseId','name','phone','channel','scenario','message','result','messageId','error'];
 var PENDING_SHEET  = '발송대기';
 var PENDING_HEADERS= ['생성일','scenario','name','phone','courseId','weekLabel','message','status'];
@@ -258,6 +258,8 @@ function solapiAuth_(key, secret){
 function digits_(s){ return String(s||'').replace(/[^0-9]/g, ''); }
 // 이름 정규화(매칭용): 공백·대괄호·괄호 문자 제거 → "[실험용]"==="실험용", " 홍 길동 "==="홍길동"
 function normName_(s){ return String(s||'').replace(/[\s\[\]（）()｛｝{}]/g,''); }
+// 기본 이름(괄호 구분자 제거): '김나연(수외)' → '김나연'. 명단 표기와 학생 입력 표기가 달라도 매칭되게.
+function baseName_(s){ return String(s||'').replace(/[\(（][^\)）]*[\)）]/g,'').replace(/[\s\[\]｛｝{}]/g,''); }
 
 function logSend_(m, channel, result, messageId, error){
   try{
@@ -276,25 +278,40 @@ function weeklyDigest(){
   var roster = readRoster_();
   if(!subs.length || !roster.length) return '데이터 없음';
 
-  var latest = 0;
-  subs.forEach(function(r){ var w=Number(r.week)||0; if(w>latest) latest=w; });
-  var weekLabel='', byName={};
+  // ★ 최신 주차는 '강좌별'로 계산한다. (전 강좌 통합 최신 주차와 비교하면
+  //    주차 체계가 다른 강좌(go3=월합성 702 vs 한티=1~5)의 제출이 전부 '미제출'로 오판됨)
+  var latestBy={}, weekLabelBy={}, byKey={}, byBase={};
+  subs.forEach(function(r){ var cid=String(r.courseId||''); var w=Number(r.week)||0; if(w>(latestBy[cid]||0)) latestBy[cid]=w; });
   subs.forEach(function(r){
-    if((Number(r.week)||0)===latest){ byName[normName_(r.name)]=r; if(!weekLabel) weekLabel=String(r.weekLabel||('주차 '+latest)); }
+    var cid=String(r.courseId||''); var w=Number(r.week)||0;
+    if(w===latestBy[cid]){
+      byKey[cid+'|'+normName_(r.name)]=r;
+      var bk=cid+'|'+baseName_(r.name);                              // 기본이름 폴백 인덱스
+      if(byBase[bk]===undefined) byBase[bk]=r; else byBase[bk]=null;  // 중복 기본이름은 폴백 금지
+      if(!weekLabelBy[cid]) weekLabelBy[cid]=String(r.weekLabel||('주차 '+w));
+    }
   });
+  // 명단 쪽 기본이름 중복(동명이인: 한유주/한유주(안외) 등)은 기본이름 매칭 금지
+  var rosterBaseDup={};
+  (function(){ var seen={}; roster.forEach(function(p){ var bk=String(p.courseId||'')+'|'+baseName_(p.name); if(seen[bk]) rosterBaseDup[bk]=1; seen[bk]=1; }); })();
 
-  // 예외(보류·결석) 처리된 최신 주차분은 대기함에서 제외
-  var ovr={}; try{ readOverrides_().forEach(function(o){ if(String(o.week)===String(latest)) ovr[normName_(o.name)]=1; }); }catch(e){}
+  // 예외(보류·결석) — 강좌별 최신 주차분만 제외
+  var ovr={}; try{ readOverrides_().forEach(function(o){ var cid=String(o.courseId||''); if(String(o.week)===String(latestBy[cid]||'')) ovr[cid+'|'+normName_(o.name)]=1; }); }catch(e){}
   var pending=[], undoneN=0, sumN=0;
   roster.forEach(function(p){
     var name=String(p.name||'').trim();
+    var cid=String(p.courseId||'');
     if(!name || go3IsTest_(name)) return;                                   // 테스트·제외 계정
-    if(ovr[normName_(name)]) return;                                        // 예외(보류·결석)
+    if(!rosterActive_(p)) return;                                           // 휴원·퇴원생 제외
+    if(!latestBy[cid]) return;                                              // 그 강좌 제출이 아예 없으면 이번 주 대상 아님
+    if(ovr[cid+'|'+normName_(name)]) return;                                // 예외(보류·결석)
     var gp=digits_(p.guardianPhone||''), sp=digits_(p.studentPhone||'');   // 학부모/학생 번호
     var consent=String(p.consent||'').toUpperCase();
     if(!gp && !sp) return;
     if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
-    var sub=byName[normName_(name)];
+    var sub=byKey[cid+'|'+normName_(name)];
+    if(!sub){ var bk=cid+'|'+baseName_(name); if(!rosterBaseDup[bk] && byBase[bk]) sub=byBase[bk]; }   // 표기 차이(괄호 구분자) 폴백
+    var weekLabel=weekLabelBy[cid]||'이번 주';
     var doneLabel = sub ? String(sub['완수상태']||'') : '';
     // 과제 해결 정도(%) — 분수(0~1) 저장분은 ×100, 없으면 완수상태 라벨 환산
     var sStr = sub ? String(sub['과제해결정도']||'').replace('%','').replace(/\s/g,'') : '';
@@ -334,9 +351,10 @@ function weeklyDigest(){
   try{
     var to=Session.getEffectiveUser().getEmail();
     if(to){
+      var wkList=Object.keys(weekLabelBy).map(function(c){ return weekLabelBy[c]; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).join(', ');
       MailApp.sendEmail(to,
-        '[숙제시스템] '+weekLabel+' 과제 현황 — 미완 '+undoneN+'명 / 제출 '+sumN+'명',
-        weekLabel+' 과제 현황 알림입니다.\n'
+        '[숙제시스템] 이번 주 과제 현황 — 미완 '+undoneN+'명 / 제출 '+sumN+'명',
+        (wkList?('대상 주차: '+wkList+'\n'):'')+'과제 현황 알림입니다.\n'
         +'· 미완(미제출·미완수): '+undoneN+'명\n· 제출: '+sumN+'명\n\n'
         +'고3 정규반은 토요일 자동발송(검수메일 13시 → 학생 15시 → 학부모 16시)으로 안내됩니다.\n'
         +'그 외·수시 발송은 대시보드 → 문자 발송 탭에서 진행하세요.\n');
@@ -425,7 +443,16 @@ function go3ClearHold_(){ try{ var sh=go3ControlSheet_(); if(sh){ sh.getRange('B
 
 // 테스트 계정(실험용 등) + 제외 명단(다른 반 학생 등)은 집계·발송에서 완전 제외
 var GO3_EXCLUDE = ['심재영'];   // 다른 반 학생 등 — 추가하려면 정규화된 이름을 여기에
-function go3IsTest_(name){ var n=String(normName_(name)||''); if(GO3_EXCLUDE.indexOf(n)>=0) return true; return n.indexOf('실험용')>=0 || n.indexOf('테스트')>=0 || n.toLowerCase()==='test'; }
+// 재원 고3 명단(원생목록 2026-07-11 · 홍승아 발송제외로 뺌) — 이 명단에 없는 go3는 자동발송 완전 제외
+function go3Base_(s){ return String(s==null?'':s).replace(/\(.*?\)/g,'').replace(/[\[\]\s]/g,''); }
+var GO3_ENROLLED = ['강예담','강지오','공두영','권오현','김가율','김경준','김나연(수외)','김누리','김도경','김도일','김민주','김보민','김영재','김은수','김제언','김주아','김현지','김효경','김효율','남규빈','노예진','문수영','문종혁','박다솜','박서희','박선유','박세은','박채원','배지윤','배진우','성현혜','손지유','손환희','신율','신지환','신지효','안신현','양도윤','오정현','유희진','윤영채','윤준서','윤하진','윤현경','윤혜상','이도경','이선경','이연우','이윤서','이준우','이지수','임서진','정다원','정서윤','정영준','조은나래','진세림','차신영','최다온','최재혁','최현서','한유주','한유주(안외)','허시은','홍지안','황선유'];
+var GO3_ENROLLED_SET = {}; GO3_ENROLLED.forEach(function(x){ GO3_ENROLLED_SET[go3Base_(x)]=1; });
+function go3IsTest_(name){ var n=String(normName_(name)||'');
+  if(GO3_EXCLUDE.indexOf(n)>=0) return true;
+  if(n.indexOf('실험용')>=0 || n.indexOf('테스트')>=0 || n.toLowerCase()==='test') return true;
+  if(GO3_ENROLLED.length && !GO3_ENROLLED_SET[go3Base_(name)]) return true;   // 재원 명단에 없으면 제외
+  return false;
+}
 function go3SolveOf_(r){
   var s=String(r['과제해결정도']||'').replace('%','').replace(/\s/g,'');
   if(s!=='' && !isNaN(parseFloat(s))){ var v=parseFloat(s); if(v<=1) v=v*100; return v; }  // 분수(0~1) 저장분은 퍼센트로 환산
@@ -441,23 +468,35 @@ function go3Classify_(){
   var ovr={};   // 강사 수동 완료(예외)처리 — 최신 주차분은 발송 제외
   readOverrides_().forEach(function(o){ if(String(o.courseId)===GO3_COURSE && String(o.week)===String(latest)) ovr[normName_(o.name)]=1; });
   var skip=go3SkipList_();   // 「발송제어」 D열 이번 주 제외 명단
-  var byNW={}, firstW={};   // normName -> { week: bestSolveRate }, 그리고 첫 제출 주차
+  var byNW={}, firstW={}, base2nn={};   // normName -> { week: bestSolveRate }, 첫 제출 주차, 기본이름→normName(유일할 때만)
   subs.forEach(function(r){ if(String(r.courseId)!==GO3_COURSE || go3IsTest_(r.name)) return; var w=Number(r.week)||0; if(!w) return;
     var nn=normName_(r.name), sr=go3SolveOf_(r);
     if(!byNW[nn]) byNW[nn]={};
     if(byNW[nn][w]==null || sr>byNW[nn][w]) byNW[nn][w]=sr;
     if(firstW[nn]==null || w<firstW[nn]) firstW[nn]=w;
+    var bb=go3Base_(r.name);
+    if(base2nn[bb]===undefined) base2nn[bb]=nn; else if(base2nn[bb]!==nn) base2nn[bb]=null;   // 기본이름 충돌 → 폴백 금지
   });
+  // 명단 쪽 기본이름 중복(동명이인)도 폴백 금지
+  var go3BaseDup={};
+  (function(){ var seen={}; roster.forEach(function(p){ if(String(p.courseId)!==GO3_COURSE) return; var bb=go3Base_(p.name); if(seen[bb]) go3BaseDup[bb]=1; seen[bb]=1; }); })();
+  function go3RecKey_(name){   // 명단 이름 → 제출 키 (정확 일치 우선, 표기 차이는 기본이름 폴백)
+    var nn=normName_(name); if(byNW[nn]) return nn;
+    var bb=go3Base_(name); if(!go3BaseDup[bb] && base2nn[bb]) return base2nn[bb];
+    return nn;
+  }
   var list=[];
   roster.forEach(function(p){ if(String(p.courseId)!==GO3_COURSE || go3IsTest_(p.name)) return;
+    if(!rosterActive_(p)) return;   // 휴원·퇴원생 제외
     var name=String(p.name||'').trim(); var gp=digits_(p.guardianPhone||''), sp=digits_(p.studentPhone||'');
     var consent=String(p.consent||'').toUpperCase();
     if(!name || (!gp&&!sp)) return;
     if(consent==='N'||consent==='NO'||consent.indexOf('미동의')>=0||consent.indexOf('거부')>=0) return;
     if(ovr[normName_(name)]) return;   // 수동 완료(예외)처리됨 → 발송 안 함
     if(skip[normName_(name)]) return;  // 「발송제어」 제외 명단(D열) → 이번 주 발송 안 함
-    var rec=byNW[normName_(name)]||{};
-    var minW=(firstW[normName_(name)]!=null)?firstW[normName_(name)]:Infinity;   // 첫 제출 이전(등록 전)은 미제출로 안 셈
+    var rkey=go3RecKey_(name);
+    var rec=byNW[rkey]||{};
+    var minW=(firstW[rkey]!=null)?firstW[rkey]:Infinity;   // 첫 제출 이전(등록 전)은 미제출로 안 셈
     function badAt(w){ if(w<minW) return false; if(!(w in rec)) return true; return rec[w]<71; }
     var hasLatest=(latest in rec), latestSr=hasLatest?rec[latest]:null;
     var thisMissing=!hasLatest, thisIncomplete=hasLatest && latestSr<71;
@@ -624,14 +663,23 @@ function readRoster_(){
   var sh = ss.getSheetByName(ROSTER_SHEET);
   if(!sh){ sh = ss.insertSheet(ROSTER_SHEET); sh.appendRow(ROSTER_HEADERS); sh.setFrozenRows(1); return []; }
   var values = sh.getDataRange().getValues();
-  if(values.length < 2) return [];
-  var head = values[0], out = [];
+  if(values.length < 1) return [];
+  var head = values[0];
+  // '상태' 열이 없으면 머리글에 추가(휴원/퇴원 표기용 — 1회 마이그레이션)
+  if(head.indexOf('상태') < 0){ sh.getRange(1, head.length+1).setValue('상태'); head = head.concat(['상태']); }
+  var out = [];
   for(var i=1;i<values.length;i++){
     var obj = {}, blank = true;
-    for(var j=0;j<head.length;j++){ obj[head[j]] = values[i][j]; if(values[i][j] !== '') blank = false; }
+    for(var j=0;j<head.length;j++){ obj[head[j]] = (values[i][j]===undefined?'':values[i][j]); if(values[i][j] !== '' && values[i][j] !== undefined) blank = false; }
     if(!blank) out.push(obj);
   }
   return out;
+}
+// 재원 여부 — 명단 '상태' 열에 휴원/퇴원/종료/X 표기 시 집계·발송 완전 제외
+function rosterActive_(p){
+  var s = String(p['상태']||'').trim();
+  if(!s) return true;
+  return !(s.indexOf('휴원')>=0 || s.indexOf('퇴원')>=0 || s.indexOf('종료')>=0 || s.toUpperCase()==='X');
 }
 
 // ════════════════════════ 공통 ════════════════════════
