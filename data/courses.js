@@ -75,9 +75,9 @@ window.COURSE_LIST = [
     weeks: [
       { week: 1, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w1.json', label: '1주차 · 고대가요', area: '고대가요', status: 'active' },
       { week: 2, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w2.json', label: '2주차 · 향가', area: '향가', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w3.json', label: '3주차 · 고려가요와 한시', area: '고려가요·한시', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w3.json', label: '3주차 · 고려가요', area: '고려가요', status: 'active' },
       { week: 4, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w4.json', label: '4주차 · 시조와 가사', area: '시조·가사', status: 'active' },
-      { week: 5, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w5.json', label: '5주차 · 시조', area: '시조', status: 'active' }
+      { week: 5, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w5.json', label: '5주차 · 가사', area: '가사', status: 'active' }
     ]
   },
   {
