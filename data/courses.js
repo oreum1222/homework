@@ -37,6 +37,14 @@ window.COURSE_LIST = [
           { week: 4, file: 'data/hw-go3-2606-w4.json', label: '4주차에 한 숙제 검사 · N제 15~18회 + 이매진', date: '7/3(금)~7/4(토)', area: '선택+이매진', status: 'active' }
         ]
       },
+      {
+        key: '2026-07', month: '7월', status: 'active', desc: '7월 수능완성 + 수능 기출 — 매일 한 항목씩, 완료한 것을 체크하세요.',
+        weeks: [
+          { week: 1, file: 'data/hw-go3-2607-w3.json', label: '7-3주차 · 수능완성 독서 + 2018수능', date: '7/17(금)~7/18(토)', area: '수능완성 독서', status: 'active' },
+          { week: 2, file: 'data/hw-go3-2607-w4.json', label: '7-4주차 · 수능완성 문학·선택 + 2019수능', date: '7/24(금)~7/25(토)', area: '수능완성 문학', status: 'active' },
+          { week: 3, file: 'data/hw-go3-2607-w5.json', label: '7-5주차 · 실전모의·선택 + 2020수능', date: '7/31(금)~8/1(토)', area: '실전모의·선택', status: 'active' }
+        ]
+      },
       // (9월·10월 등 다음 달은 여기에 months 항목 추가)
     ]
   },
