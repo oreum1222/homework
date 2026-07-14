@@ -128,6 +128,8 @@ body.landing .corner-logo{display:none}
 /* ─── Answer marking ─── */
 .area-block{margin-bottom:32px}
 .area-title{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.subject-divider{font-family:'Noto Serif KR',serif;color:var(--cream);font-size:1.15rem;font-weight:700;letter-spacing:1px;margin:34px 0 18px;padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,rgba(125,152,99,0.16),rgba(125,152,99,0.03));border-left:4px solid var(--ok)}
+.subject-divider:first-child{margin-top:6px}
 .area-title .sub{color:var(--text-muted);font-size:0.78rem;margin-left:10px;letter-spacing:0;font-weight:300}
 .q-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
 .q-item{display:flex;align-items:center;gap:10px;background:var(--bg-dark);border:1px solid var(--border-line);border-radius:4px;padding:10px 12px;cursor:pointer;transition:all 0.15s;user-select:none}
@@ -751,7 +753,12 @@ function renderStep2(){
     el('h2',{class:'section-title'},'오답 마킹'),
     el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항의 <strong>유형</strong>입니다.'})
   ));
-  secs.forEach((sec,si)=>{ root.appendChild(areaBlock(sec, si)); });
+  let _curGroup=null;
+  secs.forEach((sec,si)=>{
+    if(sec.group && sec.group!==_curGroup){ _curGroup=sec.group;
+      root.appendChild(el('div',{class:'subject-divider'}, sec.group)); }
+    root.appendChild(areaBlock(sec, si));
+  });
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
     el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();}}, STATE.data.checklist?'다음 → 이매진 체크':'다음 단계 →')

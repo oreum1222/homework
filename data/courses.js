@@ -74,23 +74,19 @@ window.COURSE_LIST = [
       { week: 3, file: 'data/hw-hanti-jong-h1-gojeonbeop-w3.json', label: '3주차 · 71~92 + 수능 1~12', area: '고전 문법', status: 'active' }
     ]
   },
-  // 고1 단과 = '고전 영역' 한 강좌. 과목 선택 없이 한 화면에서 위(고전 문학 1~5주차)→아래(고전 문법 1~4주차)로 쭉 스크롤.
+  // 고1 단과 = '고전 영역' 한 강좌. 주차(1~5) 선택 → 그 주차 안에서 고전 문학(위) 체크 후 스크롤하면 고전 문법(아래) 체크.
   {
     id: 'hanti-dan-h1-gojeon',
     name: '한티 MEXX 단과 고1 고전 영역',
     grade: '고1',
     period: '한티 MEXX 단과',
-    desc: '고1 고전 영역 — 위쪽 고전 문학(5주), 아래쪽 고전 문법(4주). 해당 주차를 선택하세요.',
+    desc: '고1 고전 영역 — 주차 안에서 고전 문학 먼저, 스크롤 내려 고전 문법을 체크하세요.',
     weeks: [
-      { week: 1, tag: '고전 문학', file: 'data/hw-hanti-dan-h1-gojeonmunhak-w1.json', label: '1주차 · 고대가요 (교재 58~59쪽)', area: '고대가요', status: 'active' },
-      { week: 2, tag: '고전 문학', file: 'data/hw-hanti-dan-h1-gojeonmunhak-w2.json', label: '2주차 · 향가 (교재 60~65쪽)', area: '향가', status: 'active' },
-      { week: 3, tag: '고전 문학', file: 'data/hw-hanti-dan-h1-gojeonmunhak-w3.json', label: '3주차 · 고려가요 (교재 66~77쪽)', area: '고려가요', status: 'active' },
-      { week: 4, tag: '고전 문학', file: 'data/hw-hanti-dan-h1-gojeonmunhak-w4.json', label: '4주차 · 시조와 가사 (교재 78~137쪽)', area: '시조·가사', status: 'active' },
-      { week: 5, tag: '고전 문학', file: 'data/hw-hanti-dan-h1-gojeonmunhak-w5.json', label: '5주차 · 가사 (교재 138~207쪽)', area: '가사', status: 'active' },
-      { week: 6, tag: '고전 문법', file: 'data/hw-hanti-dan-h1-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
-      { week: 7, tag: '고전 문법', file: 'data/hw-hanti-dan-h1-gojeonbeop-w2.json', label: '2주차 · 27~52', area: '고전 문법', status: 'active' },
-      { week: 8, tag: '고전 문법', file: 'data/hw-hanti-dan-h1-gojeonbeop-w3.json', label: '3주차 · 53~78', area: '고전 문법', status: 'active' },
-      { week: 9, tag: '고전 문법', file: 'data/hw-hanti-dan-h1-gojeonbeop-w4.json', label: '4주차 · 79~92 + 수능 기출', area: '고전 문법', status: 'active' }
+      { week: 1, file: 'data/hw-hanti-dan-h1-gojeon-w1.json', label: '1주차 · 고대가요 + 고전 문법 1~26', area: '문학+문법', status: 'active' },
+      { week: 2, file: 'data/hw-hanti-dan-h1-gojeon-w2.json', label: '2주차 · 향가 + 고전 문법 27~52', area: '문학+문법', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-dan-h1-gojeon-w3.json', label: '3주차 · 고려가요 + 고전 문법 53~78', area: '문학+문법', status: 'active' },
+      { week: 4, file: 'data/hw-hanti-dan-h1-gojeon-w4.json', label: '4주차 · 시조와 가사 + 고전 문법 79~92', area: '문학+문법', status: 'active' },
+      { week: 5, file: 'data/hw-hanti-dan-h1-gojeon-w5.json', label: '5주차 · 가사 (고전 문학)', area: '고전 문학', status: 'active' }
     ]
   },
   {
