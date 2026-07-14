@@ -492,7 +492,7 @@ function renderWeeks(courseId, monthKey){
     if(tentative) card.style.opacity='0.6';
     card.appendChild(el('div',{class:'card-top'},
       el('div',{class:'card-meta-left'},
-        el('span',{class:'card-num'}, '주차 '+String(w.week).padStart(2,'0')),
+        el('span',{class:'card-num'}, w.tag || ('주차 '+String(w.week).padStart(2,'0'))),
         w.area ? el('span',{class:'card-grade'}, w.area) : null,
         el('span',{class:'card-status '+statusClass(w.status)}, statusLabel(w.status)),
         w.date ? el('span',{class:'card-date'}, '검사일 '+w.date) : null
