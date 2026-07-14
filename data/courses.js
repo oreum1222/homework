@@ -66,31 +66,36 @@ window.COURSE_LIST = [
       { week: 3, file: 'data/hw-hanti-jong-h1-gojeonbeop-w3.json', label: '3주차 · 71~92 + 수능 1~12', area: '고전 문법', status: 'active' }
     ]
   },
+  // 고1 단과 = '고전 영역' 한 강좌 안에서 고전 문학 / 고전 문법을 과목으로 선택 (반→과목→주차)
   {
-    id: 'hanti-dan-h1-gojeonmunhak',
-    name: '한티 MEXX 단과 고1 고전 문학',
+    id: 'hanti-dan-h1-gojeon',
+    name: '한티 MEXX 단과 고1 고전 영역',
     grade: '고1',
     period: '한티 MEXX 단과',
-    desc: '고1 고전 문학 — 5주 과정. 작품(세트)별로 틀린 문항을 교재 번호 그대로 체크하세요.',
-    weeks: [
-      { week: 1, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w1.json', label: '1주차 · 고대가요', area: '고대가요', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w2.json', label: '2주차 · 향가', area: '향가', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w3.json', label: '3주차 · 고려가요', area: '고려가요', status: 'active' },
-      { week: 4, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w4.json', label: '4주차 · 시조와 가사', area: '시조·가사', status: 'active' },
-      { week: 5, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w5.json', label: '5주차 · 가사', area: '가사', status: 'active' }
-    ]
-  },
-  {
-    id: 'hanti-dan-h1-gojeonbeop',
-    name: '한티 MEXX 단과 고1 고전 문법',
-    grade: '고1',
-    period: '한티 MEXX 단과',
-    desc: '고1 고전 문법 — 4주 과정(주당 26문항). 틀린 문항을 교재 번호 그대로 체크하세요.',
-    weeks: [
-      { week: 1, file: 'data/hw-hanti-dan-h1-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-dan-h1-gojeonbeop-w2.json', label: '2주차 · 27~52', area: '고전 문법', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h1-gojeonbeop-w3.json', label: '3주차 · 53~78', area: '고전 문법', status: 'active' },
-      { week: 4, file: 'data/hw-hanti-dan-h1-gojeonbeop-w4.json', label: '4주차 · 79~92 + 수능 1~12', area: '고전 문법', status: 'active' }
+    desc: '고1 고전 영역 — 고전 문학(5주) + 고전 문법(4주). 과목을 고르고 주차를 선택하세요.',
+    groupLabel: '과목',   // months를 '월'이 아니라 '과목'(문학/문법)으로 표시
+    months: [
+      {
+        key: 'munhak', month: '고전 문학', status: 'active',
+        desc: '고전 문학 5주 — 작품(세트)별로 틀린 문항을 교재 번호 그대로 체크하세요. (교재 58~207쪽)',
+        weeks: [
+          { week: 1, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w1.json', label: '1주차 · 고대가요 (교재 58~59쪽)', area: '고대가요', status: 'active' },
+          { week: 2, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w2.json', label: '2주차 · 향가 (교재 60~65쪽)', area: '향가', status: 'active' },
+          { week: 3, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w3.json', label: '3주차 · 고려가요 (교재 66~77쪽)', area: '고려가요', status: 'active' },
+          { week: 4, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w4.json', label: '4주차 · 시조와 가사 (교재 78~137쪽)', area: '시조·가사', status: 'active' },
+          { week: 5, file: 'data/hw-hanti-dan-h1-gojeonmunhak-w5.json', label: '5주차 · 가사 (교재 138~207쪽)', area: '가사', status: 'active' }
+        ]
+      },
+      {
+        key: 'munbeop', month: '고전 문법', status: 'active',
+        desc: '고전 문법 4주 — 주당 약 26문항. 틀린 문항을 교재 번호 그대로 체크하세요.',
+        weeks: [
+          { week: 1, file: 'data/hw-hanti-dan-h1-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
+          { week: 2, file: 'data/hw-hanti-dan-h1-gojeonbeop-w2.json', label: '2주차 · 27~52', area: '고전 문법', status: 'active' },
+          { week: 3, file: 'data/hw-hanti-dan-h1-gojeonbeop-w3.json', label: '3주차 · 53~78', area: '고전 문법', status: 'active' },
+          { week: 4, file: 'data/hw-hanti-dan-h1-gojeonbeop-w4.json', label: '4주차 · 79~92 + 수능 기출', area: '고전 문법', status: 'active' }
+        ]
+      }
     ]
   },
   {

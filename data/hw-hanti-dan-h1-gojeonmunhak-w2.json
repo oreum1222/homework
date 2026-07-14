@@ -1,13 +1,15 @@
 {
  "_doc": "고전 문학 2주차 · 향가. 교재(0708판) 쪽 기준 재배치. title=작품명(출처), label=교재 문항번호, area=갈래.",
- "courseId": "hanti-dan-h1-gojeonmunhak",
+ "courseId": "hanti-dan-h1-gojeon",
  "week": 2,
  "weekMeta": {
   "id": "hanti-dan-h1-gojeonmunhak-w2",
-  "label": "2주차 · 향가",
+  "label": "고전문학 2주차 · 향가",
   "area": "향가",
   "date": "",
-  "desc": "고전 문학 2주차 · 향가"
+  "desc": "고전 문학 2주차 · 향가",
+  "courseId": "hanti-dan-h1-gojeon",
+  "month": "고전 문학"
  },
  "scoring": {
   "passRate": 80
