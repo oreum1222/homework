@@ -1,13 +1,15 @@
 {
  "_doc": "고전 문법 4주차 · 79~92 + 수능 기출. label=교재 문항번호, 해설=원문, 영역=자동분류. 강좌03/05 공유 104문제.",
- "courseId": "hanti-dan-h1-gojeonbeop",
+ "courseId": "hanti-dan-h1-gojeon",
  "week": 4,
  "weekMeta": {
   "id": "hanti-dan-h1-gojeonbeop-w4",
-  "label": "4주차 · 79~92 + 수능 기출",
+  "label": "고전문법 4주차 · 79~92 + 수능 기출",
   "area": "고전 문법",
   "date": "",
-  "desc": "고전 문법 4주차 · 79~92 + 수능 기출"
+  "desc": "고전 문법 4주차 · 79~92 + 수능 기출",
+  "courseId": "hanti-dan-h1-gojeon",
+  "month": "고전 문법"
  },
  "scoring": {
   "passRate": 80

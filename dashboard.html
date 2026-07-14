@@ -465,7 +465,7 @@ let SCRIPT_URL=null, DASH_PASSWORD=null, BRAND='오름 국어 연구소', TEACHE
 const COURSES = window.COURSE_LIST || [];
 const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 // 삭제된(과거) 반 — 제출 이력이 남아 있어 반명만 유지 (드롭다운·리포트에 raw ID 대신 표시)
-const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머)' };
+const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머)', 'hanti-dan-h1-gojeonmunhak':'단과 고1 고전 영역(문학)', 'hanti-dan-h1-gojeonbeop':'단과 고1 고전 영역(문법)' };
 Object.keys(LEGACY_COURSE_NAME).forEach(k=>{ if(!COURSE_NAME[k]) COURSE_NAME[k]=LEGACY_COURSE_NAME[k]; });
 // 상담 시드 — 이미 상담한 학생 자동 채움(저장분 없을 때만). 키=이름(공백/괄호 무시)
 const NL_CONSULT_SEED = {

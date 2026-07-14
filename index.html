@@ -422,10 +422,11 @@ function renderMonths(courseId){
   document.body.classList.remove('landing');
   clear(root);
   root.appendChild(el('div',{class:'back-bar'}, el('button',{class:'back-link',onclick:renderCourses},'← 수업 선택으로')));
+  const gLab = course.groupLabel || '월';
   root.appendChild(el('div',{class:'diag-header'},
-    el('span',{class:'exam-tag'},'수업 · 월 선택'),
+    el('span',{class:'exam-tag'},'수업 · '+gLab+' 선택'),
     el('h1',{class:'diag-title'}, course.name),
-    el('p',{class:'diag-sub'}, (course.desc||'')+' · 검사할 월을 선택해 주세요.')
+    el('p',{class:'diag-sub'}, (course.desc||'')+' · 검사할 '+gLab+'을 선택해 주세요.')
   ));
   const months = course.months||[];
   if(!months.length){ root.appendChild(el('div',{class:'error-box'},'아직 등록된 월이 없습니다.')); appendFooter(); return; }
@@ -437,7 +438,7 @@ function renderMonths(courseId){
     if(tentative) card.style.opacity='0.6';
     card.appendChild(el('div',{class:'card-top'},
       el('div',{class:'card-meta-left'},
-        el('span',{class:'card-num'}, 'MONTH '+String(i+1).padStart(2,'0')),
+        el('span',{class:'card-num'}, course.groupLabel ? (course.groupLabel+' '+(i+1)) : ('MONTH '+String(i+1).padStart(2,'0'))),
         el('span',{class:'card-status '+statusClass(m.status)}, statusLabel(m.status))
       ),
       el('span',{class:'card-arrow'},'→')
