@@ -469,6 +469,10 @@ const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 // 삭제된(과거) 반 — 제출 이력이 남아 있어 반명만 유지 (드롭다운·리포트에 raw ID 대신 표시)
 const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머)', 'hanti-dan-h1-gojeonmunhak':'단과 고1 고전 영역(문학)', 'hanti-dan-h1-gojeonbeop':'단과 고1 고전 영역(문법)' };
 Object.keys(LEGACY_COURSE_NAME).forEach(k=>{ if(!COURSE_NAME[k]) COURSE_NAME[k]=LEGACY_COURSE_NAME[k]; });
+// 대시보드에 표시할 '현재 운영 중' 반만 화이트리스트. 나머지(실험용·과거 반)는 결과값에서 숨김.
+// (강좌 정의·학생 페이지는 그대로 두고, 강사 대시보드 조회/집계에서만 제한)
+const DASH_COURSES = ['go3-regular','hanti-dan-h1-gojeon','hanti-dan-h2-hwaeon'];
+function courseShown(id){ return DASH_COURSES.indexOf(String(id||''))>=0; }
 // 상담 시드 — 이미 상담한 학생 자동 채움(저장분 없을 때만). 키=이름(공백/괄호 무시)
 const NL_CONSULT_SEED = {
   '한유주':{ curr:"내신 2등급, 수시 최저 3합 6 (영어, 국어, 탐구) → 국어는 2등급 이상 확보가 필요합니다.",
@@ -530,10 +534,10 @@ function weekShort(w){ const l=WLAB[w]; return l ? l.split('·')[0].trim() : dec
 function populateSelectors(){
   const cs=document.getElementById('courseSelect'), cur=cs.value;
   const map=new Map();
-  // 1) 강좌 레지스트리 먼저 — 데이터 로딩 전에도, 제출이 0인 반도 항상 선택 가능
-  (COURSES||[]).forEach(c=>{ if(c && c.id && !map.has(c.id)) map.set(c.id, COURSE_NAME[c.id]||c.name||c.id); });
-  // 2) 레지스트리에 없는(과거 강좌 등) 제출만 있는 수업 보강
-  ALL_DATA.forEach(r=>{ const id=val(r,'courseId','수업ID'); if(id && !map.has(id)) map.set(id, COURSE_NAME[id]||val(r,'courseLabel','수업명')||id); });
+  // 1) 강좌 레지스트리 먼저 — 데이터 로딩 전에도, 제출이 0인 반도 항상 선택 가능 (현재 운영 반만)
+  (COURSES||[]).forEach(c=>{ if(c && c.id && courseShown(c.id) && !map.has(c.id)) map.set(c.id, COURSE_NAME[c.id]||c.name||c.id); });
+  // 2) 레지스트리에 없는(과거 강좌 등) 제출만 있는 수업 보강 (현재 운영 반만)
+  ALL_DATA.forEach(r=>{ const id=val(r,'courseId','수업ID'); if(id && courseShown(id) && !map.has(id)) map.set(id, COURSE_NAME[id]||val(r,'courseLabel','수업명')||id); });
   cs.innerHTML='<option value="all">전체 수업</option>';
   Array.from(map.entries()).forEach(([id,name])=>{ const o=document.createElement('option'); o.value=id; o.textContent=name; cs.appendChild(o); });
   if(cur && Array.from(cs.options).some(o=>o.value===cur)) cs.value=cur;
@@ -542,7 +546,7 @@ function populateSelectors(){
 function populateWeekSelect(){
   const ws=document.getElementById('weekSelect'), course=document.getElementById('courseSelect').value, cur=ws.value;
   const weeks=new Set();
-  ALL_DATA.forEach(r=>{ if(course==='all'||val(r,'courseId','수업ID')===course){ const w=val(r,'week','주차'); if(w) weeks.add(w); } });
+  ALL_DATA.forEach(r=>{ const rc=val(r,'courseId','수업ID'); if(!courseShown(rc)) return; if(course==='all'||rc===course){ const w=val(r,'week','주차'); if(w) weeks.add(w); } });
   ws.innerHTML='<option value="all">전체 주차</option>';
   Array.from(weeks).sort((a,b)=>(+a)-(+b)).forEach(w=>{ const o=document.createElement('option'); o.value=w; o.textContent=weekDisp(w); ws.appendChild(o); });
   if(cur && Array.from(ws.options).some(o=>o.value===cur)) ws.value=cur;
@@ -553,6 +557,7 @@ function renderStatsAndTable(){
   const week=document.getElementById('weekSelect').value;
   const search=document.getElementById('searchInput').value.toLowerCase().trim();
   let rows=ALL_DATA.slice();
+  rows=rows.filter(r=>courseShown(val(r,'courseId','수업ID')) && !isTestName(val(r,'name','이름')));   // 현재 운영 반 + 테스트 계정 제외
   if(course!=='all') rows=rows.filter(r=>val(r,'courseId','수업ID')===course);
   if(week!=='all') rows=rows.filter(r=>val(r,'week','주차')===week);
   if(search) rows=rows.filter(r=>(val(r,'name','이름').toLowerCase().includes(search)||val(r,'school','학교').toLowerCase().includes(search)));
@@ -627,7 +632,7 @@ function switchTab(t){
 var NLW={dict:null,loading:false,course:'all',student:'',checks:{},data:{},_sent:{},_dataLines:[]};
 function nlRefreshSelects_(){   // REP.master/SMS.roster 도착 후 강좌·학생 셀렉트 갱신
   const cs=document.getElementById('nlCourse'); if(!cs) return;
-  const cids=Array.from(new Set([].concat((REP.master||[]).map(m=>m.courseId),(SMS.roster||[]).map(r=>r.courseId)).filter(c=>c&&c!=='courseId')));
+  const cids=Array.from(new Set([].concat((REP.master||[]).map(m=>m.courseId),(SMS.roster||[]).map(r=>r.courseId)).filter(c=>c&&c!=='courseId'&&courseShown(c))));
   cs.innerHTML='<option value="all">전체 수업</option>'+cids.map(cid=>'<option value="'+cid+'"'+(NLW.course===cid?' selected':'')+'>'+esc(COURSE_NAME[cid]||cid)+'</option>').join('');
   cs._filled=true;
   nlRenderStudents();
@@ -1081,7 +1086,7 @@ function smsInit(){
   const sel=document.getElementById('smsCourse');
   if(sel && !sel.dataset.filled){
     let html='<option value="">수업 선택…</option>';
-    (window.COURSE_LIST||[]).forEach(c=>{ html+='<option value="'+c.id+'">'+esc(c.name)+'</option>'; });
+    (window.COURSE_LIST||[]).forEach(c=>{ if(!courseShown(c.id)) return; html+='<option value="'+c.id+'">'+esc(c.name)+'</option>'; });
     sel.innerHTML=html; sel.dataset.filled='1';
     ['missing','incomplete','done'].forEach(k=>{ const ta=document.getElementById('smsText_'+k); if(ta&&!ta.value) ta.value=SMS_TEMPLATES[k]; });
   }
@@ -1469,7 +1474,7 @@ function kstDateStr(v){ // ISO/타임스탬프 또는 yyyy-mm-dd → KST 'yyyy-m
   return k.getUTCFullYear()+'-'+p(k.getUTCMonth()+1)+'-'+p(k.getUTCDate());
 }
 function normNameR(s){ return String(s||'').replace(/[\s\[\]（）()｛｝{}]/g,''); }   // 이름 정규화(매칭용)
-var EXCLUDE_NAMES=['심재영'];   // 다른 반 학생 등 — 집계·화면에서 완전 제외
+var EXCLUDE_NAMES=['심재영','김람쥐'];   // 테스트 계정·다른 반 학생 등 — 집계·화면에서 완전 제외
 function isTestName(nm){ const n=normNameR(nm); if(EXCLUDE_NAMES.indexOf(n)>=0) return true; return n.indexOf('실험용')>=0||n.indexOf('테스트')>=0||n.toLowerCase()==='test'; }
 var OVR={loaded:false,_loading:false,set:new Set(),byName:new Set()};   // 예외처리: set='courseId|week|normName', byName='courseId|normName'
 function setOVR_(arr){ OVR.set=new Set(); OVR.byName=new Set(); (arr||[]).forEach(o=>{ const cid=String(o.courseId||''), nm=normNameR(o.name); OVR.set.add(cid+'|'+String(o.week)+'|'+nm); OVR.byName.add(cid+'|'+nm); }); OVR.loaded=true; }
@@ -1510,6 +1515,7 @@ function buildReports(){
   (ALL_DATA||[]).forEach(r=>{
     let name=val(r,'name','이름').trim(); if(!name||EXCLUDE[name]||isTestName(name)) return;   // 테스트·제외명단 숨김
     const cid=val(r,'courseId','수업ID').trim(); if(!cid) return;
+    if(!courseShown(cid)) return;   // 현재 운영 중인 반만 (실험용·과거 반 제외)
     const week=parseInt(val(r,'week','주차'),10)||0;
     const gkey=cid+'||'+name;
     if(!groups[gkey]) groups[gkey]={name, courseId:cid, courseName:COURSE_NAME[cid]||val(r,'courseLabel','수업명')||cid, school:null, weeks:{}};
