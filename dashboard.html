@@ -186,7 +186,9 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 @media print{ body{background:#fff}.tabs,.rep-toolbar,.no-print,h1,.sub{display:none!important}.repcard{break-inside:avoid;page-break-after:always;border:1px solid #ccc;background:#fff} }
 @media (max-width:640px){ .rc-row1{grid-template-columns:1fr}.rspark{width:100%}.rdonut-wrap{flex-direction:column;align-items:flex-start} }
 /* ── 주차별 과제 현황 아코디언 ── */
-.wk-course{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:0.92rem;letter-spacing:1px;margin:14px 0 8px}
+.wk-course{font-family:'Noto Serif KR',serif;color:var(--gold);font-size:1rem;font-weight:700;letter-spacing:.5px;margin:20px 0 10px;padding:7px 12px;border-left:4px solid var(--gold);background:linear-gradient(90deg,rgba(212,180,131,.14),transparent);border-radius:0 6px 6px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wk-course:first-child{margin-top:2px}
+.wk-course .wk-csum{font-family:'Noto Sans KR',sans-serif;font-size:0.72rem;font-weight:600;color:var(--text-muted);letter-spacing:0}
 .wk-acc{border:1px solid var(--border-line);border-radius:8px;margin-bottom:8px;background:var(--bg-dark);overflow:hidden}
 .wk-acc>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'Noto Serif KR',serif;color:var(--cream);font-size:0.9rem;user-select:none}
 .wk-acc>summary::-webkit-details-marker{display:none}
@@ -1743,7 +1745,8 @@ function wkGrp_(title, arr, cls, cid, w){
 function weekStatusPanel(master){
   const rosterByCourse={};
   (SMS.roster||[]).forEach(r=>{ const cid=String(r.courseId||''); if(!cid||isTestName(r.name)) return; if(typeof rosterActiveJS==='function'&&!rosterActiveJS(r)) return; const k=normNameR(r.name); if(!k) return; (rosterByCourse[cid]=rosterByCourse[cid]||new Map()).set(k, String(r.name).trim()); });
-  const courses = REP.course!=='all' ? [REP.course] : Array.from(new Set(master.map(m=>m.courseId)));
+  // 주차별 과제 현황은 항상 반(수업)별로 묶어 전부 표시 — 위 강좌 탭 선택과 무관하게 모든 반을 한눈에.
+  const courses = Array.from(new Set(master.map(m=>m.courseId)));
   let out='';
   courses.forEach(cid=>{
     const byWeek={};
@@ -1754,7 +1757,7 @@ function weekStatusPanel(master){
     const weeks=Object.keys(byWeek).map(Number).sort((a,b)=>b-a);
     if(!weeks.length) return;
     const rmap=rosterByCourse[cid];
-    let cHtml='';
+    let cHtml=''; let cResp=0,cPart=0,cDone=0;
     weeks.forEach((w,wi)=>{
       const sub=byWeek[w], universe=new Map();
       if(rmap){   // 명단 표기(괄호 구분자)와 제출 표기가 달라도 같은 학생으로 합침 — 동명이인은 제외
@@ -1777,15 +1780,17 @@ function weekStatusPanel(master){
       resp.sort((a,b)=>(a.ov?1:0)-(b.ov?1:0) || String(a.name).localeCompare(b.name));   // 예외는 뒤로(문자 대상 먼저)
       part.sort((a,b)=>(a.dr||0)-(b.dr||0)); done.sort((a,b)=>(b.dr||0)-(a.dr||0));
       const respEx=resp.filter(x=>x.ov).length;
+      cResp+=resp.length; cPart+=part.length; cDone+=done.length;
       cHtml+='<details class="wk-acc"'+(wi===0?' open':'')+'><summary>'+esc(weekShort(w))
         +' <span class="wk-cnt resp">미응답 '+resp.length+(respEx?' · 예외 '+respEx:'')+'</span><span class="wk-cnt part">미완료 '+part.length+'</span><span class="wk-cnt done">완료 '+done.length+'</span></summary>'
         +wkGrp_('미응답',resp,'resp',cid,w)+wkGrp_('미완료',part,'part',cid,w)+wkGrp_('완료',done,'done',cid,w)+'</details>';
     });
-    out+=(REP.course==='all'?'<div class="wk-course">'+esc(COURSE_NAME[cid]||cid)+'</div>':'')+cHtml;
+    out+='<div class="wk-course">'+esc(COURSE_NAME[cid]||cid)
+      +'<span class="wk-csum">미응답 '+cResp+' · 미완료 '+cPart+' · 완료 '+cDone+'</span></div>'+cHtml;
   });
   if(!out) return '';
   const rn = SMS.loaded?'':' <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(명단 불러오는 중 — 미응답 곧 정확해짐)</span>';
-  return '<div class="miss-panel" style="border-left-color:var(--gold);border-color:rgba(212,180,131,.3)"><div class="miss-title" style="color:var(--gold)">📋 주차별 과제 현황 <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(미응답=제출없음 · 미완료=해결 71%↓ · 완료=71%↑ · 이름 클릭=예외처리[보류·결석, 문자 제외])</span>'+rn+'</div>'+out+'</div>';
+  return '<div class="miss-panel" style="border-left-color:var(--gold);border-color:rgba(212,180,131,.3)"><div class="miss-title" style="color:var(--gold)">📋 주차별 과제 현황 <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(반별 · 위 강좌 선택과 무관하게 모든 반 표시 · 미응답=제출없음 · 미완료=해결 71%↓ · 완료=71%↑ · 이름 클릭=예외처리[보류·결석, 문자 제외])</span>'+rn+'</div>'+out+'</div>';
 }
 function renderReports(){
   const root=document.getElementById('reportRoot'), note=document.getElementById('repNote');
@@ -1813,7 +1818,7 @@ function renderReports(){
   }
   // ── 주차별 과제 현황 (아코디언: 미응답/미완료/완료) ──
   ensureReportData();   // 명단+예외처리 로드(1회) → 완료 시 자동 재렌더
-  let undoneHtml=weekStatusPanel(master);
+  let undoneHtml=weekStatusPanel(REP.master);   // 항상 전체 반(수업) 기준으로 반별 표시
 
   // ── 순위 계산: 수업별, 코멘트 대상 주차의 정답률 기준 ──
   const trate=m=>{ const tw=REP.week; if(tw==='latest') return m.rates[m.rates.length-1]; const idx=m.seq.indexOf(+tw); return idx>=0?m.rates[idx]:null; };
