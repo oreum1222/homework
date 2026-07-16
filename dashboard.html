@@ -508,6 +508,7 @@ function loadData(){
     tableBox.innerHTML='<div class="empty">설정 필요</div>'; return;
   }
   tableBox.innerHTML='<div class="empty">불러오는 중...</div>';
+  populateSelectors();   // 데이터 오기 전에도 강좌 드롭다운을 레지스트리로 즉시 채움
   fetch(SCRIPT_URL+'?action=list&t='+Date.now()).then(r=>r.json()).then(d=>{
     ALL_DATA = Array.isArray(d)?d:(d.data||[]);
     buildWLAB();
@@ -529,6 +530,9 @@ function weekShort(w){ const l=WLAB[w]; return l ? l.split('·')[0].trim() : dec
 function populateSelectors(){
   const cs=document.getElementById('courseSelect'), cur=cs.value;
   const map=new Map();
+  // 1) 강좌 레지스트리 먼저 — 데이터 로딩 전에도, 제출이 0인 반도 항상 선택 가능
+  (COURSES||[]).forEach(c=>{ if(c && c.id && !map.has(c.id)) map.set(c.id, COURSE_NAME[c.id]||c.name||c.id); });
+  // 2) 레지스트리에 없는(과거 강좌 등) 제출만 있는 수업 보강
   ALL_DATA.forEach(r=>{ const id=val(r,'courseId','수업ID'); if(id && !map.has(id)) map.set(id, COURSE_NAME[id]||val(r,'courseLabel','수업명')||id); });
   cs.innerHTML='<option value="all">전체 수업</option>';
   Array.from(map.entries()).forEach(([id,name])=>{ const o=document.createElement('option'); o.value=id; o.textContent=name; cs.appendChild(o); });
