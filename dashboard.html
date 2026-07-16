@@ -469,10 +469,13 @@ const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 // 삭제된(과거) 반 — 제출 이력이 남아 있어 반명만 유지 (드롭다운·리포트에 raw ID 대신 표시)
 const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머)', 'hanti-dan-h1-gojeonmunhak':'단과 고1 고전 영역(문학)', 'hanti-dan-h1-gojeonbeop':'단과 고1 고전 영역(문법)' };
 Object.keys(LEGACY_COURSE_NAME).forEach(k=>{ if(!COURSE_NAME[k]) COURSE_NAME[k]=LEGACY_COURSE_NAME[k]; });
-// 대시보드에 표시할 '현재 운영 중' 반만 화이트리스트. 나머지(실험용·과거 반)는 결과값에서 숨김.
-// (강좌 정의·학생 페이지는 그대로 두고, 강사 대시보드 조회/집계에서만 제한)
-const DASH_COURSES = ['go3-regular','hanti-dan-h1-gojeon','hanti-dan-h2-hwaeon'];
-function courseShown(id){ return DASH_COURSES.indexOf(String(id||''))>=0; }
+// 대시보드에서 '숨길' 반만 지정(블록리스트). 나머지는 전부 표시 →
+// courses.js에 새 반을 추가하면 대시보드 코드 수정 없이 자동으로 나타납니다.
+//  · 레지스트리 안 반은 courses.js에서 hidden:true 를 주면 여기서 자동 반영
+//  · 레지스트리에 없는 과거 제출 전용 반(실험용·구버전)은 아래에 ID로 명시
+const DASH_HIDDEN = new Set(['summer-grammar','hanti-dan-h1-gojeonmunhak']);   // 실험용/구버전(제출 이력만 있음)
+(COURSES||[]).forEach(c=>{ if(c && c.id && c.hidden) DASH_HIDDEN.add(c.id); }); // courses.js hidden:true 반영
+function courseShown(id){ return !DASH_HIDDEN.has(String(id||'')); }
 // 상담 시드 — 이미 상담한 학생 자동 채움(저장분 없을 때만). 키=이름(공백/괄호 무시)
 const NL_CONSULT_SEED = {
   '한유주':{ curr:"내신 2등급, 수시 최저 3합 6 (영어, 국어, 탐구) → 국어는 2등급 이상 확보가 필요합니다.",

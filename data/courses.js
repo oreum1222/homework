@@ -55,6 +55,7 @@ window.COURSE_LIST = [
     name: '한티 MEXX 종합반 중3 현대문법',
     grade: '중3',
     period: '한티 MEXX 종합반',
+    hidden: true,   // 대시보드 조회/집계에서 숨김(현재 미운영). 다시 열려면 이 줄 삭제.
     desc: '중3 현대문법 — 3주 과정(품사 · 문장성분 · 형태소와 단어).',
     weeks: [
       { week: 1, file: 'data/hw-hanti-jong-m3-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
@@ -67,6 +68,7 @@ window.COURSE_LIST = [
     name: '한티 MEXX 종합반 고1 고전문법',
     grade: '고1',
     period: '한티 MEXX 종합반',
+    hidden: true,   // 대시보드 조회/집계에서 숨김(현재 미운영). 다시 열려면 이 줄 삭제.
     desc: '고1 고전문법 — 3주 과정(주당 약 35문항). 틀린 문항을 교재 번호 그대로 체크하세요.',
     weeks: [
       { week: 1, file: 'data/hw-hanti-jong-h1-gojeonbeop-w1.json', label: '1주차 · 1~35', area: '고전 문법', status: 'active' },
