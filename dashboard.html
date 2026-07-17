@@ -1426,7 +1426,7 @@ function genPerQuestion(pw){
   const shortT=t=>String(t||'').split(/[,\/]/)[0].trim();
   const tipFor=q=>{ let t=(q.remediation||'').split(/[.。]/)[0].trim(); if(!t) t=(q.weakness1||'').split(/[.。]/)[0].trim(); return t; };
   const lines=(pw.wrongDetails||[]).slice().sort((a,b)=>(a.no||0)-(b.no||0)).map(q=>{
-    const label=(q.label?q.label:(q.no+'번'));
+    const label=wrongLabel(q);
     const type=shortT(q.type)|| (q.area||'');
     const tip=tipFor(q);
     return '· '+label+(type?' ('+type+')':'')+(tip?' — '+tip:'');
@@ -1456,6 +1456,16 @@ function wrongsOf(r){
   const wd=jparse(val(r,'wrongDetailsJson','wrongDetailsJson'));
   if(Array.isArray(wd)&&wd.length){ const ns=wd.map(x=>x&&x.no).filter(n=>n!=null&&n!==''); if(ns.length) return ns.map(String); }
   return repWrongs(val(r,'틀린문항','틀린문항'));
+}
+// 오답 문항 표시명 — N제/선택과목처럼 회차별(35~45번)로 매긴 과제는 번호가 '회차×100+문항'으로 저장됨.
+//  area/source에 'N회'가 있으면 '15회 38번'으로 풀어 표기. (일반 과제는 그대로 'N번')
+function wrongLabel(q){
+  if(!q) return '';
+  if(q.label) return q.label;
+  const no=Number(q.no);
+  const m=String(q.area||q.source||'').match(/(\d+)\s*회/);
+  if(m && !isNaN(no) && no>=100) return m[1]+'회 '+(no%100)+'번';
+  return (isNaN(no)?q.no:no)+'번';
 }
 function repTrend(rates){ if(rates.length<2) return '단일'; const d=rates[rates.length-1]-rates[0]; return d>=8?'상승':d<=-8?'하락':'유지'; }
 function doneRateFromLabel(l){ return {'전부 끝냄':100,'대부분(70% 이상)':85,'절반쯤':50,'조금만(30% 이하)':25,'아직 시작 못 함':0}[l]; }
@@ -1705,7 +1715,11 @@ function rWeekRows(m){
     const scored = !(pw.rate===0 && pw.wrongN===0);
     let scoreCell, wrongTxt;
     if(scored){
-      wrongTxt = pw.wrongs.length ? pw.wrongs.map(w=>(/^\d{6,}$/.test(w)?'기록오류⚠':w+'번')).join(', ') : '—';
+      if(pw.wrongDetails && pw.wrongDetails.length){
+        wrongTxt = pw.wrongDetails.slice().sort((a,b)=>(a.no||0)-(b.no||0)).map(wrongLabel).join(', ');
+      } else {
+        wrongTxt = pw.wrongs.length ? pw.wrongs.map(w=>(/^\d{6,}$/.test(w)?'기록오류⚠':w+'번')).join(', ') : '—';
+      }
       scoreCell = `<span style="color:${rRateCol(pw.rate)}">${pw.rate}% · ${pw.wrongN}틀림</span>`;
     } else {
       const dr = pwDoneRate(pw);
