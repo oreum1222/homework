@@ -259,6 +259,15 @@ body.landing .corner-logo{display:none}
 .notsolved-btn.on{background:#d68a8a;color:#241010;border-color:#d68a8a}
 .q-grid.grid-disabled{opacity:0.35;pointer-events:none;filter:grayscale(0.6)}
 .notsolved-note{margin-top:10px;font-size:0.85rem;color:#d6a96a;font-weight:600}
+/* 과제 완수율 입력 카드 */
+.comp-card{border:1.5px solid rgba(95,198,163,.4);background:linear-gradient(180deg,rgba(95,198,163,.08),transparent)}
+.comp-title{font-size:1.05rem;font-weight:700;color:var(--gold,#5fc6a3);margin-bottom:6px}
+.comp-desc{font-size:0.9rem;color:var(--text-dim,#9fb0ad);line-height:1.5;margin-bottom:14px}
+.comp-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.comp-total,.comp-unit{font-size:0.98rem;font-weight:600;color:var(--text,#e7f0ee)}
+.comp-input{width:88px;font-size:1.15rem;font-weight:700;text-align:center;padding:8px 6px;border-radius:9px;border:1.5px solid rgba(95,198,163,.55);background:rgba(0,0,0,.18);color:var(--gold,#5fc6a3)}
+.comp-input:focus{outline:none;border-color:var(--gold,#5fc6a3)}
+.comp-rate{margin-left:6px;font-size:0.92rem;font-weight:700;color:var(--gold,#5fc6a3);white-space:nowrap}
 /* 재검사 방법 */
 .oath-method{margin:18px 0 4px;padding:18px 20px;border-radius:10px;background:rgba(95,198,163,.08);border:1px solid rgba(95,198,163,.3)}
 .oath-method>label{display:block;font-weight:700;color:var(--cream,#e8eef0);font-size:1.1rem;margin-bottom:10px}
@@ -526,7 +535,7 @@ function loadWeek(courseId, monthKey, week){
     document.getElementById('loading').style.display='none';
     STATE.data = d;
     STATE.week = monthKey ? weekUid : (d.week!=null ? d.week : week);
-    STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.notSolved = new Set(); STATE.studyAns = {}; STATE.result = null;
+    STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.notSolved = new Set(); STATE.solvedTotal = null; STATE.studyAns = {}; STATE.result = null;
     STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null; STATE.oathMethod = null;
     renderDiag();
   }).catch(err=>{
@@ -749,9 +758,26 @@ function renderStep2(){
     ));
     return;
   }
+  // ── 과제 완수율 입력 (오답 기입 전) ── 주차 전체 문항 중 실제로 푼 문항 수
+  const weekTotal = secs.reduce((n,s)=>n+((s.questions||[]).length),0);
+  if(STATE.solvedTotal==null) STATE.solvedTotal = weekTotal;   // 기본값 = 다 풀었다고 가정
+  const compCard = el('div',{class:'section comp-card'});
+  compCard.appendChild(el('div',{class:'comp-title'},'먼저, 과제 완수율을 확인할게요'));
+  compCard.appendChild(el('div',{class:'comp-desc'},'이번 주 과제로 낸 '+weekTotal+'문항 중, 실제로 몇 문항을 풀었나요? 다 풀었으면 그대로 두면 됩니다.'));
+  const compRate = el('span',{class:'comp-rate'});
+  const inp = el('input',{type:'number', class:'comp-input', min:0, max:weekTotal, step:1, value:String(STATE.solvedTotal)});
+  function syncRate(){ const v=Math.max(0,Math.min(weekTotal,parseInt(inp.value,10)||0));
+    compRate.textContent = weekTotal?('완수율 '+Math.round(v/weekTotal*100)+'%'):''; }
+  inp.oninput = ()=>{ let v=parseInt(inp.value,10); if(isNaN(v)) return; v=Math.max(0,Math.min(weekTotal,v)); STATE.solvedTotal=v; syncRate(); };
+  inp.onblur  = ()=>{ let v=Math.max(0,Math.min(weekTotal,parseInt(inp.value,10)||0)); inp.value=String(v); STATE.solvedTotal=v; syncRate(); };
+  syncRate();
+  compCard.appendChild(el('div',{class:'comp-row'},
+    el('span',{class:'comp-total'}, weekTotal+'문항 중'), inp, el('span',{class:'comp-unit'},'문항 풀었어요'), compRate));
+  root.appendChild(compCard);
+
   root.appendChild(el('div',{class:'section'},
     el('h2',{class:'section-title'},'오답 마킹'),
-    el('p',{class:'section-desc', html:'숙제에서 틀린 문항을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항의 <strong>유형</strong>입니다.'})
+    el('p',{class:'section-desc', html:'푼 문항 중 <strong>틀린 문항</strong>을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항의 <strong>유형</strong>입니다.'})
   ));
   let _curGroup=null;
   secs.forEach((sec,si)=>{
@@ -765,26 +791,15 @@ function renderStep2(){
   ));
 }
 function secKeyOf(sec, i){ return String((sec&&sec.key) || (sec&&sec.title) || i); }
-function toggleNotSolved(secKey){
-  if(STATE.notSolved.has(secKey)) STATE.notSolved.delete(secKey);
-  else {
-    STATE.notSolved.add(secKey);
-    // 안 풂으로 표시하면 그 회차 오답 마킹 제거 (안 풀었으니 오답 없음)
-    (STATE.data.sections||[]).forEach((s,i)=>{ if(secKeyOf(s,i)===secKey) (s.questions||[]).forEach(q=>STATE.wrong.delete(String(q.no))); });
-  }
-  renderDiag();
-}
 function areaBlock(sec, si){
   const secKey = secKeyOf(sec, si);
   const questions = sec.questions||[];
   const title = (sec.title||'문항') + (sec.range?` (${sec.range})`:'');
-  const notSolved = STATE.notSolved.has(secKey);
   const block = el('div',{class:'section area-block'});
   block.appendChild(el('div',{class:'area-title'}, title,
-    el('span',{class:'sub'}, questions.length+'문항'),
-    el('button',{type:'button', class:'notsolved-btn'+(notSolved?' on':''), onclick:()=>toggleNotSolved(secKey)}, notSolved?'✓ 안 풂':'안 풂')
+    el('span',{class:'sub'}, questions.length+'문항')
   ));
-  const grid = el('div',{class:'q-grid'+(notSolved?' grid-disabled':'')});
+  const grid = el('div',{class:'q-grid'});
   questions.forEach(q=>{
     const key = String(q.no);
     const item = el('div',{class: STATE.wrong.has(key)?'q-item wrong':'q-item'},
@@ -793,14 +808,12 @@ function areaBlock(sec, si){
       (q.wr!=null) ? el('span',{class:'q-wr'}, q.wr+'%') : ((q.type||q.area) ? el('span',{class:'q-cc'}, q.type||q.area) : null)
     );
     item.onclick = ()=>{
-      if(STATE.notSolved.has(secKey)) return;   // 안 풂이면 마킹 불가
       if(STATE.wrong.has(key)) STATE.wrong.delete(key); else STATE.wrong.add(key);
       item.classList.toggle('wrong');
     };
     grid.appendChild(item);
   });
   block.appendChild(grid);
-  if(notSolved) block.appendChild(el('div',{class:'notsolved-note'},'이 회차는 ‘안 풂’으로 표시됐어요 — 과제 해결 정도에 반영됩니다.'));
   return block;
 }
 
@@ -945,18 +958,23 @@ function computeResult(){
   const cl = !!(STATE.data && STATE.data.checklist);
   if(cl && !mk) return computeChecklistResult();   // 순수 체크리스트
   const qs = allQuestions();
-  let totalPts=0, rawPts=0, correct=0, solvedQ=0;
-  const wrongDetails=[];
+  // ── 완수율: 학생이 직접 입력한 '푼 문항 수'(주차 전체) 기준 ──
+  const weekTotal = qs.length;
+  const solved = (STATE.solvedTotal==null) ? weekTotal
+               : Math.max(0, Math.min(weekTotal, parseInt(STATE.solvedTotal,10)||0));
+  const wrongDetails=[]; let fullPts=0, lostPts=0;
   qs.forEach(q=>{
-    if(STATE.notSolved.has(q._secKey)) return;   // '안 풂' 회차 문항은 정답률 계산에서 제외
-    const pts = q.points || (q.three?3:2);
-    totalPts += pts; solvedQ++;
-    if(STATE.wrong.has(String(q.no))){ wrongDetails.push({...q, score:pts}); }
-    else { rawPts += pts; correct++; }
+    const pts = q.points || (q.three?3:2); fullPts += pts;
+    if(STATE.wrong.has(String(q.no))){ wrongDetails.push({...q, score:pts}); lostPts += pts; }
   });
-  const total = solvedQ;   // 푼 문항만 정답률 모수
-  const wrongN = wrongDetails.length;
+  let wrongN = wrongDetails.length;
+  if(wrongN > solved) wrongN = solved;             // 푼 문항보다 많이 표시했으면 보정
+  const total = solved;                            // 정답률 모수 = 실제 푼 문항
+  const correct = Math.max(0, solved - wrongN);
   const rate = total ? Math.round((correct/total)*100) : 0;
+  // 원점수/만점: 다 풀었으면 배점 기반(3점 반영), 일부만 풀었으면 문항 기준 근사(2점)
+  const totalPts = (solved>=weekTotal) ? fullPts : solved*2;
+  const rawPts   = (solved>=weekTotal) ? (fullPts - lostPts) : correct*2;
 
   const patterns = matchPatterns(STATE.wrong, STATE.data.patternRules||[]);
   const areaStat = computeAreaStat(qs);
@@ -974,18 +992,17 @@ function computeResult(){
     reason: studyOpt('reason', studyGet(STATE.studyAns,'reason'))
   };
 
-  // ── 과제 해결 정도(%) — '안 풂' 회차 + 이매진 미체크 반영 ──
-  let nSec=0, solvedSec=0; const notSolvedTitles=[];
-  (STATE.data.sections||[]).forEach((s,i)=>{ if(!(s.questions||[]).length) return; nSec++;
-    if(STATE.notSolved.has(secKeyOf(s,i))) notSolvedTitles.push(s.title||('회차'+(i+1))); else solvedSec++; });
+  // ── 과제 완수율(%) — 푼 문항 수(+이매진 완료) / 전체 문항 ──
   const imgTotal = cl ? chkTotal() : 0;
   const imgDone  = cl ? STATE.checked.size : 0;
-  const totalUnits = nSec + imgTotal;
-  const solveRate = totalUnits ? Math.round((solvedSec+imgDone)/totalUnits*100)
-                               : (completion.doneRate!=null?completion.doneRate:null);
+  const denomU = weekTotal + imgTotal;
+  const solveRate = denomU ? Math.round((solved+imgDone)/denomU*100)
+                           : (completion.doneRate!=null?completion.doneRate:null);
+  const undoneCount = Math.max(0, weekTotal - solved);
+  const notSolvedTitles = undoneCount ? ['미완 '+undoneCount+'문항'] : [];
 
   const result = { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag, diligence, completion,
-    solveRate, notSolvedTitles };
+    solveRate, notSolvedTitles, weekTotal, solved, undoneCount };
   if(cl) result.checklist = computeChecklistData();   // N제 + 이매진 조합: 이매진 완수율도 함께
   return result;
 }
@@ -1133,7 +1150,7 @@ function renderStep4(){
     ));
   } else {
     root.appendChild(el('div',{class:'score-block'},
-      scoreCard('과제 해결 정도', (r.solveRate!=null?r.solveRate+'%':'-'), (r.notSolvedTitles&&r.notSolvedTitles.length?('안 풂 '+r.notSolvedTitles.length+'개'):'다 풂')),
+      scoreCard('과제 완수율', (r.solveRate!=null?r.solveRate+'%':'-'), (r.undoneCount?('미완 '+r.undoneCount+'문항'):'전부 풀이')),
       scoreCard('정답률', r.rate+'%', '/ 푼 문항 기준'),
       scoreCard('맞은 문항', r.correct, '/ '+r.total+'문항'),
       scoreCard('틀린 문항', r.wrongN, '문항')
@@ -1321,7 +1338,7 @@ function submitResult(isManual){
     studyDiagJson: JSON.stringify(r.studyDiag),
     studyAnsJson: JSON.stringify(STATE.studyAns),
     과제해결정도: (r.solveRate!=null ? r.solveRate+'%' : ''),
-    안풂회차: (r.notSolvedTitles||[]).join(', '),
+    안풂회차: (r.undoneCount ? ('미완 '+r.undoneCount+'문항') : ''),
     이매진완수율: r.checklist ? (r.checklist.rate+'%') : '',
     체크리스트: r.checklist ? ('완료 '+r.checklist.done+'/'+r.checklist.total+(r.checklist.undoneItems.length?(' · 미완: '+r.checklist.undoneItems.join(', ')):'')) : ''
   };
@@ -1382,6 +1399,7 @@ function teacherReplay(courseId, params){
     STATE.data=d; STATE.courseId=courseId; STATE.week=week;
     STATE.student={ name:params.get('name')||'학생', school:params.get('school')||'', grade:params.get('grade')||'' };
     STATE.wrong = new Set((params.get('wrong')||'').split(',').map(s=>s.trim()).filter(Boolean));
+    STATE.solvedTotal = params.has('solved') ? (parseInt(params.get('solved'),10)||0) : null;
     try{ STATE.studyAns = JSON.parse(params.get('study')||'{}'); }catch(e){ STATE.studyAns={}; }
     STATE.result = computeResult();
     STATE.step=4; STATE.teacherView=true; STATE.autoSubmitted=true;
