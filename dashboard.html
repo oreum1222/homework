@@ -1450,6 +1450,13 @@ function regenComment(sid){
 
 function jparse(s){ try{ return JSON.parse(s); }catch(e){ return null; } }
 function repWrongs(s){ return s?String(s).split(',').map(x=>x.trim()).filter(Boolean):[]; }
+// 오답 번호 — wrongDetailsJson(JSON 텍스트라 무손상)의 no를 우선 사용.
+//  '틀린문항' 텍스트 컬럼은 옛 제출분에서 구글시트가 콤마 없는 숫자열을 한 수로 오인/지수화해 손상됨.
+function wrongsOf(r){
+  const wd=jparse(val(r,'wrongDetailsJson','wrongDetailsJson'));
+  if(Array.isArray(wd)&&wd.length){ const ns=wd.map(x=>x&&x.no).filter(n=>n!=null&&n!==''); if(ns.length) return ns.map(String); }
+  return repWrongs(val(r,'틀린문항','틀린문항'));
+}
 function repTrend(rates){ if(rates.length<2) return '단일'; const d=rates[rates.length-1]-rates[0]; return d>=8?'상승':d<=-8?'하락':'유지'; }
 function doneRateFromLabel(l){ return {'전부 끝냄':100,'대부분(70% 이상)':85,'절반쯤':50,'조금만(30% 이하)':25,'아직 시작 못 함':0}[l]; }
 function pwDoneRate(pw){
@@ -1527,7 +1534,7 @@ function buildReports(){
       week, weekLabel:val(r,'weekLabel','주차명'), area:val(r,'area','영역'),
       rate:parseFloat(val(r,'정답률','정답률'))||0,
       wrongN:parseInt(val(r,'틀린개수','틀린개수'),10)||0,
-      wrongs:repWrongs(val(r,'틀린문항','틀린문항')),
+      wrongs:wrongsOf(r),
       patterns:jparse(val(r,'patternsJson','patternsJson'))||[],
       strengths:jparse(val(r,'strengthsJson','strengthsJson'))||[],
       areaStat:jparse(val(r,'areaStatJson','areaStatJson'))||{},
@@ -1694,8 +1701,18 @@ function rDonut(m){
 function rWeekRows(m){
   let rows='';
   m.perWeek.forEach(pw=>{
-    const wrongTxt=pw.wrongs.length?pw.wrongs.map(w=>(/^\d{5,}$/.test(w)?'기록오류⚠':w+'번')).join(', '):'—';   // 5자리+ = 옛 시트 숫자오인 손상값
-    rows+=`<tr><td class="r-rnd">${esc(weekShort(pw.week))}</td><td class="r-sc" style="color:${rRateCol(pw.rate)}">${pw.rate}% · ${pw.wrongN}틀림</td><td class="r-wrong">${esc(pw.area||'')}</td><td class="r-wrong">${esc(wrongTxt)}</td></tr>`;
+    // 정답률 0·오답 0 = 완료 점검형 주차(수수활·수능완성 등, 채점 없이 완수만) → 완수율로 표시
+    const scored = !(pw.rate===0 && pw.wrongN===0);
+    let scoreCell, wrongTxt;
+    if(scored){
+      wrongTxt = pw.wrongs.length ? pw.wrongs.map(w=>(/^\d{6,}$/.test(w)?'기록오류⚠':w+'번')).join(', ') : '—';
+      scoreCell = `<span style="color:${rRateCol(pw.rate)}">${pw.rate}% · ${pw.wrongN}틀림</span>`;
+    } else {
+      const dr = pwDoneRate(pw);
+      scoreCell = `<span style="color:var(--text-muted)">완료 점검${dr!=null?(' · 완수 '+dr+'%'):''}</span>`;
+      wrongTxt = '—';
+    }
+    rows+=`<tr><td class="r-rnd">${esc(weekShort(pw.week))}</td><td class="r-sc">${scoreCell}</td><td class="r-wrong">${esc(pw.area||'')}</td><td class="r-wrong">${esc(wrongTxt)}</td></tr>`;
   });
   return rows;
 }
