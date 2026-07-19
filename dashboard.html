@@ -1540,6 +1540,10 @@ function buildReports(){
     const gkey=cid+'||'+name;
     if(!groups[gkey]) groups[gkey]={name, courseId:cid, courseName:COURSE_NAME[cid]||val(r,'courseLabel','수업명')||cid, school:null, weeks:{}};
     const g=groups[gkey];
+    // 같은 학생·같은 주차 중복 제출 → timestamp 최신본만 유지(옛 제출이 뒤에 와도 안 이김)
+    const _ts=val(r,'timestamp','제출시각');
+    const _prev=g.weeks[week];
+    if(_prev && String(_prev.ts||'') >= String(_ts||'')) return;
     g.weeks[week]={
       week, weekLabel:val(r,'weekLabel','주차명'), area:val(r,'area','영역'),
       rate:parseFloat(val(r,'정답률','정답률'))||0,
