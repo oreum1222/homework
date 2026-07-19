@@ -565,6 +565,13 @@ function renderStatsAndTable(){
   if(week!=='all') rows=rows.filter(r=>val(r,'week','주차')===week);
   if(search) rows=rows.filter(r=>(val(r,'name','이름').toLowerCase().includes(search)||val(r,'school','학교').toLowerCase().includes(search)));
 
+  // 중복 제출 제거: 같은 학생·수업·주차는 timestamp 최신본 하나만
+  const _best={};
+  rows.forEach(r=>{ const k=val(r,'courseId','수업ID')+'|'+val(r,'name','이름').trim()+'|'+val(r,'week','주차');
+    const ts=String(val(r,'timestamp','제출시각'));
+    if(!_best[k] || String(val(_best[k],'timestamp','제출시각'))<ts) _best[k]=r; });
+  rows=Object.keys(_best).map(k=>_best[k]);
+
   const rates=rows.map(r=>parseFloat(val(r,'정답률','정답률'))).filter(n=>!isNaN(n));
   const avgRate = rates.length?(rates.reduce((a,b)=>a+b,0)/rates.length).toFixed(1):'0';
   document.getElementById('statsBox').innerHTML=`
@@ -592,8 +599,9 @@ function renderStatsAndTable(){
     // 과제 해결 정도 셀 (밴드 색)
     let solveCell;
     if(isOath){ solveCell='<span class="tag" style="background:rgba(214,138,138,.2);color:#e0a3a3">각서(안 함)</span>'; }
-    else if(solve!==''){ const n=parseFloat(solve); const c=n>=71?'#9fd0ad':(n>=10?'#d6a96a':'#e0a3a3');
-      solveCell='<span class="tag" style="color:'+c+';border:1px solid '+c+'55">'+esc(solve)+'</span>'; }
+    else if(solve!==''){ let n=parseFloat(solve); if(!isNaN(n)){ if(n<=1) n=n*100; n=Math.round(n); }   // 시트가 '18%'를 0.18로 저장 → %로 환산
+      const c=n>=71?'#9fd0ad':(n>=10?'#d6a96a':'#e0a3a3');
+      solveCell='<span class="tag" style="color:'+c+';border:1px solid '+c+'55">'+(isNaN(n)?esc(solve):n+'%')+'</span>'; }
     else { solveCell='<span style="color:var(--text-muted)">–</span>'; }
     // 정답률 셀 (문항형만)
     const rateCell = isOath ? '<span style="color:var(--text-muted)">–</span>'
