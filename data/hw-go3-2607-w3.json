@@ -17,277 +17,277 @@
   {
    "key": "k2018",
    "title": "2018학년도 수능 (2017년 시행) · 오답 그리드",
-   "range": "1번~45번 · 공통 1~34, 선택 35~45",
+   "range": "1번~45번 (선택과목 체제 이전 · 전 문항 공통)",
    "group": "오답 그리드",
    "questions": [
     {
      "no": 1,
      "label": "1번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 2,
      "label": "2번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 3,
      "label": "3번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 4,
      "label": "4번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 5,
      "label": "5번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 6,
      "label": "6번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 7,
      "label": "7번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 8,
      "label": "8번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 9,
      "label": "9번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 10,
      "label": "10번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 11,
      "label": "11번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 12,
      "label": "12번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 13,
      "label": "13번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 14,
      "label": "14번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 15,
      "label": "15번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 16,
      "label": "16번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 17,
      "label": "17번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 18,
      "label": "18번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 19,
      "label": "19번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 20,
      "label": "20번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 21,
      "label": "21번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 22,
      "label": "22번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 23,
      "label": "23번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 24,
      "label": "24번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 25,
      "label": "25번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 26,
      "label": "26번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 27,
      "label": "27번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 28,
      "label": "28번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 29,
      "label": "29번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 30,
      "label": "30번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 31,
      "label": "31번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 32,
      "label": "32번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 33,
      "label": "33번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 34,
      "label": "34번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 35,
      "label": "35번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 36,
      "label": "36번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 37,
      "label": "37번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 38,
      "label": "38번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 39,
      "label": "39번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 40,
      "label": "40번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 41,
      "label": "41번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 42,
      "label": "42번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 43,
      "label": "43번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 44,
      "label": "44번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 45,
      "label": "45번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     }
    ]

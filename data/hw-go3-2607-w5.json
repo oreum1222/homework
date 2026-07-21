@@ -851,277 +851,277 @@
   {
    "key": "k2020",
    "title": "2020학년도 수능 (2019년 시행) · 오답 그리드",
-   "range": "1번~45번 · 공통 1~34, 선택 35~45",
+   "range": "1번~45번 (선택과목 체제 이전 · 전 문항 공통)",
    "group": "오답 그리드",
    "questions": [
     {
      "no": 401,
      "label": "수능 1번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 402,
      "label": "수능 2번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 403,
      "label": "수능 3번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 404,
      "label": "수능 4번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 405,
      "label": "수능 5번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 406,
      "label": "수능 6번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 407,
      "label": "수능 7번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 408,
      "label": "수능 8번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 409,
      "label": "수능 9번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 410,
      "label": "수능 10번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 411,
      "label": "수능 11번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 412,
      "label": "수능 12번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 413,
      "label": "수능 13번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 414,
      "label": "수능 14번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 415,
      "label": "수능 15번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 416,
      "label": "수능 16번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 417,
      "label": "수능 17번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 418,
      "label": "수능 18번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 419,
      "label": "수능 19번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 420,
      "label": "수능 20번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 421,
      "label": "수능 21번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 422,
      "label": "수능 22번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 423,
      "label": "수능 23번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 424,
      "label": "수능 24번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 425,
      "label": "수능 25번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 426,
      "label": "수능 26번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 427,
      "label": "수능 27번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 428,
      "label": "수능 28번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 429,
      "label": "수능 29번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 430,
      "label": "수능 30번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 431,
      "label": "수능 31번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 432,
      "label": "수능 32번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 433,
      "label": "수능 33번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 434,
      "label": "수능 34번",
-     "area": "공통",
+     "area": "기출",
      "three": false
     },
     {
      "no": 435,
      "label": "수능 35번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 436,
      "label": "수능 36번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 437,
      "label": "수능 37번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 438,
      "label": "수능 38번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 439,
      "label": "수능 39번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 440,
      "label": "수능 40번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 441,
      "label": "수능 41번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 442,
      "label": "수능 42번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 443,
      "label": "수능 43번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 444,
      "label": "수능 44번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     },
     {
      "no": 445,
      "label": "수능 45번",
-     "area": "선택",
+     "area": "기출",
      "three": false
     }
    ]
