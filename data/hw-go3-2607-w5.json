@@ -1,71 +1,1153 @@
 {
- "_doc": "고3 정규반 7월 · 7-5주차 · 실전모의·선택 + 2020수능 (일일 체크리스트 방식 — 완료 항목 체크).",
+ "_doc": "고3 정규반 2026년 7월 3주차 — 오답 그리드(수능 기출/실전 모의고사 1~45번) + 일자별 완료 체크리스트.",
  "courseId": "go3-regular",
  "week": 3,
  "weekMeta": {
-  "id": "go3-2607-w5",
-  "label": "7-5주차 · 실전모의·선택 + 2020수능",
-  "area": "실전모의·선택",
+  "id": "go3-2607-w3",
+  "label": "3주차에 한 숙제 검사 — 수능완성 실전편 1~3회와 선택 + 2020학년도 수능",
+  "area": "실전 모의고사, 선택과목 + 수능 기출",
   "month": "7월",
   "date": "2026-07-31",
-  "desc": "수능완성 실전 모의고사 1~3회 + 선택③④(언매/화작) + 취약 유형 보충 + 수능 기출 2020학년도 · 1차 검사 7/29(수) · 분석 7/31"
+  "desc": "수능완성 실전 모의고사 1~3회(7/26·28·30) + 선택③④(7/27·29) + 취약 유형 보충(7/31) + 수능 기출 2020학년도. 1차 검사 7/29(수), 분석 수업 7/31(금)."
  },
- "completionOnly": true,
  "scoring": {
-  "passRate": 100
+  "passRate": 80
  },
- "sections": [],
+ "sections": [
+  {
+   "key": "m1",
+   "title": "실전 모의고사 1회 (p134~158) · 오답 그리드",
+   "range": "1번~45번",
+   "group": "오답 그리드",
+   "questions": [
+    {
+     "no": 101,
+     "label": "1회 1번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 102,
+     "label": "1회 2번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 103,
+     "label": "1회 3번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 104,
+     "label": "1회 4번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 105,
+     "label": "1회 5번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 106,
+     "label": "1회 6번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 107,
+     "label": "1회 7번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 108,
+     "label": "1회 8번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 109,
+     "label": "1회 9번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 110,
+     "label": "1회 10번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 111,
+     "label": "1회 11번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 112,
+     "label": "1회 12번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 113,
+     "label": "1회 13번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 114,
+     "label": "1회 14번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 115,
+     "label": "1회 15번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 116,
+     "label": "1회 16번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 117,
+     "label": "1회 17번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 118,
+     "label": "1회 18번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 119,
+     "label": "1회 19번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 120,
+     "label": "1회 20번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 121,
+     "label": "1회 21번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 122,
+     "label": "1회 22번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 123,
+     "label": "1회 23번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 124,
+     "label": "1회 24번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 125,
+     "label": "1회 25번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 126,
+     "label": "1회 26번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 127,
+     "label": "1회 27번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 128,
+     "label": "1회 28번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 129,
+     "label": "1회 29번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 130,
+     "label": "1회 30번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 131,
+     "label": "1회 31번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 132,
+     "label": "1회 32번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 133,
+     "label": "1회 33번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 134,
+     "label": "1회 34번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 135,
+     "label": "1회 35번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 136,
+     "label": "1회 36번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 137,
+     "label": "1회 37번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 138,
+     "label": "1회 38번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 139,
+     "label": "1회 39번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 140,
+     "label": "1회 40번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 141,
+     "label": "1회 41번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 142,
+     "label": "1회 42번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 143,
+     "label": "1회 43번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 144,
+     "label": "1회 44번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 145,
+     "label": "1회 45번",
+     "area": "선택",
+     "three": false
+    }
+   ]
+  },
+  {
+   "key": "m2",
+   "title": "실전 모의고사 2회 (p160~184) · 오답 그리드",
+   "range": "1번~45번",
+   "group": "오답 그리드",
+   "questions": [
+    {
+     "no": 201,
+     "label": "2회 1번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 202,
+     "label": "2회 2번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 203,
+     "label": "2회 3번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 204,
+     "label": "2회 4번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 205,
+     "label": "2회 5번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 206,
+     "label": "2회 6번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 207,
+     "label": "2회 7번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 208,
+     "label": "2회 8번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 209,
+     "label": "2회 9번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 210,
+     "label": "2회 10번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 211,
+     "label": "2회 11번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 212,
+     "label": "2회 12번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 213,
+     "label": "2회 13번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 214,
+     "label": "2회 14번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 215,
+     "label": "2회 15번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 216,
+     "label": "2회 16번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 217,
+     "label": "2회 17번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 218,
+     "label": "2회 18번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 219,
+     "label": "2회 19번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 220,
+     "label": "2회 20번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 221,
+     "label": "2회 21번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 222,
+     "label": "2회 22번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 223,
+     "label": "2회 23번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 224,
+     "label": "2회 24번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 225,
+     "label": "2회 25번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 226,
+     "label": "2회 26번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 227,
+     "label": "2회 27번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 228,
+     "label": "2회 28번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 229,
+     "label": "2회 29번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 230,
+     "label": "2회 30번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 231,
+     "label": "2회 31번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 232,
+     "label": "2회 32번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 233,
+     "label": "2회 33번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 234,
+     "label": "2회 34번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 235,
+     "label": "2회 35번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 236,
+     "label": "2회 36번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 237,
+     "label": "2회 37번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 238,
+     "label": "2회 38번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 239,
+     "label": "2회 39번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 240,
+     "label": "2회 40번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 241,
+     "label": "2회 41번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 242,
+     "label": "2회 42번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 243,
+     "label": "2회 43번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 244,
+     "label": "2회 44번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 245,
+     "label": "2회 45번",
+     "area": "선택",
+     "three": false
+    }
+   ]
+  },
+  {
+   "key": "m3",
+   "title": "실전 모의고사 3회 (p186~210) · 오답 그리드",
+   "range": "1번~45번",
+   "group": "오답 그리드",
+   "questions": [
+    {
+     "no": 301,
+     "label": "3회 1번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 302,
+     "label": "3회 2번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 303,
+     "label": "3회 3번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 304,
+     "label": "3회 4번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 305,
+     "label": "3회 5번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 306,
+     "label": "3회 6번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 307,
+     "label": "3회 7번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 308,
+     "label": "3회 8번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 309,
+     "label": "3회 9번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 310,
+     "label": "3회 10번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 311,
+     "label": "3회 11번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 312,
+     "label": "3회 12번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 313,
+     "label": "3회 13번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 314,
+     "label": "3회 14번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 315,
+     "label": "3회 15번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 316,
+     "label": "3회 16번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 317,
+     "label": "3회 17번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 318,
+     "label": "3회 18번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 319,
+     "label": "3회 19번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 320,
+     "label": "3회 20번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 321,
+     "label": "3회 21번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 322,
+     "label": "3회 22번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 323,
+     "label": "3회 23번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 324,
+     "label": "3회 24번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 325,
+     "label": "3회 25번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 326,
+     "label": "3회 26번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 327,
+     "label": "3회 27번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 328,
+     "label": "3회 28번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 329,
+     "label": "3회 29번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 330,
+     "label": "3회 30번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 331,
+     "label": "3회 31번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 332,
+     "label": "3회 32번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 333,
+     "label": "3회 33번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 334,
+     "label": "3회 34번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 335,
+     "label": "3회 35번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 336,
+     "label": "3회 36번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 337,
+     "label": "3회 37번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 338,
+     "label": "3회 38번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 339,
+     "label": "3회 39번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 340,
+     "label": "3회 40번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 341,
+     "label": "3회 41번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 342,
+     "label": "3회 42번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 343,
+     "label": "3회 43번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 344,
+     "label": "3회 44번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 345,
+     "label": "3회 45번",
+     "area": "선택",
+     "three": false
+    }
+   ]
+  },
+  {
+   "key": "k2020",
+   "title": "2020학년도 수능 (2019년 시행) · 오답 그리드",
+   "range": "1번~45번 · 공통 1~34, 선택 35~45",
+   "group": "오답 그리드",
+   "questions": [
+    {
+     "no": 401,
+     "label": "수능 1번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 402,
+     "label": "수능 2번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 403,
+     "label": "수능 3번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 404,
+     "label": "수능 4번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 405,
+     "label": "수능 5번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 406,
+     "label": "수능 6번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 407,
+     "label": "수능 7번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 408,
+     "label": "수능 8번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 409,
+     "label": "수능 9번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 410,
+     "label": "수능 10번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 411,
+     "label": "수능 11번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 412,
+     "label": "수능 12번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 413,
+     "label": "수능 13번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 414,
+     "label": "수능 14번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 415,
+     "label": "수능 15번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 416,
+     "label": "수능 16번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 417,
+     "label": "수능 17번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 418,
+     "label": "수능 18번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 419,
+     "label": "수능 19번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 420,
+     "label": "수능 20번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 421,
+     "label": "수능 21번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 422,
+     "label": "수능 22번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 423,
+     "label": "수능 23번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 424,
+     "label": "수능 24번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 425,
+     "label": "수능 25번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 426,
+     "label": "수능 26번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 427,
+     "label": "수능 27번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 428,
+     "label": "수능 28번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 429,
+     "label": "수능 29번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 430,
+     "label": "수능 30번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 431,
+     "label": "수능 31번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 432,
+     "label": "수능 32번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 433,
+     "label": "수능 33번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 434,
+     "label": "수능 34번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 435,
+     "label": "수능 35번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 436,
+     "label": "수능 36번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 437,
+     "label": "수능 37번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 438,
+     "label": "수능 38번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 439,
+     "label": "수능 39번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 440,
+     "label": "수능 40번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 441,
+     "label": "수능 41번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 442,
+     "label": "수능 42번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 443,
+     "label": "수능 43번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 444,
+     "label": "수능 44번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 445,
+     "label": "수능 45번",
+     "area": "선택",
+     "three": false
+    }
+   ]
+  }
+ ],
  "checklist": {
-  "title": "실전 모의고사·선택 + 수능 기출(2020)",
-  "desc": "이번 주에 '완료한' 항목에만 체크해 주세요. 안 한 것은 비워 두면 됩니다.",
+  "title": "수능완성 선택 유형편과 보충 (7/27~7/31)",
+  "desc": "오답 그리드로 마킹하는 실전 모의고사와 수능 기출은 여기 없습니다. 아래 항목만 완료한 것에 체크해 주세요.",
   "groups": [
    {
-    "date": "7/26(일)",
-    "items": [
-     {
-      "key": "m0726",
-      "type": "실모",
-      "name": "실전 모의고사 1회 · p134–158"
-     }
-    ]
-   },
-   {
-    "date": "7/27(월) · 선택③",
+    "date": "7/27(월) · 선택 ③",
     "items": [
      {
       "key": "s0727",
       "type": "선택",
-      "name": "[언매] 매체 ➊➋ p103–118  ·  [화작] 화법+작문 ➊➋ p113–128"
+      "name": "[언매] 매체 ➊➋ p103~118   /   [화작] 화법과 작문 ➊➋ p113~128"
      }
     ]
    },
    {
-    "date": "7/28(화)",
-    "items": [
-     {
-      "key": "m0728",
-      "type": "실모",
-      "name": "실전 모의고사 2회 · p160–184"
-     }
-    ]
-   },
-   {
-    "date": "7/29(수) · 선택④",
+    "date": "7/29(수) · 선택 ④",
     "items": [
      {
       "key": "s0729",
       "type": "선택",
-      "name": "[언매] 매체 ➌ p119–128  ·  [화작] 유형편 완료"
-     }
-    ]
-   },
-   {
-    "date": "7/30(목)",
-    "items": [
-     {
-      "key": "m0730",
-      "type": "실모",
-      "name": "실전 모의고사 3회 · p186–210"
+      "name": "[언매] 매체 ➌ p119~128 (유형편 완료)   /   [화작] 유형편 완료, 취약 복습"
      }
     ]
    },
@@ -75,17 +1157,7 @@
      {
       "key": "b0731",
       "type": "보충",
-      "name": "취약 유형 보충 · 오답 정리"
-     }
-    ]
-   },
-   {
-    "date": "수능 기출 · 1차 검사 7/29(수)",
-    "items": [
-     {
-      "key": "k2020",
-      "type": "기출",
-      "name": "2020학년도 수능 (분석 수업 7/31)"
+      "name": "취약 유형 보충과 오답 정리"
      }
     ]
    }
