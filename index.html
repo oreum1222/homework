@@ -977,7 +977,8 @@ function computeResult(){
   const rawPts   = (solved>=weekTotal) ? (fullPts - lostPts) : correct*2;
 
   const patterns = matchPatterns(STATE.wrong, STATE.data.patternRules||[]);
-  const areaStat = computeAreaStat(qs);
+  // noDiag: 모의고사·수능 기출처럼 별도(모고) 진단을 쓰는 주차 → 영역별 강약점 집계 안 함
+  const areaStat = STATE.data.noDiag ? {} : computeAreaStat(qs);
   let strengths = matchStrengths(STATE.wrong, STATE.data.strengthRules||[]);
   if(!strengths.length) strengths = fallbackStrength(areaStat);   // 강점 항상 발견
   const studyDiag = diagnoseStudy(STATE.studyAns, STATE.data.studyDiagnosticCodes||{});
@@ -1164,7 +1165,13 @@ function renderStep4(){
   }
 
   // 강점·약점·틀린문항은 오답 문항이 있는 과제에서만
-  if(!noItems){
+  if(!noItems && STATE.data.noDiag){
+    // 모의고사·수능 기출 주차 — 영역 진단은 모고 진단에서 확인
+    const nBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'영역별 진단 안내'));
+    nBlock.appendChild(el('p',{class:'empty-msg'},
+      STATE.data.diagNote || '이번 주 과제는 모의고사와 수능 기출입니다. 영역별 강점과 약점은 모고 진단을 통해 확인하세요.'));
+    root.appendChild(nBlock);
+  } else if(!noItems){
   // 강점
   const sBlock = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'강점 진단'));
   if(!r.strengths.length){
