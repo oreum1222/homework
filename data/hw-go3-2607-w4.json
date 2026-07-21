@@ -1,23 +1,301 @@
 {
- "_doc": "고3 정규반 7월 · 7-4주차 · 수능완성 문학·선택 + 2019수능 (일일 체크리스트 방식 — 완료 항목 체크).",
+ "_doc": "고3 정규반 2026년 7월 2주차 — 오답 그리드(수능 기출/실전 모의고사 1~45번) + 일자별 완료 체크리스트.",
  "courseId": "go3-regular",
  "week": 2,
  "weekMeta": {
-  "id": "go3-2607-w4",
-  "label": "7-4주차 · 수능완성 문학·선택 + 2019수능",
-  "area": "수능완성 문학",
+  "id": "go3-2607-w2",
+  "label": "2주차에 한 숙제 검사 — 수능완성 문학 유형편과 선택 + 2019학년도 수능",
+  "area": "문학, 선택과목 + 수능 기출",
   "month": "7월",
   "date": "2026-07-24",
-  "desc": "수능완성 문학 유형연습 ➊~➎ + 선택①②(언매/화작) + 수능 기출 2019학년도 · 1차 검사 7/22(수) · 분석 7/24·25"
+  "desc": "수능완성 문학 유형연습 ➊~➎(7/19~7/23) + 선택①②(7/24·25) + 수능 기출 2019학년도. 1차 검사 7/22(수), 분석 수업 7/24(금)·25(토)."
  },
- "completionOnly": true,
  "scoring": {
-  "passRate": 100
+  "passRate": 80
  },
- "sections": [],
+ "sections": [
+  {
+   "key": "k2019",
+   "title": "2019학년도 수능 (2018년 시행) · 오답 그리드",
+   "range": "1번~45번 · 공통 1~34, 선택 35~45",
+   "group": "오답 그리드",
+   "questions": [
+    {
+     "no": 1,
+     "label": "1번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 2,
+     "label": "2번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 3,
+     "label": "3번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 4,
+     "label": "4번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 5,
+     "label": "5번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 6,
+     "label": "6번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 7,
+     "label": "7번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 8,
+     "label": "8번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 9,
+     "label": "9번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 10,
+     "label": "10번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 11,
+     "label": "11번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 12,
+     "label": "12번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 13,
+     "label": "13번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 14,
+     "label": "14번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 15,
+     "label": "15번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 16,
+     "label": "16번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 17,
+     "label": "17번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 18,
+     "label": "18번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 19,
+     "label": "19번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 20,
+     "label": "20번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 21,
+     "label": "21번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 22,
+     "label": "22번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 23,
+     "label": "23번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 24,
+     "label": "24번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 25,
+     "label": "25번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 26,
+     "label": "26번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 27,
+     "label": "27번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 28,
+     "label": "28번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 29,
+     "label": "29번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 30,
+     "label": "30번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 31,
+     "label": "31번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 32,
+     "label": "32번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 33,
+     "label": "33번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 34,
+     "label": "34번",
+     "area": "공통",
+     "three": false
+    },
+    {
+     "no": 35,
+     "label": "35번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 36,
+     "label": "36번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 37,
+     "label": "37번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 38,
+     "label": "38번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 39,
+     "label": "39번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 40,
+     "label": "40번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 41,
+     "label": "41번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 42,
+     "label": "42번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 43,
+     "label": "43번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 44,
+     "label": "44번",
+     "area": "선택",
+     "three": false
+    },
+    {
+     "no": 45,
+     "label": "45번",
+     "area": "선택",
+     "three": false
+    }
+   ]
+  }
+ ],
  "checklist": {
-  "title": "수능완성 문학·선택 + 수능 기출(2019)",
-  "desc": "이번 주에 '완료한' 항목에만 체크해 주세요. 안 한 것은 비워 두면 됩니다.",
+  "title": "수능완성 문학 유형편과 선택 데일리 (7/19~7/25)",
+  "desc": "오답 그리드로 마킹하는 실전 모의고사와 수능 기출은 여기 없습니다. 아래 항목만 완료한 것에 체크해 주세요.",
   "groups": [
    {
     "date": "7/19(일)",
@@ -25,7 +303,7 @@
      {
       "key": "l0719",
       "type": "문학",
-      "name": "유형연습 ➊ · p45–51"
+      "name": "문학 유형연습 ➊ · p45~51"
      }
     ]
    },
@@ -35,7 +313,7 @@
      {
       "key": "l0720",
       "type": "문학",
-      "name": "유형연습 ➋ · p52–59"
+      "name": "문학 유형연습 ➋ · p52~59"
      }
     ]
    },
@@ -45,7 +323,7 @@
      {
       "key": "l0721",
       "type": "문학",
-      "name": "유형연습 ➌ · p60–67"
+      "name": "문학 유형연습 ➌ · p60~67"
      }
     ]
    },
@@ -55,7 +333,7 @@
      {
       "key": "l0722",
       "type": "문학",
-      "name": "유형연습 ➍ · p68–76"
+      "name": "문학 유형연습 ➍ · p68~76"
      }
     ]
    },
@@ -65,37 +343,27 @@
      {
       "key": "l0723",
       "type": "문학",
-      "name": "유형연습 ➎ · p77–85"
+      "name": "문학 유형연습 ➎ · p77~85"
      }
     ]
    },
    {
-    "date": "7/24(금) · 선택①",
+    "date": "7/24(금) · 선택 ①",
     "items": [
      {
       "key": "s0724",
       "type": "선택",
-      "name": "[언매] 언어 ➊➋ p86–94  ·  [화작] 화법 ➊➋ p86–99"
+      "name": "[언매] 언어 ➊➋ p86~94   /   [화작] 화법 ➊➋ p86~99"
      }
     ]
    },
    {
-    "date": "7/25(토) · 선택②",
+    "date": "7/25(토) · 선택 ②",
     "items": [
      {
       "key": "s0725",
       "type": "선택",
-      "name": "[언매] 언어 ➌➍ p95–102  ·  [화작] 작문 ➊➋ p100–112"
-     }
-    ]
-   },
-   {
-    "date": "수능 기출 · 1차 검사 7/22(수)",
-    "items": [
-     {
-      "key": "k2019",
-      "type": "기출",
-      "name": "2019학년도 수능 (분석 수업 7/24·25)"
+      "name": "[언매] 언어 ➌➍ p95~102   /   [화작] 작문 ➊➋ p100~112"
      }
     ]
    }

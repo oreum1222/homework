@@ -40,9 +40,9 @@ window.COURSE_LIST = [
       {
         key: '2026-07', month: '7월', status: 'active', desc: '7월 수능완성 + 수능 기출 — 매일 한 항목씩, 완료한 것을 체크하세요.',
         weeks: [
-          { week: 1, file: 'data/hw-go3-2607-w3.json', label: '7-3주차 · 수능완성 독서 + 2018수능', date: '7/17(금)~7/18(토)', area: '수능완성 독서', status: 'active' },
-          { week: 2, file: 'data/hw-go3-2607-w4.json', label: '7-4주차 · 수능완성 문학·선택 + 2019수능', date: '7/24(금)~7/25(토)', area: '수능완성 문학', status: 'active' },
-          { week: 3, file: 'data/hw-go3-2607-w5.json', label: '7-5주차 · 실전모의·선택 + 2020수능', date: '7/31(금)~8/1(토)', area: '실전모의·선택', status: 'active' }
+          { week: 1, file: 'data/hw-go3-2607-w3.json', label: '1주차에 한 숙제 검사 · 수능완성 독서 유형편 + 2018학년도 수능', date: '7/17(금)~7/18(토)', area: '독서 + 수능 기출', status: 'active' },
+          { week: 2, file: 'data/hw-go3-2607-w4.json', label: '2주차에 한 숙제 검사 · 수능완성 문학 유형편과 선택 + 2019학년도 수능', date: '7/24(금)~7/25(토)', area: '문학, 선택과목 + 수능 기출', status: 'active' },
+          { week: 3, file: 'data/hw-go3-2607-w5.json', label: '3주차에 한 숙제 검사 · 수능완성 실전편 1~3회와 선택 + 2020학년도 수능', date: '7/31(금)', area: '실전 모의고사, 선택과목 + 수능 기출', status: 'active' }
         ]
       },
       // (9월·10월 등 다음 달은 여기에 months 항목 추가)
