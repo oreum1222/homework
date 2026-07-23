@@ -80,8 +80,11 @@ window.COURSE_LIST = [
     name: '[오름] 국어 고전문법',
     grade: '전체',
     period: '오름 문법',
-    desc: '고전문법 — 훈민정음, 표기법, 문법 요소 등. 주차별 과제를 검사합니다.',
-    weeks: []
+    desc: '고전문법 — 훈민정음, 표기법, 문법 요소 등. 틀린 문항을 교재 번호 그대로 체크하세요.',
+    // 한티 MEXX 고전문법과 '문법 교재 과제'만 동일(문학 제외)
+    weeks: [
+      { week: 1, file: 'data/hw-oreum-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' }
+    ]
   },
 
   // ═══ 한티 MEXX (여름 강의) — 교재 확정 후 weeks에 주차+data/hw-<id>-w<n>.json 채워 넣기 (비어 있으면 '준비 중') ═══
