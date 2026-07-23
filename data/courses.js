@@ -64,8 +64,13 @@ window.COURSE_LIST = [
     name: '[오름] 국어 현대문법',
     grade: '전체',
     period: '오름 문법',
-    desc: '현대문법 — 품사, 문장성분, 형태소와 단어 등. 주차별 과제를 검사합니다.',
-    weeks: []
+    desc: '현대문법 — 품사, 문장성분, 형태소와 단어. 틀린 문항을 교재 번호 그대로 체크하세요.',
+    // 1~3주차 과제는 한티 MEXX 단과 고2 화법과 언어 1~3주차와 동일(복사본)
+    weeks: [
+      { week: 1, file: 'data/hw-oreum-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
+      { week: 2, file: 'data/hw-oreum-hyeonbeop-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
+      { week: 3, file: 'data/hw-oreum-hyeonbeop-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' }
+    ]
   },
   {
     id: 'oreum-gojeonbeop',
