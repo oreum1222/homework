@@ -81,9 +81,12 @@ window.COURSE_LIST = [
     grade: '전체',
     period: '오름 문법',
     desc: '고전문법 — 훈민정음, 표기법, 문법 요소 등. 틀린 문항을 교재 번호 그대로 체크하세요.',
-    // 한티 MEXX 고전문법과 '문법 교재 과제'만 동일(문학 제외)
+    // 한티 MEXX 고전문법과 '문법 교재 과제'만 동일(문학 제외). 4주 과정 = 교재 1~92 + 수능 기출 12
     weeks: [
-      { week: 1, file: 'data/hw-oreum-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' }
+      { week: 1, file: 'data/hw-oreum-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
+      { week: 2, file: 'data/hw-oreum-gojeonbeop-w2.json', label: '2주차 · 27~52', area: '고전 문법', status: 'active' },
+      { week: 3, file: 'data/hw-oreum-gojeonbeop-w3.json', label: '3주차 · 53~78', area: '고전 문법', status: 'active' },
+      { week: 4, file: 'data/hw-oreum-gojeonbeop-w4.json', label: '4주차 · 79~92 + 수능 기출', area: '고전 문법', status: 'active' }
     ]
   },
 
