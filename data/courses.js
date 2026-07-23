@@ -17,12 +17,20 @@
  *         학생이 입력하는 이름과 정확히 일치해야 합니다.
  */
 
+/* ▣ 학원 목록 — 학생은 [학원 선택 → 수업 선택 → 주차] 순으로 들어갑니다.
+ *    각 강좌의 academy 값이 아래 id와 연결됩니다. (academy 없으면 'oreum'으로 간주) */
+window.ACADEMY_LIST = [
+  { id: 'oreum', name: '[오름] 국어학원', desc: '고3 정규반과 문법 강좌' },
+  { id: 'hanti', name: '한티 MEXX 학원', desc: '종합반과 단과 강좌' }
+];
+
 window.COURSE_LIST = [
 
   // ═══ 고3 정규반 (월별 → 주차) ═══
   {
     id: 'go3-regular',
     name: '고3 정규반',
+    academy: 'oreum',
     grade: '고3',
     desc: '정규반 월별 과제 — 월을 고르고 주차를 선택하세요.',
     period: '정규반',
@@ -49,9 +57,30 @@ window.COURSE_LIST = [
     ]
   },
 
+  // ═══ [오름] 국어 문법 반 — 주차 데이터는 교재 확정 후 채웁니다(지금은 '준비 중'으로 표시) ═══
+  {
+    id: 'oreum-hyeonbeop',
+    academy: 'oreum',
+    name: '[오름] 국어 현대문법',
+    grade: '전체',
+    period: '오름 문법',
+    desc: '현대문법 — 품사, 문장성분, 형태소와 단어 등. 주차별 과제를 검사합니다.',
+    weeks: []
+  },
+  {
+    id: 'oreum-gojeonbeop',
+    academy: 'oreum',
+    name: '[오름] 국어 고전문법',
+    grade: '전체',
+    period: '오름 문법',
+    desc: '고전문법 — 훈민정음, 표기법, 문법 요소 등. 주차별 과제를 검사합니다.',
+    weeks: []
+  },
+
   // ═══ 한티 MEXX (여름 강의) — 교재 확정 후 weeks에 주차+data/hw-<id>-w<n>.json 채워 넣기 (비어 있으면 '준비 중') ═══
   {
     id: 'hanti-jong-m3-hyeonbeop',
+    academy: 'hanti',
     name: '한티 MEXX 종합반 중3 현대문법',
     grade: '중3',
     period: '한티 MEXX 종합반',
@@ -65,6 +94,7 @@ window.COURSE_LIST = [
   },
   {
     id: 'hanti-jong-h1-gojeonbeop',
+    academy: 'hanti',
     name: '한티 MEXX 종합반 고1 고전문법',
     grade: '고1',
     period: '한티 MEXX 종합반',
@@ -79,6 +109,7 @@ window.COURSE_LIST = [
   // 고1 단과 = '고전 영역' 한 강좌. 주차(1~5) 선택 → 그 주차 안에서 고전 문학(위) 체크 후 스크롤하면 고전 문법(아래) 체크.
   {
     id: 'hanti-dan-h1-gojeon',
+    academy: 'hanti',
     name: '한티 MEXX 단과 고1 고전 영역',
     grade: '고1',
     period: '한티 MEXX 단과',
@@ -93,6 +124,7 @@ window.COURSE_LIST = [
   },
   {
     id: 'hanti-dan-h2-hwaeon',
+    academy: 'hanti',
     name: '한티 MEXX 단과 고2 화법과 언어',
     grade: '고2',
     period: '한티 MEXX 단과',
