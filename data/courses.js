@@ -69,7 +69,9 @@ window.COURSE_LIST = [
     weeks: [
       { week: 1, file: 'data/hw-oreum-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
       { week: 2, file: 'data/hw-oreum-hyeonbeop-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
-      { week: 3, file: 'data/hw-oreum-hyeonbeop-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' }
+      { week: 3, file: 'data/hw-oreum-hyeonbeop-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' },
+      // 4주차 = 한티 화법과 언어 4주차(음운의 체계) + 5주차(음운의 변동) 합본
+      { week: 4, file: 'data/hw-oreum-hyeonbeop-w4.json', label: '4주차 · 음운의 체계와 변동', area: '음운', status: 'active' }
     ]
   },
   {
