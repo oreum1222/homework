@@ -578,14 +578,14 @@ function renderDiag(){
     else if(STATE.step===4) renderStep4();
     window.scrollTo(0,0); return;
   }
-  // 일반 흐름 (+이매진 있으면 오답 마킹 다음에 '이매진 체크' 단계 삽입)
+  // 일반 흐름 (체크리스트 있으면 오답 마킹 다음에 '일일학습 체크' 단계 삽입)
   const sEl=(num,label,active,done)=>el('div',{class:active?'step active':(done?'step done':'step')}, el('span',{class:'step-num'},num+'단계'), el('span',{class:'step-label'},label));
   const isImg = STATE.step==='imagine';
   const bar=[];
   if(cl){
     bar.push(sEl(1,'기본 정보', STATE.step===1, STATE.step!==1));
     bar.push(sEl(2,'오답 마킹', STATE.step===2, isImg||STATE.step===3||STATE.step===4));
-    bar.push(sEl(3,'이매진 체크', isImg, STATE.step===3||STATE.step===4));
+    bar.push(sEl(3,'일일학습 체크', isImg, STATE.step===3||STATE.step===4));
     bar.push(sEl(4,'과제 점검', STATE.step===3, STATE.step===4));
     bar.push(sEl(5,'진단 결과', STATE.step===4, false));
   } else {
@@ -787,7 +787,7 @@ function renderStep2(){
   });
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
-    el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();}}, STATE.data.checklist?'다음 → 이매진 체크':'다음 단계 →')
+    el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();}}, STATE.data.checklist?'다음 → 일일학습 체크':'다음 단계 →')
   ));
 }
 function secKeyOf(sec, i){ return String((sec&&sec.key) || (sec&&sec.title) || i); }
@@ -886,7 +886,7 @@ function goToResult(){
   renderDiag();
 }
 
-// ─── 완료 체크리스트 (이매진 등) ───
+// ─── 완료 체크리스트 (일일학습 등) ───
 function chkTotal(){ let n=0; ((STATE.data.checklist||{}).groups||[]).forEach(g=>n+=(g.items||[]).length); return n; }
 function renderChecklist(){
   const cl = STATE.data.checklist||{};
@@ -916,7 +916,7 @@ function renderChecklist(){
     )
   ));
   root.appendChild(el('div',{class:'chk-count', id:'chkCount'}, ''));
-  const combined = (STATE.data.sections||[]).some(s=>(s.questions||[]).length);  // N제+이매진 조합
+  const combined = (STATE.data.sections||[]).some(s=>(s.questions||[]).length);  // 문항 채점 + 일일학습 체크 조합
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=(combined?2:1); renderDiag();}}, combined?'← 오답 마킹':'← 이전'),
     combined
@@ -993,7 +993,7 @@ function computeResult(){
     reason: studyOpt('reason', studyGet(STATE.studyAns,'reason'))
   };
 
-  // ── 과제 완수율(%) — 푼 문항 수(+이매진 완료) / 전체 문항 ──
+  // ── 과제 완수율(%) — 푼 문항 수(+일일학습 완료) / 전체 문항 ──
   const imgTotal = cl ? chkTotal() : 0;
   const imgDone  = cl ? STATE.checked.size : 0;
   const denomU = weekTotal + imgTotal;
@@ -1004,7 +1004,7 @@ function computeResult(){
 
   const result = { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag, diligence, completion,
     solveRate, notSolvedTitles, weekTotal, solved, undoneCount };
-  if(cl) result.checklist = computeChecklistData();   // N제 + 이매진 조합: 이매진 완수율도 함께
+  if(cl) result.checklist = computeChecklistData();   // 문항 채점 + 일일학습 체크 조합: 일일학습 완수율도 함께
   return result;
 }
 // 영역(area)/유형(type)별 정오 집계 — 대시보드·강약점 분석용
@@ -1242,11 +1242,11 @@ function renderStep4(){
   root.appendChild(wBlock);
   } // end if(!noItems) — 틀린 문항
 
-  // 이매진 완료 (N제+이매진 조합)
+  // 일일학습 완료 (문항 채점 + 일일학습 체크 조합)
   if(r.checklist){
     const c=r.checklist;
-    const ib = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'}, '이매진 완료 — 완수율 '+c.rate+'% ('+c.done+'/'+c.total+'개)'));
-    if(!c.undoneItems.length) ib.appendChild(el('p',{class:'empty-msg'},'이매진 항목 전부 완료했습니다. 훌륭해요!'));
+    const ib = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'}, '일일학습 완료 — 완수율 '+c.rate+'% ('+c.done+'/'+c.total+'개)'));
+    if(!c.undoneItems.length) ib.appendChild(el('p',{class:'empty-msg'},'일일학습 항목 전부 완료했습니다. 훌륭해요!'));
     else { ib.appendChild(el('div',{class:'pattern-diag', style:'margin-bottom:8px'},'안 한 항목 '+c.undoneItems.length+'개:'));
       c.undoneItems.forEach(s=> ib.appendChild(el('div',{class:'pattern'}, el('div',{class:'pattern-name'}, s)))); }
     root.appendChild(ib);
