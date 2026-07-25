@@ -217,6 +217,8 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .wk-chip.wk-click:hover{border-color:var(--gold);background:rgba(212,180,131,.12)}
 .wk-chip.wk-ov{border-color:rgba(138,160,176,.45);border-style:dashed;opacity:.78}
 .wk-chip .wk-ex{color:#8aa0b0;font-size:0.72rem;font-weight:700;margin-left:2px}
+.wk-sms-btn{margin-left:10px;font-size:0.74rem;font-weight:700;color:#d68a8a;background:rgba(214,138,138,.12);border:1px solid rgba(214,138,138,.4);border-radius:6px;padding:2px 10px;cursor:pointer;vertical-align:middle;transition:.12s}
+.wk-sms-btn:hover{background:#d68a8a;color:#241010;border-color:#d68a8a}
 /* ── 가정통신문 작성 ── */
 .nl-chips{display:flex;flex-wrap:wrap;gap:7px}
 .nl-dchip,.nl-kw{display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--cream);background:var(--bg-card);border:1px solid var(--border-line);border-radius:7px;padding:5px 11px;cursor:pointer;transition:border-color .12s,background .12s}
@@ -1801,7 +1803,20 @@ function wkGrp_(title, arr, cls, cid, w){
     else if(cls==='resp'||cls==='part'){ click=' onclick="wkSetEx(\''+jsesc(cid)+'\','+w+',\''+jsesc(x.name)+'\',1)" title="클릭 → 예외 처리(보강·결석 등 보류 · 문자 제외, 미응답 유지)"'; klass+=' wk-click'; }
     return '<span class="'+klass+'"'+click+'>'+esc(x.name)+extra+'</span>';
   }).join('');
-  return '<div class="wk-grp"><span class="wk-glab '+cls+'">'+title+' '+arr.length+'</span><div class="wk-chips">'+items+'</div></div>';
+  const sendBtn = (cls==='resp')
+    ? ' <button class="wk-sms-btn" onclick="wkGoSms(\''+jsesc(cid)+'\','+w+')" title="이 미응답자들에게 문자 발송 탭으로 이동">문자 발송 →</button>'
+    : '';
+  return '<div class="wk-grp"><span class="wk-glab '+cls+'">'+title+' '+arr.length+'</span>'+sendBtn+'<div class="wk-chips">'+items+'</div></div>';
+}
+// 미응답 그룹 '문자 발송 →' 클릭 → 발송 탭 열고 그 강좌·주차로 자동 분류
+function wkGoSms(cid, w){
+  switchTab('sms');
+  const cs=document.getElementById('smsCourse');
+  if(cs){ if(!Array.from(cs.options).some(o=>o.value===cid)){ cs.dataset.filled=''; smsInit(); } cs.value=cid; }
+  smsCourseChanged();                                   // 그 강좌의 주차 목록 채우고 최신주차로
+  const ws=document.getElementById('smsWeek');
+  if(ws && Array.from(ws.options).some(o=>o.value===String(w))){ ws.value=String(w); smsWeekChanged(); }
+  const box=document.getElementById('smsGroups'); if(box) box.scrollIntoView({block:'center', behavior:'smooth'});
 }
 function weekStatusPanel(master){
   const rosterByCourse={};
