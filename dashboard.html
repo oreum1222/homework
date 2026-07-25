@@ -2118,13 +2118,16 @@ function buildParentLetter(m, extra){
   const doneVals=(m.doneSeq||[]).filter(v=>v!=null);
   const doneAvg=doneVals.length?Math.round(doneVals.reduce((a,b)=>a+b,0)/doneVals.length):null;
   const dil=(m.avgDil!=null?m.avgDil:null);
-  // 강점 영역 — 전 주차 누적 정답률 기준(최근 주차가 아닌 전체 누적). 이름은 '영역' 접미어 없이 보관.
+  // 영역명 정리: '영역' 접미어 제거 + 회차 라벨(N제 N회·실전 N회)·진단 태그(선택과목 안정)는 내용 영역이 아니므로 제외
+  const areaBare=s=>String(s||'').replace(/\s*영역\s*$/,'').trim();
+  const isContentArea=s=>{ s=areaBare(s); return !!s && !/\d+\s*회/.test(s) && !/^N제/.test(s) && !/안정$/.test(s); };
+  // 강점 영역 — 전 주차 누적 정답률 기준(최근 주차가 아닌 전체 누적), 내용 영역만.
   let strong=null;
-  const strongArr=Object.entries(m.areaAgg||{}).map(([a,v])=>({a,total:v.total,wrong:v.wrong,acc:v.total?(v.total-v.wrong)/v.total:0})).filter(x=>x.total>=2).sort((x,y)=>y.acc-x.acc||y.total-x.total);
-  if(strongArr.length && strongArr[0].acc>=0.6) strong=strongArr[0].a;
-  if(!strong && m.strengths && m.strengths.length) strong=(String(m.strengths[0].name||'').replace(/\s*영역\s*$/,'').trim())||null;
-  // 약점 영역(오답 많은 + 정확도 낮은)
-  const weakArr=Object.entries(m.areaAgg||{}).map(([a,v])=>({a,wrong:v.wrong,total:v.total,acc:v.total?(v.total-v.wrong)/v.total:1})).filter(x=>x.wrong>0).sort((x,y)=>y.wrong-x.wrong||x.acc-y.acc);
+  const strongArr=Object.entries(m.areaAgg||{}).map(([a,v])=>({a:areaBare(a),total:v.total,wrong:v.wrong,acc:v.total?(v.total-v.wrong)/v.total:0})).filter(x=>isContentArea(x.a)&&x.total>=2&&x.acc>=0.6).sort((x,y)=>y.acc-x.acc||y.total-x.total);
+  if(strongArr.length) strong=strongArr[0].a;
+  if(!strong && m.strengths && m.strengths.length){ const s=areaBare(m.strengths[0].name); if(isContentArea(s)) strong=s; }
+  // 약점 영역(오답 많은 + 정확도 낮은) — 내용 영역만
+  const weakArr=Object.entries(m.areaAgg||{}).map(([a,v])=>({a:areaBare(a),wrong:v.wrong,total:v.total,acc:v.total?(v.total-v.wrong)/v.total:1})).filter(x=>isContentArea(x.a)&&x.wrong>0).sort((x,y)=>y.wrong-x.wrong||x.acc-y.acc);
   const weak=weakArr.length?weakArr[0].a:null;
   const recur=(m.recurring&&m.recurring.length&&m.recurring[0].cnt>=2)?m.recurring[0]:null;
   const types=(m.typeTop||[]).slice(0,2).map(x=>x.t);
