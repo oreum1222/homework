@@ -562,6 +562,44 @@ function populateWeekSelect(){
   if(cur && Array.from(ws.options).some(o=>o.value===cur)) ws.value=cur;
 }
 
+// 주차별 제출 현황 — 반 전체(제출 이력 학생 + 명단) 대비 몇 명이 냈는지 한눈에
+function weekSubmitOverview(courseFilter){
+  // 활성 명단(있으면) 기준이름 세트 — 분모 보정용
+  const rosterByC={};
+  (SMS.roster||[]).forEach(r=>{ const cid=String(r.courseId||''); if(!cid||isTestName(r.name)) return; if(typeof rosterActiveJS==='function' && !rosterActiveJS(r)) return; const bb=baseNameJS(r.name); if(!bb) return; (rosterByC[cid]=rosterByC[cid]||new Set()).add(bb); });
+  // 수업별 주차별 제출자(기준이름) + 수업 전체 학생 집합
+  const dataByC={};
+  ALL_DATA.forEach(r=>{ const cid=val(r,'courseId','수업ID'); if(!courseShown(cid)) return;
+    const nm=val(r,'name','이름').trim(); if(!nm||isTestName(nm)) return;
+    const w=parseInt(val(r,'week','주차'),10); if(isNaN(w)) return;
+    const bb=baseNameJS(nm); if(!bb) return;
+    const d=dataByC[cid]=dataByC[cid]||{weeks:new Map(), all:new Set()};
+    let s=d.weeks.get(w); if(!s){ s=new Set(); d.weeks.set(w,s); } s.add(bb); d.all.add(bb); });
+  let cids=Object.keys(dataByC).filter(c=>courseShown(c));
+  if(courseFilter && courseFilter!=='all') cids=cids.filter(c=>c===courseFilter);
+  if(!cids.length) return '';
+  const barColor=p=> p>=90?'#6cc38a' : p>=70?'#9fd0ad' : p>=40?'#d6a96a' : '#e0a3a3';
+  let blocks='';
+  cids.forEach(cid=>{ const d=dataByC[cid];
+    const uni=new Set(d.all); (rosterByC[cid]||new Set()).forEach(b=>uni.add(b)); const total=uni.size||1;
+    const weeks=Array.from(d.weeks.keys()).sort((a,b)=>a-b);
+    let rows='';
+    weeks.forEach(w=>{ const n=d.weeks.get(w).size; const pct=Math.round(n/total*100); const col=barColor(pct);
+      const wlab=esc(weekShort(w));
+      rows+='<div style="display:flex;align-items:center;gap:12px;margin:7px 0">'
+        +'<div title="'+wlab+'" style="flex:0 0 110px;color:var(--cream);font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+wlab+'</div>'
+        +'<div style="flex:1;height:12px;border-radius:7px;background:rgba(255,255,255,.06);overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:7px;transition:width .4s"></div></div>'
+        +'<div style="flex:0 0 92px;text-align:right;font-size:.86rem"><b style="color:'+col+'">'+n+'</b><span style="color:var(--text-muted)"> / '+total+'명</span></div></div>';
+    });
+    const multi=cids.length>1;
+    blocks+='<div style="margin-top:'+(multi?14:10)+'px">'
+      +(multi?'<div style="color:var(--cream);font-weight:500;font-size:.9rem;margin-bottom:4px">'+esc(COURSE_NAME[cid]||cid)+' <span style="color:var(--text-muted);font-weight:400;font-size:.8rem">· 반 '+total+'명</span></div>':'')
+      +rows+'</div>';
+  });
+  return '<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)">'
+    +'<div style="color:#9fd0ad;font-size:.9rem;font-weight:500;margin-bottom:2px">주차별 제출 현황 <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(반 전체 = 제출 이력 학생'+(SMS.loaded?'+명단':'')+' 기준 · 막대=제출 비율)</span></div>'
+    +blocks+'</div>';
+}
 function renderStatsAndTable(){
   const course=document.getElementById('courseSelect').value;
   const week=document.getElementById('weekSelect').value;
@@ -588,7 +626,8 @@ function renderStatsAndTable(){
       <div class="stat-card"><div class="stat-label">평균 정답률</div><div class="stat-num">${avgRate}%</div></div>
       <div class="stat-card"><div class="stat-label">학생 수</div><div class="stat-num">${new Set(rows.map(r=>val(r,'name','이름'))).size}</div></div>
       <div class="stat-card"><div class="stat-label">수업 수</div><div class="stat-num">${new Set(rows.map(r=>val(r,'courseId','수업ID'))).size}</div></div>
-    </div></div>`;
+    </div>${weekSubmitOverview(course)}</div>`;
+  ensureReportData();   // 명단(roster) 1회 로드 → 도착 시 분모 보정
 
   const tableBox=document.getElementById('tableBox');
   if(!rows.length){ tableBox.innerHTML='<div class="empty">조건에 해당하는 제출이 없습니다.</div>'; return; }
@@ -1517,7 +1556,7 @@ function jsesc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 function ensureReportData(){   // 미응답 분류용 명단 + 예외처리 1회 로드 후 재렌더
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ SMS.loaded=true; OVR.loaded=true; return; }
   if(!SMS.loaded && !SMS._loading){ SMS._loading=true;
-    fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); if(typeof nlRefreshSelects_==='function' && document.getElementById('nlCourse')) nlRefreshSelects_(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; }); }
+    fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); if(ALL_DATA.length && document.getElementById('statsBox')) renderStatsAndTable(); if(typeof nlRefreshSelects_==='function' && document.getElementById('nlCourse')) nlRefreshSelects_(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; }); }
   if(!OVR.loaded && !OVR._loading){ OVR._loading=true;
     fetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>{ setOVR_(Array.isArray(d)?d:[]); OVR._loading=false; renderReports(); }).catch(()=>{ OVR.loaded=true; OVR._loading=false; }); }
 }
