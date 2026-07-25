@@ -59,6 +59,13 @@ button.ghost:hover{background:var(--bg-card-hover);border-color:var(--gold);colo
 .ok{color:var(--cream);padding:14px 18px;background:rgba(74,90,58,0.2);border-radius:4px;margin:14px 0;font-size:0.88rem;border:1px solid var(--green-deep)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px}
 .stat-card{background:var(--bg-dark);border:1px solid var(--border-line);border-radius:5px;padding:18px;text-align:center}
+.wsub-row{position:relative}
+.wsub-row.has-miss{cursor:default;border-radius:6px}
+.wsub-row.has-miss:hover{background:rgba(255,255,255,.03)}
+.wsub-tip{display:none;position:absolute;left:12px;right:12px;top:100%;z-index:50;margin-top:2px;background:#0e141d;border:1px solid rgba(224,163,163,.45);border-radius:8px;padding:9px 12px;font-size:.8rem;color:var(--text-secondary);line-height:1.85;box-shadow:0 8px 24px rgba(0,0,0,.55)}
+.wsub-row:hover .wsub-tip{display:block}
+.wsub-tip .wt-h{color:#e0a3a3;font-weight:600;margin-bottom:2px;display:block}
+.wsub-tip .wt-n{color:var(--cream)}
 .stat-label{font-size:0.74rem;color:var(--text-muted);letter-spacing:1.5px;margin-bottom:8px}
 .stat-num{font-family:'Noto Serif KR',serif;color:var(--gold);font-weight:700;font-size:1.8rem;line-height:1}
 table{width:100%;border-collapse:collapse;font-size:0.88rem}
@@ -564,32 +571,42 @@ function populateWeekSelect(){
 
 // 주차별 제출 현황 — 반 전체(제출 이력 학생 + 명단) 대비 몇 명이 냈는지 한눈에
 function weekSubmitOverview(courseFilter){
-  // 활성 명단(있으면) 기준이름 세트 — 분모 보정용
+  // 활성 명단(있으면) 기준이름→표기 — 분모 보정 + 미제출자 이름 표시용
   const rosterByC={};
-  (SMS.roster||[]).forEach(r=>{ const cid=String(r.courseId||''); if(!cid||isTestName(r.name)) return; if(typeof rosterActiveJS==='function' && !rosterActiveJS(r)) return; const bb=baseNameJS(r.name); if(!bb) return; (rosterByC[cid]=rosterByC[cid]||new Set()).add(bb); });
-  // 수업별 주차별 제출자(기준이름) + 수업 전체 학생 집합
+  (SMS.roster||[]).forEach(r=>{ const cid=String(r.courseId||''); if(!cid||isTestName(r.name)) return; if(typeof rosterActiveJS==='function' && !rosterActiveJS(r)) return; const bb=baseNameJS(r.name); if(!bb) return; (rosterByC[cid]=rosterByC[cid]||new Map()).set(bb, String(r.name).trim()); });
+  // 수업별 주차별 제출자(기준이름) + 수업 전체 학생 집합 + 기준이름→표기
   const dataByC={};
   ALL_DATA.forEach(r=>{ const cid=val(r,'courseId','수업ID'); if(!courseShown(cid)) return;
     const nm=val(r,'name','이름').trim(); if(!nm||isTestName(nm)) return;
     const w=parseInt(val(r,'week','주차'),10); if(isNaN(w)) return;
     const bb=baseNameJS(nm); if(!bb) return;
-    const d=dataByC[cid]=dataByC[cid]||{weeks:new Map(), all:new Set()};
-    let s=d.weeks.get(w); if(!s){ s=new Set(); d.weeks.set(w,s); } s.add(bb); d.all.add(bb); });
+    const d=dataByC[cid]=dataByC[cid]||{weeks:new Map(), all:new Set(), disp:{}};
+    let s=d.weeks.get(w); if(!s){ s=new Set(); d.weeks.set(w,s); } s.add(bb); d.all.add(bb);
+    if(!d.disp[bb]) d.disp[bb]=nm; });
   let cids=Object.keys(dataByC).filter(c=>courseShown(c));
   if(courseFilter && courseFilter!=='all') cids=cids.filter(c=>c===courseFilter);
   if(!cids.length) return '';
   const barColor=p=> p>=90?'#6cc38a' : p>=70?'#9fd0ad' : p>=40?'#d6a96a' : '#e0a3a3';
   let blocks='';
   cids.forEach(cid=>{ const d=dataByC[cid];
-    const uni=new Set(d.all); (rosterByC[cid]||new Set()).forEach(b=>uni.add(b)); const total=uni.size||1;
+    const rmap=rosterByC[cid]||new Map();
+    const uni=new Set(d.all); rmap.forEach((nm,b)=>uni.add(b)); const total=uni.size||1;
+    const dispOf=b=> rmap.get(b) || d.disp[b] || b;   // 명단 표기 우선
     const weeks=Array.from(d.weeks.keys()).sort((a,b)=>a-b);
     let rows='';
-    weeks.forEach(w=>{ const n=d.weeks.get(w).size; const pct=Math.round(n/total*100); const col=barColor(pct);
+    weeks.forEach(w=>{ const sub=d.weeks.get(w); const n=sub.size; const pct=Math.round(n/total*100); const col=barColor(pct);
       const wlab=esc(weekShort(w));
-      rows+='<div style="display:flex;align-items:center;gap:12px;margin:7px 0">'
+      const missing=[]; uni.forEach(b=>{ if(!sub.has(b)) missing.push(dispOf(b)); });
+      missing.sort((a,b)=>a.localeCompare(b));
+      const shown=missing.slice(0,40).map(esc).join(' · ')+(missing.length>40?(' 외 '+(missing.length-40)+'명'):'');
+      const tip = missing.length
+        ? '<div class="wsub-tip"><span class="wt-h">'+esc(weekShort(w))+' 미제출 '+missing.length+'명</span><span class="wt-n">'+shown+'</span></div>'
+        : '';
+      rows+='<div class="wsub-row'+(missing.length?' has-miss':'')+'" style="display:flex;align-items:center;gap:12px;margin:7px 0;padding:2px 0">'
         +'<div title="'+wlab+'" style="flex:0 0 110px;color:var(--cream);font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+wlab+'</div>'
         +'<div style="flex:1;height:12px;border-radius:7px;background:rgba(255,255,255,.06);overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:7px;transition:width .4s"></div></div>'
-        +'<div style="flex:0 0 92px;text-align:right;font-size:.86rem"><b style="color:'+col+'">'+n+'</b><span style="color:var(--text-muted)"> / '+total+'명</span></div></div>';
+        +'<div style="flex:0 0 92px;text-align:right;font-size:.86rem"><b style="color:'+col+'">'+n+'</b><span style="color:var(--text-muted)"> / '+total+'명</span></div>'
+        +tip+'</div>';
     });
     const multi=cids.length>1;
     blocks+='<div style="margin-top:'+(multi?14:10)+'px">'
@@ -597,7 +614,7 @@ function weekSubmitOverview(courseFilter){
       +rows+'</div>';
   });
   return '<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)">'
-    +'<div style="color:#9fd0ad;font-size:.9rem;font-weight:500;margin-bottom:2px">주차별 제출 현황 <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(반 전체 = 제출 이력 학생'+(SMS.loaded?'+명단':'')+' 기준 · 막대=제출 비율)</span></div>'
+    +'<div style="color:#9fd0ad;font-size:.9rem;font-weight:500;margin-bottom:2px">주차별 제출 현황 <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(반 전체 = 제출 이력 학생'+(SMS.loaded?'+명단':'')+' 기준 · 막대=제출 비율 · 행에 마우스=미제출자)</span></div>'
     +blocks+'</div>';
 }
 function renderStatsAndTable(){
