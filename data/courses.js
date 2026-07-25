@@ -114,9 +114,9 @@ window.COURSE_LIST = [
     hidden: true,   // 대시보드 조회/집계에서 숨김(현재 미운영). 다시 열려면 이 줄 삭제.
     desc: '고1 고전문법 — 3주 과정(주당 약 35문항). 틀린 문항을 교재 번호 그대로 체크하세요.',
     weeks: [
-      { week: 1, file: 'data/hw-hanti-jong-h1-gojeonbeop-w1.json', label: '1주차 · 1~35', area: '고전 문법', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-jong-h1-gojeonbeop-w2.json', label: '2주차 · 36~70', area: '고전 문법', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-jong-h1-gojeonbeop-w3.json', label: '3주차 · 71~92 + 수능 1~12', area: '고전 문법', status: 'active' }
+      { week: 1, file: 'data/hw-hanti-jong-h1-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
+      { week: 2, file: 'data/hw-hanti-jong-h1-gojeonbeop-w2.json', label: '2주차 · 27~70', area: '고전 문법', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-jong-h1-gojeonbeop-w3.json', label: '3주차 · 71~92 + 수능 기출', area: '고전 문법', status: 'active' }
     ]
   },
   // 고1 단과 = '고전 영역' 한 강좌. 주차(1~5) 선택 → 그 주차 안에서 고전 문학(위) 체크 후 스크롤하면 고전 문법(아래) 체크.
