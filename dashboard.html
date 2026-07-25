@@ -546,7 +546,7 @@ var WLAB={};
 function buildWLAB(){ WLAB={}; (ALL_DATA||[]).forEach(r=>{ const w=val(r,'week','주차'); const l=val(r,'weekLabel','주차명'); if(w && l) WLAB[w]=l; }); }
 function decodeWk_(w){ w=+w||0; if(w>=100){ const wk=w%100; if(wk>=1) return wk+'주차'; } return w+'주차'; }  // 합성주차(월×100+주차) → 'N주차'
 function weekDisp(w){ return WLAB[w] || decodeWk_(w); }
-function weekShort(w){ const l=WLAB[w]; return l ? l.split('·')[0].trim() : decodeWk_(w); }
+function weekShort(w){ const l=WLAB[w]; if(l){ const m=l.match(/^\s*(\d+)\s*주차/); if(m) return m[1]+'주차'; return l.split('·')[0].trim(); } return decodeWk_(w); }  // go3 등 긴 라벨도 'N주차'로 압축(드롭다운은 weekDisp라 영향 없음)
 
 function populateSelectors(){
   const cs=document.getElementById('courseSelect'), cur=cs.value;
