@@ -273,6 +273,11 @@ body.landing .corner-logo{display:none}
 .comp-input{width:88px;font-size:1.15rem;font-weight:700;text-align:center;padding:8px 6px;border-radius:9px;border:1.5px solid rgba(95,198,163,.55);background:rgba(0,0,0,.18);color:var(--gold,#5fc6a3)}
 .comp-input:focus{outline:none;border-color:var(--gold,#5fc6a3)}
 .comp-rate{margin-left:6px;font-size:0.92rem;font-weight:700;color:var(--gold,#5fc6a3);white-space:nowrap}
+.comp-all{font-size:0.86rem;padding:7px 14px}
+.comp-warn{display:none;margin-top:10px;font-size:0.86rem;font-weight:700;color:#e0a3a3}
+.comp-card.comp-need{border-color:#e0a3a3;box-shadow:0 0 0 2px rgba(224,163,163,.28)}
+.comp-card.comp-need .comp-input{border-color:#e0a3a3;color:#e0a3a3}
+.comp-card.comp-need .comp-warn{display:block}
 /* 재검사 방법 */
 .oath-method{margin:18px 0 4px;padding:18px 20px;border-radius:10px;background:rgba(95,198,163,.08);border:1px solid rgba(95,198,163,.3)}
 .oath-method>label{display:block;font-weight:700;color:var(--cream,#e8eef0);font-size:1.1rem;margin-bottom:10px}
@@ -815,26 +820,26 @@ function renderStep2(){
     ));
     return;
   }
-  // ── 과제 완수율 입력 (오답 기입 전) ── 주차 전체 문항 중 실제로 푼 문항 수
+  // ── 과제 완수율(정확한 푼 문항 수) — 매주 필수 조사 (오답 기입 전) ──
   const weekTotal = secs.reduce((n,s)=>n+((s.questions||[]).length),0);
-  if(STATE.solvedTotal==null){
-    // 기본값 = 1단계 '얼마나 했나요' 응답과 일치(덜 했다고 하면 그만큼만) — 안 건드려도 완수율이 정확히 반영되게
-    const _di = (typeof studyGet==='function') ? studyGet(STATE.studyAns,'done') : null;
-    const _dr = (_di!=null) ? [100,85,50,25,0][_di] : null;
-    STATE.solvedTotal = (_dr!=null && _dr<100) ? Math.round(weekTotal*_dr/100) : weekTotal;
-  }
   const compCard = el('div',{class:'section comp-card'});
-  compCard.appendChild(el('div',{class:'comp-title'},'먼저, 과제 완수율을 확인할게요'));
-  compCard.appendChild(el('div',{class:'comp-desc'},'이번 주 과제로 낸 '+weekTotal+'문항 중, 실제로 몇 문항을 풀었나요? 아래 숫자가 실제 푼 만큼과 다르면 고쳐 주세요.'));
+  compCard.appendChild(el('div',{class:'comp-title'},'이번 주, 몇 문항 풀었나요? (필수)'));
+  compCard.appendChild(el('div',{class:'comp-desc'},'이번 주 과제로 낸 '+weekTotal+'문항 중, 실제로 푼 문항 수를 적어 주세요. 매주 확인하는 항목이라 꼭 입력해야 다음으로 넘어갈 수 있어요.'));
   const compRate = el('span',{class:'comp-rate'});
-  const inp = el('input',{type:'number', class:'comp-input', min:0, max:weekTotal, step:1, value:String(STATE.solvedTotal)});
-  function syncRate(){ const v=Math.max(0,Math.min(weekTotal,parseInt(inp.value,10)||0));
+  const inp = el('input',{type:'number', class:'comp-input', min:0, max:weekTotal, step:1, placeholder:'숫자 입력', value:(STATE.solvedTotal!=null?String(STATE.solvedTotal):'')});
+  function syncRate(){ const raw=String(inp.value).trim(); if(raw===''){ compRate.textContent=''; return; }
+    const v=Math.max(0,Math.min(weekTotal,parseInt(inp.value,10)||0));
     compRate.textContent = weekTotal?('완수율 '+Math.round(v/weekTotal*100)+'%'):''; }
-  inp.oninput = ()=>{ let v=parseInt(inp.value,10); if(isNaN(v)) return; v=Math.max(0,Math.min(weekTotal,v)); STATE.solvedTotal=v; syncRate(); };
-  inp.onblur  = ()=>{ let v=Math.max(0,Math.min(weekTotal,parseInt(inp.value,10)||0)); inp.value=String(v); STATE.solvedTotal=v; syncRate(); };
+  inp.oninput = ()=>{ const raw=String(inp.value).trim(); if(raw===''){ STATE.solvedTotal=null; compCard.classList.remove('comp-need'); syncRate(); return; }
+    let v=parseInt(inp.value,10); if(isNaN(v)) return; v=Math.max(0,Math.min(weekTotal,v)); STATE.solvedTotal=v; compCard.classList.remove('comp-need'); syncRate(); };
+  inp.onblur  = ()=>{ const raw=String(inp.value).trim(); if(raw===''){ STATE.solvedTotal=null; return; }
+    let v=Math.max(0,Math.min(weekTotal,parseInt(inp.value,10)||0)); inp.value=String(v); STATE.solvedTotal=v; syncRate(); };
+  const allBtn = el('button',{class:'btn btn-ghost comp-all', onclick:()=>{ inp.value=String(weekTotal); STATE.solvedTotal=weekTotal; compCard.classList.remove('comp-need'); syncRate(); }}, '전부 풀었어요 ('+weekTotal+'문항)');
   syncRate();
   compCard.appendChild(el('div',{class:'comp-row'},
-    el('span',{class:'comp-total'}, weekTotal+'문항 중'), inp, el('span',{class:'comp-unit'},'문항 풀었어요'), compRate));
+    el('span',{class:'comp-total'}, weekTotal+'문항 중'), inp, el('span',{class:'comp-unit'},'문항'), compRate));
+  compCard.appendChild(el('div',{class:'comp-row', style:'margin-top:10px'}, allBtn));
+  compCard.appendChild(el('div',{class:'comp-warn'}, '푼 문항 수를 입력해 주세요.'));
   root.appendChild(compCard);
 
   root.appendChild(el('div',{class:'section'},
@@ -849,7 +854,15 @@ function renderStep2(){
   });
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
-    el('button',{class:'btn btn-primary', onclick:()=>{STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();}}, STATE.data.checklist?'다음 → 일일학습 체크':'다음 단계 →')
+    el('button',{class:'btn btn-primary', onclick:()=>{
+      if(STATE.solvedTotal==null){   // 완수율(푼 문항 수) 필수 — 안 넣으면 진행 차단
+        compCard.classList.add('comp-need');
+        compCard.scrollIntoView({behavior:'smooth', block:'center'});
+        try{ inp.focus(); }catch(e){}
+        return;
+      }
+      STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();
+    }}, STATE.data.checklist?'다음 → 일일학습 체크':'다음 단계 →')
   ));
 }
 function secKeyOf(sec, i){ return String((sec&&sec.key) || (sec&&sec.title) || i); }
