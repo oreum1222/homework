@@ -817,10 +817,15 @@ function renderStep2(){
   }
   // ── 과제 완수율 입력 (오답 기입 전) ── 주차 전체 문항 중 실제로 푼 문항 수
   const weekTotal = secs.reduce((n,s)=>n+((s.questions||[]).length),0);
-  if(STATE.solvedTotal==null) STATE.solvedTotal = weekTotal;   // 기본값 = 다 풀었다고 가정
+  if(STATE.solvedTotal==null){
+    // 기본값 = 1단계 '얼마나 했나요' 응답과 일치(덜 했다고 하면 그만큼만) — 안 건드려도 완수율이 정확히 반영되게
+    const _di = (typeof studyGet==='function') ? studyGet(STATE.studyAns,'done') : null;
+    const _dr = (_di!=null) ? [100,85,50,25,0][_di] : null;
+    STATE.solvedTotal = (_dr!=null && _dr<100) ? Math.round(weekTotal*_dr/100) : weekTotal;
+  }
   const compCard = el('div',{class:'section comp-card'});
   compCard.appendChild(el('div',{class:'comp-title'},'먼저, 과제 완수율을 확인할게요'));
-  compCard.appendChild(el('div',{class:'comp-desc'},'이번 주 과제로 낸 '+weekTotal+'문항 중, 실제로 몇 문항을 풀었나요? 다 풀었으면 그대로 두면 됩니다.'));
+  compCard.appendChild(el('div',{class:'comp-desc'},'이번 주 과제로 낸 '+weekTotal+'문항 중, 실제로 몇 문항을 풀었나요? 아래 숫자가 실제 푼 만큼과 다르면 고쳐 주세요.'));
   const compRate = el('span',{class:'comp-rate'});
   const inp = el('input',{type:'number', class:'comp-input', min:0, max:weekTotal, step:1, value:String(STATE.solvedTotal)});
   function syncRate(){ const v=Math.max(0,Math.min(weekTotal,parseInt(inp.value,10)||0));
