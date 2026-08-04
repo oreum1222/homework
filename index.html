@@ -599,6 +599,9 @@ function loadWeek(courseId, monthKey, week){
     STATE.week = monthKey ? weekUid : (d.week!=null ? d.week : week);
     STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.notSolved = new Set(); STATE.solvedTotal = null; STATE.studyAns = {}; STATE.result = null;
     STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null; STATE.oathMethod = null;
+    // 학년 기본값 = 선택한 코스의 학년(예: 중3 코스 → '중3'). 예전에 중3 옵션이 없어 다른 학년을 고르던 문제 방지. (명단 매칭은 이름 기준이라 학년값은 표시용)
+    var _c = COURSES.find(function(c){ return c.id===STATE.courseId; });
+    if(_c && ['중3','고1','고2','고3','N수'].indexOf(_c.grade)>=0) STATE.student.grade = _c.grade;
     renderDiag();
   }).catch(err=>{
     document.getElementById('loading').style.display='none';
@@ -674,7 +677,7 @@ function renderStep1(){
     formRow('이름','text','name', STATE.student.name, '예: 홍길동'),
     el('div',{class:'form-grid2'},
       formRow('학교','text','school', STATE.student.school, '예: 산본고등학교'),
-      formRow('학년','select','grade', STATE.student.grade, null, ['고1','고2','고3','N수'])
+      formRow('학년','select','grade', STATE.student.grade, null, ['중3','고1','고2','고3','N수'])
     )
   );
   // 숙제 함 / 안 함
@@ -1227,7 +1230,7 @@ function renderStep4(){
   } else {
     root.appendChild(el('div',{class:'score-block'},
       scoreCard('과제 완수율', (r.solveRate!=null?r.solveRate+'%':'-'), (r.undoneCount?('미완 '+r.undoneCount+'문항'):'전부 풀이')),
-      scoreCard('정답률', r.rate+'%', '/ 푼 문항 기준'),
+      scoreCard('정답률', r.rate+'%', '푼 것 기준 · 실질 '+(r.weekTotal?Math.round(r.correct/r.weekTotal*100):r.rate)+'%'),
       scoreCard('맞은 문항', r.correct, '/ '+r.total+'문항'),
       scoreCard('틀린 문항', r.wrongN, '문항')
     ));
@@ -1359,14 +1362,14 @@ function computeRank(){
       if(String(row.courseId)!==String(STATE.courseId)) return;
       if(String(row.week)!==String(STATE.week)) return;
       const nm = String(row.name||'').trim(); if(!nm) return;
-      const rt = Number(row['정답률']); if(isNaN(rt)) return;
+      let rt = Number(row['맞은개수']); if(isNaN(rt)) rt=(Number(row['총문항'])||0)-(Number(row['틀린개수'])||0); if(isNaN(rt)) return;
       if(best[nm]==null || rt>best[nm]) best[nm]=rt;
     });
-    best[my] = STATE.result.rate;                       // 나(최신) 포함
+    best[my] = STATE.result.correct;                    // 나(최신) 포함 — 맞은 개수(실질 정답률) 기준
     const myRate = best[my]; let rank=1;
     Object.keys(best).forEach(n=>{ if(best[n]>myRate) rank++; });
     const N = Object.keys(best).length;
-    rankEl.innerHTML = '🏆 전체 <b>'+N+'명</b> 중 <b>'+rank+'등</b> <span class="rank-sub">(같은 과제 · 정답률 기준 · 제출 누적)</span>';
+    rankEl.innerHTML = '🏆 전체 <b>'+N+'명</b> 중 <b>'+rank+'등</b> <span class="rank-sub">(같은 과제 · 맞은 개수 기준 · 제출 누적)</span>';
   }).catch(()=>{ rankEl.style.display='none'; });
 }
 

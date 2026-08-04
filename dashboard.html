@@ -704,6 +704,56 @@ function switchTab(t){
 
 // ════════════════════════ 가정통신문 작성 ════════════════════════
 var NLW={dict:null,loading:false,course:'all',student:'',checks:{},data:{},_sent:{},_dataLines:[]};
+// ── 관찰 문장 체크 서버 누적 저장(가통용) : 매주 체크할 때마다 학생별로 서버 저장 → 가통 작성 시 자동 복원 ──
+var OBS={loaded:false, rows:[], byStu:{}};           // byStu['cid|name'] = { key:{kw,cat,week,ts} }
+var OBSKEY={idToKey:{}, keyToId:{}, metaByKey:{}};   // 사전 id ↔ 안정키(kw 텍스트) 매핑
+function obsStuKey_(cid,name){ return String(cid||'')+'|'+normNameR(name||''); }
+function nlCidFor_(name){   // 학생의 실제 courseId(필터가 '전체'여도 고정 키가 되게 해석)
+  if(NLW.course && NLW.course!=='all') return NLW.course;
+  var m=nlFindMaster(name); if(m&&m.courseId) return String(m.courseId);
+  var r=(SMS.roster||[]).find(function(x){return normNameR(x.name)===normNameR(name);}); return r?String(r.courseId):'';
+}
+function nlCurWeek_(){ try{ var m=nlFindMaster(NLW.student); return m&&m.n?String(m.n):''; }catch(e){ return ''; } }
+function obsBuildKeymap_(){
+  OBSKEY={idToKey:{}, keyToId:{}, metaByKey:{}};
+  if(!NLW.dict) return;
+  (NLW.dict.cards||[]).forEach(function(c,i){ var id='card:'+i, key='card:'+c.name; OBSKEY.idToKey[id]=key; OBSKEY.keyToId[key]=id; OBSKEY.metaByKey[key]={kw:c.name,cat:'문장카드'}; });
+  (NLW.dict.categories||[]).forEach(function(cat,ci){ cat.subs.forEach(function(sub,si){ sub.items.forEach(function(it,ii){
+    var id='k:'+ci+'.'+si+'.'+ii, key='kw:'+cat.cat+'|'+it.kw; OBSKEY.idToKey[id]=key; OBSKEY.keyToId[key]=id; OBSKEY.metaByKey[key]={kw:it.kw,cat:cat.cat}; }); }); });
+}
+function obsLoad_(cb){
+  if(OBS.loaded){ cb&&cb(); return; }
+  if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ OBS.loaded=true; cb&&cb(); return; }
+  fetch(SCRIPT_URL+'?action=observchecks&t='+Date.now()).then(function(r){return r.json();}).then(function(d){
+    OBS.rows=Array.isArray(d)?d:[]; OBS.byStu={};
+    OBS.rows.forEach(function(r){ var k=obsStuKey_(r.courseId,r.name); (OBS.byStu[k]=OBS.byStu[k]||{})[r.key]={kw:r.kw,cat:r.cat,week:r.week,ts:r.ts}; });
+    OBS.loaded=true; cb&&cb();
+  }).catch(function(){ OBS.loaded=true; cb&&cb(); });
+}
+function obsSavedFor_(name){ return OBS.byStu[obsStuKey_(nlCidFor_(name),name)]||{}; }
+function obsApplyToChecks_(name){   // 서버 누적 → NLW.checks 복원(현재 사전 id로 매핑)
+  var saved=obsSavedFor_(name);
+  Object.keys(saved).forEach(function(key){ var id=OBSKEY.keyToId[key]; if(id) NLW.checks[id]=true; });
+}
+function obsWhen_(id){   // 서버 저장돼 있으면 '추가 시점' 배지 텍스트
+  if(!NLW.student) return '';
+  var key=OBSKEY.idToKey[id]; if(!key) return '';
+  var rec=obsSavedFor_(NLW.student)[key]; if(!rec) return '';
+  if(rec.ts==='(방금)') return '방금';
+  if(rec.week) return rec.week+'주';
+  var dm=String(rec.ts||'').match(/(\d{4})-(\d{2})-(\d{2})/); return dm?((+dm[2])+'/'+(+dm[3])):'저장';
+}
+function obsSave_(id, on){   // 체크/해제 시 서버 저장(낙관적)
+  if(!NLW.student) return;
+  var key=OBSKEY.idToKey[id]; if(!key) return;
+  var cid=nlCidFor_(NLW.student), meta=OBSKEY.metaByKey[key]||{}, week=nlCurWeek_();
+  var sk=obsStuKey_(cid,NLW.student); OBS.byStu[sk]=OBS.byStu[sk]||{};
+  if(on) OBS.byStu[sk][key]={kw:meta.kw,cat:meta.cat,week:week,ts:'(방금)'}; else delete OBS.byStu[sk][key];
+  if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')) return;
+  var rows=JSON.stringify([{courseId:cid,name:NLW.student,key:key,kw:meta.kw||'',cat:meta.cat||'',week:week,on:on?1:0,by:'가경T'}]);
+  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:'action=observCheck&rows='+encodeURIComponent(rows)})
+    .then(function(r){return r.json();}).catch(function(){});
+}
 function nlRefreshSelects_(){   // REP.master/SMS.roster 도착 후 강좌·학생 셀렉트 갱신
   const cs=document.getElementById('nlCourse'); if(!cs) return;
   const cids=Array.from(new Set([].concat((REP.master||[]).map(m=>m.courseId),(SMS.roster||[]).map(r=>r.courseId)).filter(c=>c&&c!=='courseId'&&courseShown(c))));
@@ -716,10 +766,10 @@ function nlInit(){
   if((!ALL_DATA||!ALL_DATA.length) && (!REP.master||!REP.master.length) && typeof loadData==='function') loadData();
   ensureReportData();
   nlRefreshSelects_();
-  if(NLW.dict){ nlRenderCards(); nlRenderChecklist(); return; }
+  if(NLW.dict){ obsBuildKeymap_(); nlRenderCards(); nlRenderChecklist(); obsLoad_(); return; }
   if(NLW.loading) return;
   NLW.loading=true;
-  fetch('data/observ-dict.json?t='+Date.now()).then(r=>r.json()).then(d=>{ NLW.dict=d; NLW.loading=false; nlRenderCards(); nlRenderChecklist(); }).catch(e=>{ NLW.loading=false; const cl=document.getElementById('nlChecklist'); if(cl) cl.innerHTML='<div class="error">관찰문장 사전 로드 실패: '+esc(e.message)+'</div>'; });
+  fetch('data/observ-dict.json?t='+Date.now()).then(r=>r.json()).then(d=>{ NLW.dict=d; NLW.loading=false; obsBuildKeymap_(); nlRenderCards(); nlRenderChecklist(); obsLoad_(function(){ if(NLW.student){ obsApplyToChecks_(NLW.student); nlRenderCards(); nlRenderChecklist(); nlAssemble(); } }); }).catch(e=>{ NLW.loading=false; const cl=document.getElementById('nlChecklist'); if(cl) cl.innerHTML='<div class="error">관찰문장 사전 로드 실패: '+esc(e.message)+'</div>'; });
 }
 function nlOnCourse(){ NLW.course=document.getElementById('nlCourse').value; nlRenderStudents(); }
 function nlRenderStudents(){
@@ -736,6 +786,7 @@ function nlSelectStudent(name){
   NLW.student=name||''; NLW.checks={}; NLW.data={};
   document.getElementById('nlBody').style.display=name?'':'none';
   if(!name) return;
+  obsLoad_(function(){ obsApplyToChecks_(name); nlRenderCards(); nlRenderChecklist(); nlAssemble(); });   // 서버 누적 관찰 → 자동 복원
   nlRenderData(); nlRenderCards(); nlRenderChecklist(); nlAssemble();
   // ver3 자동 초안 채우기(학생 바뀌면 새로)
   try{ var d=nlGatherV3_(name); if(d&&d.n){ var t=nlDrafts_(d);
@@ -773,14 +824,14 @@ function nlBuildSent(){
 function nlRenderCards(){
   const box=document.getElementById('nlCards'); if(!box||!NLW.dict) return;
   box.innerHTML='<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px">빠른 문장카드 (클릭 = 코멘트에 추가)</div><div class="nl-chips">'
-    +(NLW.dict.cards||[]).map((c,i)=>'<button class="nl-card'+(NLW.checks['card:'+i]?' on':'')+'" onclick="nlToggle(\'card:'+i+'\',this)">'+esc(c.name)+'</button>').join('')+'</div>';
+    +(NLW.dict.cards||[]).map((c,i)=>{const w=obsWhen_('card:'+i); return '<button class="nl-card'+(NLW.checks['card:'+i]?' on':'')+'" onclick="nlToggle(\'card:'+i+'\',this)">'+esc(c.name)+(w?' <span style="font-size:.6rem;color:#c9a84a;font-weight:700">'+esc(w)+'</span>':'')+'</button>';}).join('')+'</div>';
 }
 function nlRenderChecklist(){
   const box=document.getElementById('nlChecklist'); if(!box||!NLW.dict) return;
   nlBuildSent();
   box.innerHTML=(NLW.dict.categories||[]).map((cat,ci)=>{
     const inner=cat.subs.map((sub,si)=>'<div class="nlc-sub"><div class="nlc-sub-t">'+esc(sub.sub)+'</div><div class="nl-chips">'
-      +sub.items.map((it,ii)=>{ const id='k:'+ci+'.'+si+'.'+ii; return '<label class="nl-kw'+(NLW.checks[id]?' on':'')+'" title="'+esc(it.interp)+'"><input type="checkbox" '+(NLW.checks[id]?'checked':'')+' onchange="nlToggle(\''+id+'\',this)"> '+esc(it.kw)+'</label>'; }).join('')
+      +sub.items.map((it,ii)=>{ const id='k:'+ci+'.'+si+'.'+ii; const w=obsWhen_(id); return '<label class="nl-kw'+(NLW.checks[id]?' on':'')+'" title="'+esc(it.interp)+'"><input type="checkbox" '+(NLW.checks[id]?'checked':'')+' onchange="nlToggle(\''+id+'\',this)"> '+esc(it.kw)+(w?' <span style="font-size:.62rem;color:#c9a84a;font-weight:700;margin-left:2px">'+esc(w)+'</span>':'')+'</label>'; }).join('')
       +'</div></div>').join('');
     const cnt=cat.subs.reduce((a,s)=>a+s.items.length,0);
     return '<details class="wk-acc"><summary>'+esc(cat.cat)+' <span class="wk-cnt resp">'+cnt+'</span></summary><div style="padding:4px 14px 12px">'+inner+'</div></details>';
@@ -799,6 +850,7 @@ function nlToggle(id, el){
       return;
     }
   } else { NLW.checks[id]=false; }
+  obsSave_(id, !!NLW.checks[id]);   // 서버 누적 저장(체크=추가 / 해제=삭제)
   if(id.indexOf('card:')===0) nlRenderCards();
   else if(el){ const lab=el.closest('.nl-kw'); if(lab) lab.classList.toggle('on',!!NLW.checks[id]); }
   nlAssemble();
