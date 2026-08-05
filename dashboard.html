@@ -835,7 +835,7 @@ function nlRenderData(){
   box.innerHTML='<div class="nl-chips">'+lines.map(l=>'<label class="nl-dchip"><input type="checkbox" '+(NLW.data[l.id]?'checked':'')+' onchange="NLW.data[\''+l.id+'\']=this.checked"> '+esc(l.t)+'</label>').join('')+'</div>';
 }
 // ── PDF 1면용: 학습 성향 진단·상담 보충 블록(6축 그래프 + 상담 요약). 프로필 없으면 빈 문자열 ──
-function nlProfileBlock_(name){
+function nlProfileBlock_(name, bare){
   var p=gatonFor_(name); if(!p) return '';
   var AXO=['자료 장악','사고 적용','조건 변별','오답 메타인지','시간 운영','정서 회복'];
   var bars='';
@@ -1164,8 +1164,8 @@ function nlBuildV3_(d,t){
   var logo=LOGO_NAVY_URL||LOGO_URL||'';
   var p1=nlV3Page_('<div class="nlp-head" style="padding-bottom:10px;margin-bottom:12px">'+(logo?'<img class="nlp-logo" src="'+logo+'" style="width:140px;margin-bottom:8px">':'')+'<div class="nlp-title">가정통신문</div><div class="nlp-brand">'+esc(BRAND)+'</div></div>'
     +'<div class="nlp-meta" style="margin-bottom:10px"><span><b style="color:#1c2c52">'+esc(d.name)+' 학생 학부모님</b> 귀하</span><span>'+dot+'</span></div>'
-    +'<div class="nlp-greet" style="margin-bottom:13px;padding:10px 15px;line-height:1.55">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 최근 과제 제출 데이터를 바탕으로 <b>정답률 · 단원별 수행 · 반 평균 비교</b>를 정리해 전해 드립니다.</div>'
-    +'<div class="nlp-sec-t" style="margin-bottom:9px">'+esc(d.name)+' 학생 학습 데이터 리포트</div>'+stats+grid+cmpTbl+nlProfileBlock_(d.name));
+    +'<div class="nlp-greet" style="margin-bottom:13px;padding:10px 15px;line-height:1.7">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 최근 '+esc(d.name)+' 학생이 과제를 풀어 온 모습을 하나하나 살펴보았습니다. 얼마나 정확하게 풀어 내는지, 어떤 단원이 제법 안정적으로 자리를 잡았는지, 또 같은 과제를 함께 해 온 친구들 사이에서 지금 어디쯤 와 있는지를 아래에 차근차근 정리해 전해 드립니다.</div>'
+    +'<div class="nlp-sec-t" style="margin-bottom:9px">'+esc(d.name)+' 학생 학습 데이터 리포트</div>'+stats+grid+cmpTbl);
   // 2면 오답 분석
   var oabSec='<div class="nlp-sec-t" style="margin-bottom:9px">이번 달 오답 들여다보기 <span style="font-weight:400;color:#9a958a;font-size:.78rem">— 대표 '+d.repOab.length+'문항</span></div>'+d.repOab.map(nlV3Oab_).join('');
   var dnaSec='<div class="nlp-diag" style="margin-bottom:14px"><div class="h" style="margin-bottom:11px">'+esc(d.name)+' 학생의 오답 DNA</div>'+t.dna.map(function(x){return '<div style="display:flex;gap:11px;margin-bottom:9px"><div style="font-family:\'Noto Serif KR\';font-size:1.05rem;color:#b08d57;font-weight:700;flex:none;width:20px">'+x.n+'</div><div><div style="font-weight:700;color:#1c2c52;font-size:.86rem;margin-bottom:2px">'+esc(x.t)+'</div><div style="font-size:.82rem;color:#3a4154;line-height:1.6">'+esc(x.d)+'</div></div></div>';}).join('')+'</div>';
@@ -1184,10 +1184,14 @@ function nlBuildV3_(d,t){
   if(cs.goal) cRows+=cRow('목표',esc(cs.goal));
   if(cs.plan){ var pl=String(cs.plan).split('\n').map(function(x){return x.trim();}).filter(Boolean); if(pl.length) cRows+=cRow('학습 계획','<ul style="margin:0;padding-left:16px;line-height:1.7">'+pl.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'); }
   var consultBlock=cRows?'<div style="margin-bottom:15px;background:#eef2f8;border:1px solid #cdd9ea;border-radius:10px;padding:14px 18px 15px"><div class="nlp-sec-t" style="margin-bottom:11px;color:#1f3a5f;border-bottom:2px solid #2c4a6e;padding-bottom:6px">학습 상담과 목표 <span style="background:#2c4a6e;color:#fff;font-size:.62rem;font-weight:700;border-radius:12px;padding:2px 8px;margin-left:6px;vertical-align:2px">이번 상담 반영</span></div>'+cRows+'</div>':'';
-  var p3=nlV3Page_(nlV3Head_('학습 해석 · 처방 · 가정 연계',esc(d.name)+' 학생 · '+esc(BRAND))+tag+sec('데이터로 본 학습 특징','<div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.feat)+'</div>')+sec('다음 학습 처방',presc)+consultBlock+sec('학부모님께 드리는 관찰 포인트',obs));
+  var p3=nlV3Page_(nlV3Head_('학습 해석과 처방, 가정 연계',esc(d.name)+' 학생 · '+esc(BRAND))+tag+sec('데이터로 본 학습 특징','<div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.feat)+'</div>')+sec('다음 학습 처방',presc)+consultBlock+sec('학부모님께 드리는 관찰 포인트',obs));
   // 4면 종합 의견
   var p4=nlV3Page_(nlV3Head_('가정통신문',esc(BRAND))+'<div class="nlp-greet" style="margin-bottom:22px">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 이 기간 동안 '+esc(d.name)+' 학생의 학습 모습을 살펴 전해 드립니다.</div><div class="nlp-sec-t" style="margin-bottom:18px">'+esc(d.name)+' 학생 · 가경T 종합 의견</div><div class="nlp-comment">'+esc(t.warm)+'</div><div class="nlp-sign"><div class="d">'+ko+'</div><div class="b">'+esc(BRAND)+'　'+esc(TEACHER)+' <span style="font-size:.88rem;color:#737a88;font-weight:400">드림</span></div></div>',true);
-  return '<div id="nlPages">'+p1+p2+p3+p4+'</div>';
+  // 성향 진단·상담 — 독립 3쪽(페이지 잘림 방지). 프로필 없으면 생략.
+  var pProf = gatonFor_(d.name) ? nlV3Page_(nlV3Head_('학습 성향 진단과 상담',esc(d.name)+' 학생 · '+esc(BRAND))
+    +'<div style="font-size:.86rem;color:#3a4154;line-height:1.85;margin-bottom:16px">과제 점수만으로는 다 담기 어려운 '+esc(d.name)+' 학생의 공부 성향을, 여섯 갈래로 나누어 살핀 진단과 대면 상담에서 본 모습으로 함께 전해 드립니다.</div>'
+    +nlProfileBlock_(d.name,true)) : '';
+  return '<div id="nlPages">'+p1+p2+pProf+p3+p4+'</div>';
 }
 function nlMakePdf(){
   if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
