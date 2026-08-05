@@ -94,6 +94,7 @@ window.COURSE_LIST = [
     weeks: [
       { week: 1, file: 'data/hw-oreum-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
       { week: 2, file: 'data/hw-oreum-gojeonbeop-w2.json', label: '2주차 · 27~52', area: '고전 문법', status: 'active' },
+      { week: 5, tag: '2주차 (2)', file: 'data/hw-oreum-gojeonbeop-w5.json', label: '교재 53~70 + 내신형 워크북 1~50', area: '고전 문법', status: 'active' },
       { week: 3, file: 'data/hw-oreum-gojeonbeop-w3.json', label: '3주차 · 53~78', area: '고전 문법', status: 'active' },
       { week: 4, file: 'data/hw-oreum-gojeonbeop-w4.json', label: '4주차 · 79~92 + 수능 기출', area: '고전 문법', status: 'active' }
     ]
