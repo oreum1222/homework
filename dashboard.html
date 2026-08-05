@@ -704,6 +704,11 @@ function switchTab(t){
 
 // ════════════════════════ 가정통신문 작성 ════════════════════════
 var NLW={dict:null,loading:false,course:'all',student:'',checks:{},data:{},_sent:{},_dataLines:[]};
+// ── 성향 진단·상담 보충 데이터(숙제 검사 응답이 부실한 학생 통신문 보강용) ──
+var GATON_PROFILE={};
+(function(){ try{ fetch('data/gaton-profile.json?v=20260805&t='+Date.now()).then(function(r){return r.json();}).then(function(d){ GATON_PROFILE=d||{}; }).catch(function(){}); }catch(e){} })();
+function gatonFor_(name){ if(!GATON_PROFILE||!name) return null; if(GATON_PROFILE[name]) return GATON_PROFILE[name];
+  var nk=(typeof normNameR==='function'?normNameR(name):name); for(var k in GATON_PROFILE){ if((typeof normNameR==='function'?normNameR(k):k)===nk) return GATON_PROFILE[k]; } return null; }
 // ── 관찰 문장 체크 서버 누적 저장(가통용) : 매주 체크할 때마다 학생별로 서버 저장 → 가통 작성 시 자동 복원 ──
 var OBS={loaded:false, rows:[], byStu:{}};           // byStu['cid|name'] = { key:{kw,cat,week,ts} }
 var OBSKEY={idToKey:{}, keyToId:{}, metaByKey:{}};   // 사전 id ↔ 안정키(kw 텍스트) 매핑
@@ -806,15 +811,44 @@ function nlSaveConsult(){ try{ if(!NLW.student) return; var g=function(id){var e
   localStorage.setItem(nlConsultKey_(NLW.student), JSON.stringify({curr:g('nlCurr'),goal:g('nlGoal'),plan:g('nlPlan')})); }catch(e){} }
 function nlRenderData(){
   const box=document.getElementById('nlData'); const m=nlFindMaster(NLW.student); NLW._dataLines=[];
-  if(!m){ box.innerHTML='<div class="empty" style="font-size:0.85rem">제출 데이터가 없어 자료 요약은 생략됩니다(관찰 문장만으로 작성).</div>'; return; }
-  const lines=[], trend={상승:'상승세',하락:'하락',유지:'유지'}[m.trend]||'';
-  lines.push({id:'avg',t:'평균 정답률 '+m.avgRate+'%'+(trend?' · 추세 '+trend:'')});
-  const areas=Object.entries(m.areaAgg||{}).map(([a,v])=>({a,acc:v.total?Math.round((v.total-v.wrong)/v.total*100):0,wrong:v.wrong,total:v.total})).filter(x=>x.total>=2).sort((x,y)=>x.acc-y.acc);
-  if(areas.length){ const w=areas[0]; lines.push({id:'weak',t:'약점 영역: '+w.a+' ('+w.total+'문제 중 '+w.wrong+' 오답)'}); }
-  if(areas.length>1){ const s=areas[areas.length-1]; lines.push({id:'strong',t:'강점 영역: '+s.a+' (정답률 '+s.acc+'%)'}); }
-  lines.push({id:'submit',t:'제출 '+m.n+'주차 · 누적 오답 '+m.totalWrong+'개'});
+  const lines=[];
+  if(m){
+    const trend={상승:'상승세',하락:'하락',유지:'유지'}[m.trend]||'';
+    lines.push({id:'avg',t:'평균 정답률 '+m.avgRate+'%'+(trend?' · 추세 '+trend:'')});
+    const areas=Object.entries(m.areaAgg||{}).map(([a,v])=>({a,acc:v.total?Math.round((v.total-v.wrong)/v.total*100):0,wrong:v.wrong,total:v.total})).filter(x=>x.total>=2).sort((x,y)=>x.acc-y.acc);
+    if(areas.length){ const w=areas[0]; lines.push({id:'weak',t:'약점 영역: '+w.a+' ('+w.total+'문제 중 '+w.wrong+' 오답)'}); }
+    if(areas.length>1){ const s=areas[areas.length-1]; lines.push({id:'strong',t:'강점 영역: '+s.a+' (정답률 '+s.acc+'%)'}); }
+    lines.push({id:'submit',t:'제출 '+m.n+'주차 · 누적 오답 '+m.totalWrong+'개'});
+  }
+  // 성향 진단·상담 보충(숙제 데이터가 부실해도 통신문을 채워 넣을 수 있게)
+  const p=gatonFor_(NLW.student);
+  if(p){
+    if(p.strong&&p.strong.length) lines.push({id:'p_strong',t:'성향 강점 — '+p.strong.join(', ')});
+    if(p.weak&&p.weak.length) lines.push({id:'p_weak',t:'성향 보완 — '+p.weak.join(', ')});
+    if(p.type&&p.type!=='성향 진단 미응답') lines.push({id:'p_type',t:'학습 유형 — '+p.type});
+    if(p.summer) lines.push({id:'p_summer',t:'여름 진단 — '+p.summer});
+    if(p.weakAreas) lines.push({id:'p_weakA',t:'취약 영역 — '+p.weakAreas});
+    if(p.goal) lines.push({id:'p_goal',t:'본인 목표 — “'+p.goal+'”'});
+  }
   NLW._dataLines=lines;
+  if(!lines.length){ box.innerHTML='<div class="empty" style="font-size:0.85rem">제출·성향 데이터가 없어 자료 요약은 생략됩니다(관찰 문장만으로 작성).</div>'; return; }
   box.innerHTML='<div class="nl-chips">'+lines.map(l=>'<label class="nl-dchip"><input type="checkbox" '+(NLW.data[l.id]?'checked':'')+' onchange="NLW.data[\''+l.id+'\']=this.checked"> '+esc(l.t)+'</label>').join('')+'</div>';
+}
+// ── PDF 1면용: 학습 성향 진단·상담 보충 블록(6축 그래프 + 상담 요약). 프로필 없으면 빈 문자열 ──
+function nlProfileBlock_(name){
+  var p=gatonFor_(name); if(!p) return '';
+  var AXO=['자료 장악','사고 적용','조건 변별','오답 메타인지','시간 운영','정서 회복'];
+  var bars='';
+  if(p.six){ AXO.forEach(function(k){ var v=p.six[k]; if(v==null) return; var col=v>=67?'#1c2c52':(v>=40?'#b08d57':'#c0563f');
+    bars+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div style="width:80px;font-size:.73rem;color:#3a4154;flex:none">'+esc(k)+'</div><div style="flex:1;height:8px;background:#eee7d6;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+v+'%;background:'+col+';border-radius:4px"></div></div><div style="width:24px;text-align:right;font-size:.73rem;font-weight:700;color:#1c2c52;flex:none">'+v+'</div></div>'; }); }
+  var rows=''; var addR=function(k,v){ if(v) rows+='<div style="font-size:.79rem;line-height:1.62;margin-bottom:3px"><span style="color:#2c4a6e;font-weight:700">'+k+'</span>　'+esc(v)+'</div>'; };
+  addR('강점',(p.strong||[]).join(', ')); addR('보완',(p.weak||[]).join(', '));
+  addR('유형',(p.type&&p.type!=='성향 진단 미응답')?p.type:''); addR('여름 진단',p.summer);
+  addR('취약 영역',p.weakAreas); addR('본인 목표',p.goal?('“'+p.goal+'”'):'');
+  if(!bars && !rows) return '';
+  return '<div style="margin-top:14px"><div class="nlp-sec-t" style="margin-bottom:9px">학습 성향 진단 · 상담 <span style="font-weight:400;color:#9a958a;font-size:.76rem">— 성향 6축 진단과 대면 상담 종합</span></div>'
+    +'<div class="nlp-grid2"><div class="nlp-card" style="padding:11px 14px">'+(bars||'<div style="font-size:.78rem;color:#9a958a;padding:14px 0;text-align:center">6축 성향 진단 미응답</div>')+'</div>'
+    +'<div class="nlp-card" style="padding:11px 14px">'+(rows||'<div style="font-size:.78rem;color:#9a958a;padding:14px 0;text-align:center">상담 요약 없음</div>')+'</div></div></div>';
 }
 function nlBuildSent(){
   NLW._sent={};
@@ -1131,7 +1165,7 @@ function nlBuildV3_(d,t){
   var p1=nlV3Page_('<div class="nlp-head" style="padding-bottom:10px;margin-bottom:12px">'+(logo?'<img class="nlp-logo" src="'+logo+'" style="width:140px;margin-bottom:8px">':'')+'<div class="nlp-title">가정통신문</div><div class="nlp-brand">'+esc(BRAND)+'</div></div>'
     +'<div class="nlp-meta" style="margin-bottom:10px"><span><b style="color:#1c2c52">'+esc(d.name)+' 학생 학부모님</b> 귀하</span><span>'+dot+'</span></div>'
     +'<div class="nlp-greet" style="margin-bottom:13px;padding:10px 15px;line-height:1.55">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 최근 과제 제출 데이터를 바탕으로 <b>정답률 · 단원별 수행 · 반 평균 비교</b>를 정리해 전해 드립니다.</div>'
-    +'<div class="nlp-sec-t" style="margin-bottom:9px">'+esc(d.name)+' 학생 학습 데이터 리포트</div>'+stats+grid+cmpTbl);
+    +'<div class="nlp-sec-t" style="margin-bottom:9px">'+esc(d.name)+' 학생 학습 데이터 리포트</div>'+stats+grid+cmpTbl+nlProfileBlock_(d.name));
   // 2면 오답 분석
   var oabSec='<div class="nlp-sec-t" style="margin-bottom:9px">이번 달 오답 들여다보기 <span style="font-weight:400;color:#9a958a;font-size:.78rem">— 대표 '+d.repOab.length+'문항</span></div>'+d.repOab.map(nlV3Oab_).join('');
   var dnaSec='<div class="nlp-diag" style="margin-bottom:14px"><div class="h" style="margin-bottom:11px">'+esc(d.name)+' 학생의 오답 DNA</div>'+t.dna.map(function(x){return '<div style="display:flex;gap:11px;margin-bottom:9px"><div style="font-family:\'Noto Serif KR\';font-size:1.05rem;color:#b08d57;font-weight:700;flex:none;width:20px">'+x.n+'</div><div><div style="font-weight:700;color:#1c2c52;font-size:.86rem;margin-bottom:2px">'+esc(x.t)+'</div><div style="font-size:.82rem;color:#3a4154;line-height:1.6">'+esc(x.d)+'</div></div></div>';}).join('')+'</div>';
@@ -1159,7 +1193,7 @@ function nlMakePdf(){
   if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
   if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
   var d=nlGatherV3_(NLW.student);
-  if(!d || !d.n){ alert('이 학생의 제출 데이터를 찾지 못했습니다.'); return; }
+  if(!d || (!d.n && !gatonFor_(NLW.student))){ alert('이 학생의 제출 데이터도, 성향 진단 데이터도 없습니다.'); return; }
   var t=nlDrafts_(d);
   // 편집칸 값으로 덮어쓰기(있으면)
   var gv=function(id){var e=document.getElementById(id);return e&&e.value.trim()?e.value.trim():null;};
