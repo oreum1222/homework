@@ -437,11 +437,11 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
       <div class="section">
         <div class="section-title">리포트 텍스트 <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(학생 선택 시 데이터로 자동 초안 — 그대로 두거나 다듬어 쓰세요. 1~3면에 반영)</span></div>
         <div style="display:grid;grid-template-columns:1fr;gap:12px">
-          <div><div style="font-size:0.82rem;color:#cbb88a;margin-bottom:5px">학습 유형 태그 <span style="color:var(--text-muted)">(2·3면)</span></div>
-            <input id="nlTag" class="cmt-area" style="width:100%;min-height:0;padding:9px 12px" placeholder="예: 안정 수행형 · 기준 적용 보완형"></div>
+          <div><div style="font-size:0.82rem;color:#cbb88a;margin-bottom:5px">학습 단계 <span style="color:var(--text-muted)">(3면)</span></div>
+            <input id="nlTag" class="cmt-area" style="width:100%;min-height:0;padding:9px 12px" placeholder="예: 성실한 수행을 바탕으로 판단 기준을 다듬는 단계"></div>
           <div><div style="font-size:0.82rem;color:#cbb88a;margin-bottom:5px">데이터로 본 학습 특징 <span style="color:var(--text-muted)">(3면)</span></div>
             <textarea id="nlFeat" class="cmt-area" style="min-height:90px"></textarea></div>
-          <div><div style="font-size:0.82rem;color:#cbb88a;margin-bottom:5px">다음 학습 처방 <span style="color:var(--text-muted)">(3면 · 한 줄에 한 항목)</span></div>
+          <div><div style="font-size:0.82rem;color:#cbb88a;margin-bottom:5px">다음 과제에서 신경 쓸 순서 <span style="color:var(--text-muted)">(3면 · 한 줄에 한 항목)</span></div>
             <textarea id="nlPresc" class="cmt-area" style="min-height:90px"></textarea></div>
           <div><div style="font-size:0.82rem;color:#cbb88a;margin-bottom:5px">가정 관찰 포인트 <span style="color:var(--text-muted)">(3면)</span></div>
             <textarea id="nlObs" class="cmt-area" style="min-height:80px"></textarea></div>
@@ -455,10 +455,10 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
             <textarea id="nlPlan" class="cmt-area" style="min-height:78px" placeholder="언어 오답 재수집 후 재풀이&#10;문장편 재학습(2주차, 4~6주차) + 기출 재풀이&#10;개념 백지 테스트" oninput="nlSaveConsult()"></textarea>
           </div>
         </div>
-        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:8px">※ 지표·그래프·반 평균·오답 상세·오답 DNA·학습 신호는 제출 데이터에서 자동 생성됩니다. 위 칸과 종합 의견만 다듬으시면 됩니다.</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:8px">※ 지표, 그래프, 반 평균, 오답 상세, 공통 경향, 회차 점검은 제출 데이터에서 자동 생성됩니다. 위 칸과 종합 의견만 다듬으시면 됩니다.</div>
       </div>
       <div class="section">
-        <div class="section-title">가정통신문 PDF <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(4면: 데이터 리포트 · 오답 분석 · 해석/처방/가정연계 · 가경T 종합 의견)</span></div>
+        <div class="section-title">가정통신문 PDF <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(4면: 데이터 리포트 · 오답 분석 · 성향·해석·처방 · 종합 의견)</span></div>
         <div class="row" style="gap:10px;align-items:center">
           <button onclick="nlMakePdf()" style="background:var(--gold);color:var(--bg-dark);font-weight:700;border:none">가정통신문 PDF 저장</button>
           <span id="nlPdfMsg" style="color:var(--text-muted);font-size:0.82rem"></span>
@@ -842,12 +842,14 @@ function nlProfileBlock_(name, bare){
   if(p.six){ AXO.forEach(function(k){ var v=p.six[k]; if(v==null) return; var col=v>=67?'#1c2c52':(v>=40?'#b08d57':'#c0563f');
     bars+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div style="width:80px;font-size:.73rem;color:#3a4154;flex:none">'+esc(k)+'</div><div style="flex:1;height:8px;background:#eee7d6;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+v+'%;background:'+col+';border-radius:4px"></div></div><div style="width:24px;text-align:right;font-size:.73rem;font-weight:700;color:#1c2c52;flex:none">'+v+'</div></div>'; }); }
   var rows=''; var addR=function(k,v){ if(v) rows+='<div style="font-size:.79rem;line-height:1.62;margin-bottom:3px"><span style="color:#2c4a6e;font-weight:700">'+k+'</span>　'+esc(v)+'</div>'; };
-  addR('강점',(p.strong||[]).join(', ')); addR('보완',(p.weak||[]).join(', '));
-  addR('유형',(p.type&&p.type!=='성향 진단 미응답')?p.type:''); addR('여름 진단',p.summer);
+  // 학부모용: 부정 표현(부족·낮음·미흡·수치)을 걸러 긍정·중립 신호만 노출, '~형' 유형 낙인은 생략
+  var softSummer=function(s){ if(!s) return ''; return String(s).split(/[,，]/).map(function(x){return x.trim();}).filter(function(x){ return x && !/부족|낮음|낮은|약함|약한|미흡|부진|못함|안됨|\(\s*\d/.test(x); }).join(', '); };
+  addR('강점',(p.strong||[]).join(', ')); addR('확인할 점',(p.weak||[]).join(', '));
+  addR('여름 진단',softSummer(p.summer));
   addR('취약 영역',p.weakAreas); addR('본인 목표',p.goal?('“'+p.goal+'”'):'');
   if(!bars && !rows) return '';
-  return '<div style="margin-top:14px"><div class="nlp-sec-t" style="margin-bottom:9px">학습 성향 진단 · 상담 <span style="font-weight:400;color:#9a958a;font-size:.76rem">— 성향 6축 진단과 대면 상담 종합</span></div>'
-    +'<div class="nlp-grid2"><div class="nlp-card" style="padding:11px 14px">'+(bars||'<div style="font-size:.78rem;color:#9a958a;padding:14px 0;text-align:center">6축 성향 진단 미응답</div>')+'</div>'
+  return '<div style="margin-top:2px"><div class="nlp-sec-t" style="margin-bottom:7px">학습 성향 진단 · 상담 <span style="font-weight:400;color:#9a958a;font-size:.76rem">— 성향 6축 진단과 대면 상담 종합</span></div>'
+    +'<div class="nlp-grid2" style="margin-bottom:9px"><div class="nlp-card" style="padding:11px 14px">'+(bars||'<div style="font-size:.78rem;color:#9a958a;padding:14px 0;text-align:center">6축 성향 진단 미응답</div>')+'</div>'
     +'<div class="nlp-card" style="padding:11px 14px">'+(rows||'<div style="font-size:.78rem;color:#9a958a;padding:14px 0;text-align:center">상담 요약 없음</div>')+'</div></div></div>';
 }
 function nlBuildSent(){
@@ -1115,13 +1117,15 @@ function nlGatherV3_(name){
   // 대표 단원(강점 단원) 반평균
   var bestUnit=units.slice().sort(function(a,b){return b.rate-a.rate;})[0];
   var bestUnitCls=bestUnit&&pu[bestUnit.unit]?Math.round(pu[bestUnit.unit].reduce(function(x,y){return x+y;},0)/pu[bestUnit.unit].length):null;
+  // 반 평균 대비를 '우수' 같은 평가어가 아니라 사실 그대로(동일/높음/낮음)로 표기
+  var ppP=function(mine,cls){ if(cls==null) return ''; var diff=mine-cls; if(diff===0) return '반 평균과 동일'; return diff>0?('반 평균보다 '+diff+'%p 높음'):('반 평균보다 '+(-diff)+'%p 낮음'); };
   var cmp=[];
-  cmp.push({label:'평균 정답률',mine:avgRate+'%',avg:(clsRate!=null?clsRate+'%':'—'),good:clsRate!=null&&avgRate>=clsRate});
-  cmp.push({label:'과제 완수율',mine:완수율+'%',avg:(cls완수!=null?cls완수+'%':'—'),good:cls완수!=null&&완수율>=cls완수});
-  cmp.push({label:'누적 오답 수',mine:wrongN+'개',avg:(clsWrong!=null?clsWrong+'개':'—'),good:clsWrong!=null&&wrongN<=clsWrong});
-  if(bestUnit&&bestUnitCls!=null) cmp.push({label:bestUnit.unit+' 정답률',mine:bestUnit.rate+'%',avg:bestUnitCls+'%',good:bestUnit.rate>=bestUnitCls});
-  // 학습 유형 태그(규칙)
-  var tag=''; if(avgRate>=90&&wrongN<=20) tag='고득점 미세 보완형'; else if(avgRate>=80&&완수율>=80) tag='안정 수행형 · 기준 적용 보완형'; else if(avgRate>=80) tag='수행 루틴 보완형'; else if(avgRate>=70) tag='개념 재정비형'; else tag='기본 개념 회복형';
+  cmp.push({label:'평균 정답률',mine:avgRate+'%',avg:(clsRate!=null?clsRate+'%':'—'),delta:ppP(avgRate,clsRate)});
+  cmp.push({label:'과제 완수율',mine:완수율+'%',avg:(cls완수!=null?cls완수+'%':'—'),delta:ppP(완수율,cls완수)});
+  cmp.push({label:'누적 오답 수',mine:wrongN+'개',avg:(clsWrong!=null?clsWrong+'개':'—'),delta:(clsWrong==null?'':(wrongN===clsWrong?'반 평균과 동일':(wrongN<clsWrong?('반 평균보다 '+(clsWrong-wrongN)+'문항 적음'):('반 평균보다 '+(wrongN-clsWrong)+'문항 많음'))))});
+  if(bestUnit&&bestUnitCls!=null) cmp.push({label:bestUnit.unit+' 정답률',mine:bestUnit.rate+'%',avg:bestUnitCls+'%',delta:ppP(bestUnit.rate,bestUnitCls)});
+  // 학습 단계(규칙) — '~형' 유형 낙인 대신 과정 서술로
+  var tag=''; if(avgRate>=90&&wrongN<=20) tag='높은 정답률을 유지하며 세부 실수를 줄이는 단계'; else if(avgRate>=80&&완수율>=80) tag='성실한 수행을 바탕으로 판단 기준을 다듬는 단계'; else if(avgRate>=80) tag='수행 루틴을 안정시키는 단계'; else if(avgRate>=70) tag='개념을 다시 정비하는 단계'; else tag='기본 개념을 회복하는 단계';
   var courseName=(m&&COURSE_NAME[m.courseId])||COURSE_NAME[NLW.course]||'';
   return { name:name, m:m, courseName:courseName, totalQ:totalQ, correctQ:correctQ, wrongN:wrongN, avgRate:avgRate, trend:(m?m.trend:'유지'),
     n:n, 완수율:완수율, complete:complete, partial:partial, onTime:onTime, units:units, unitsLow:unitsLow, flow:flow,
@@ -1129,21 +1133,25 @@ function nlGatherV3_(name){
 }
 // 자동 초안 텍스트(편집 가능)
 function nlDrafts_(d){
-  var wk=d.weakNames.slice(0,3).join(' · ')||'세부 영역';
-  var st=d.strongNames.slice(0,3).join(' · ')||'기본 개념';
+  var st=d.strongNames.slice(0,2).join(', ')||'기본 개념';
+  var w0=d.weakNames[0]||'세부 영역', w2=d.weakNames[2]||d.weakNames[1]||'세부 개념';
+  var rateCmp=(d.cmp&&d.cmp[0]&&d.cmp[0].delta)?d.cmp[0].delta:'';
+  var ratePhrase=rateCmp?(rateCmp.indexOf('동일')>=0?'반 평균과 같은 수준이며':(rateCmp+'이며')):'준수한 수준이며';
   return {
-    feat: d.name+' 학생은 최근 과제에서 평균 정답률 '+d.avgRate+'%로 '+(d.avgRate>=85?'안정적인':'성실한')+' 수행을 보입니다. 특히 '+st+' 영역에서 높은 수행을 보이며 기본 개념을 받아들이는 힘이 확인됩니다. 다만 '+wk+' 영역에서는 세부 판단 기준이 흔들리는 모습이 있어, 여러 조건을 동시에 비교하는 문항에서 기준을 끝까지 유지하는 연습이 필요합니다.',
-    presc: (d.weakNames[0]||'주요 약점')+' 판단 기준 재정리\n'+(d.weakNames[1]||'반복 오답')+' 문항 재풀이\n'+(d.weakNames[2]||'관련 영역')+' 유사 유형 적용\n오답 개념을 다른 문항에 다시 연결하는 훈련',
-    obs: '“숙제 다 했어?” 보다 “이번에 틀린 문제 중에 어떤 개념이 제일 헷갈렸어?” 라고 물어봐 주세요.\n'+d.name+' 학생은 과제를 끝내는 것보다 틀린 개념을 자기 말로 설명하는 과정에서 학습 효과가 더 커집니다.',
+    // 3면 데이터로 본 학습 특징 — 한 회차 결과이므로 확정 진단 대신 과정 서술
+    feat: d.name+' 학생은 이번 과제를 성실히 수행했고, 전체 '+d.totalQ+'문항 가운데 '+d.correctQ+'문항을 해결했습니다. 전체 정답률은 '+d.avgRate+'%로 '+ratePhrase+', 기본 개념을 이해하고 문제에 적용하는 힘도 확인됩니다. 이번 오답은 특정 단원의 지식이 크게 부족해서라기보다, 여러 조건을 함께 살펴야 하는 문항에서 판단 기준을 끝까지 대조하지 못한 데서 주로 나타났습니다. 따라서 새로운 내용을 많이 더하기보다, 이미 알고 있는 개념을 실제 자료와 선지에 정확히 연결하는 연습이 우선입니다.',
+    // 3면 '다음 과제에서 신경 쓸 순서' — 의료적 '처방' 대신 실행 순서
+    presc: '발문에서 판단해야 할 조건에 밑줄 긋기\n선지마다 적용된 개념과 근거 확인하기\n틀린 문항은 오답 이유를 한 줄로 정리하기\n같은 개념이 다른 자료에서 어떻게 출제되는지 다시 확인하기',
+    // 3면 관찰 포인트 — 과제 완수의 가치를 낮추지 않는 방향
+    obs: '가정에서는 과제의 양보다 '+d.name+' 학생이 틀린 문항을 어떻게 이해했는지 가볍게 확인해 주시면 좋겠습니다.\n“숙제 다 했어?”라고 묻기보다 “이번에 틀린 문제 중에서 가장 헷갈렸던 선지는 뭐였어?” 또는 “다시 풀면 무엇을 먼저 확인해야 할까?”라고 물어봐 주세요.\n'+d.name+' 학생이 자신의 판단 근거를 말로 설명하는 과정이 반복되면, 알고 있는 개념을 문제에 적용하는 힘도 함께 안정될 수 있습니다.',
     tag: d.tag,
-    dna:[
-      {n:'①',t:'기준 적용형',d:'개념은 알고 있으나, 실제 문항에서 판단 기준을 끝까지 적용하는 과정에서 흔들림이 있습니다.'},
-      {n:'②',t:'조건 비교형',d:'여러 조건을 동시에 비교해야 하는 문항에서 오답이 집중됩니다.'},
-      {n:'③',t:'세부 개념 점검형',d:wk+'에서 추가 정리가 필요합니다.'}
-    ],
-    stable:['과제 제출 흐름 안정','최근 '+d.n+'회 정답률 안정적 유지',(d.strongNames.slice(0,2).join('·')||'기본 개념')+' 강점 확인'],
-    caution:[(d.weakNames[0]||'세부 영역')+' 오답 반복','조건 비교 문항에서 흔들림',(d.weakNames[2]||d.weakNames[1]||'일부 개념')+' 재점검 필요'],
-    warm: d.name+' 학생은 공부를 꾸준히 이어 가는 힘이 있는 학생입니다. 보이는 약점은 실력이 부족해서가 아니라 여러 조건을 한꺼번에 따지는 문항에서 잠깐 흔들리는 지점이며, 방향이 분명한 만큼 오답을 다시 정리하고 같은 개념을 다른 문항에서 한 번 더 다루면 충분히 단단해집니다. 그 과정을 제가 책임지고 함께 잡아 가겠습니다. 가정에서도 작은 변화에 관심 가져 주시면 학생에게 큰 힘이 됩니다.'
+    // 2면 '오답에서 확인된 공통 경향' — 'DNA' 같은 고정 특성 표현 배제, 산문형
+    common: '이번 오답은 개념을 전혀 모르는 데서 나왔다기보다, 알고 있는 기준을 실제 자료에 끝까지 적용하는 과정에서 나타났습니다. 특히 두 가지 이상의 조건을 비교해야 하는 문항에서, 한 조건을 먼저 확인한 뒤 나머지 조건의 검토가 충분히 이어지지 않는 경향이 보입니다. 다음 과제에서는 정답을 고른 뒤 ‘이 선지가 맞는 근거’와 ‘다른 선지가 틀린 근거’를 각각 한 가지씩 확인하는 습관을 들이면, 지금 갖고 있는 개념 이해가 실제 정답률로 더 안정적으로 이어질 수 있습니다.',
+    // 2면 회차 점검 — '안정/주의 신호' 대신 확인된 점/확인할 점
+    checked: ['과제를 빠짐없이 제출함','전체 '+d.totalQ+'문항 중 '+d.correctQ+'문항을 해결함',st+'에서 안정적인 이해를 보임'],
+    tocheck: [w0+' 개념을 실제 자료에 정확히 적용하는지','여러 조건이 포함된 선지를 끝까지 대조하는지',w2+'의 적용 환경을 함께 판단하는지'],
+    // 4면 종합 의견 — 자리·태도 변호 배제, 학습 과정 중심
+    warm: '안녕하세요, '+d.name+' 학생 학부모님. '+BRAND+'입니다. 이번 과제 결과와 수업에서 관찰한 '+d.name+' 학생의 학습 모습을 전해 드립니다.\n\n'+d.name+' 학생은 최근 과제를 성실히 수행했고, 전체 '+d.totalQ+'문항 가운데 '+d.correctQ+'문항을 해결했습니다. 맡은 학습을 꾸준히 이어 가는 힘은 '+d.name+' 학생이 이미 갖고 있는 분명한 장점입니다.\n\n이번 오답을 살펴보면 개념을 전혀 몰라서 틀렸다기보다, 알고 있는 기준을 실제 자료와 선지에 끝까지 적용하는 과정에서 실수가 나타났습니다. 특히 여러 조건을 동시에 살펴야 하는 문항에서 판단이 흔들렸습니다.\n\n이는 새로운 개념을 많이 외워야 한다는 뜻이 아닙니다. 발문에서 요구하는 조건을 먼저 표시하고, 각 선지를 선택하거나 제외한 근거를 하나씩 확인하는 습관이 더해지면 지금의 개념 이해가 실제 정답으로 더 안정적으로 이어질 수 있습니다. 오답을 다시 볼 때도 정답만 확인하기보다 ‘내가 놓친 조건이 무엇이었는지’를 한 줄로 남기는 것이 도움이 됩니다.\n\n'+d.name+' 학생은 과제를 성실하게 수행하고 틀린 이유를 돌아볼 수 있는 학생입니다. 현재의 성실함에 이러한 점검 습관이 더해지면 다음 과제에서는 보다 안정적인 결과가 나타날 것으로 기대합니다.'
   };
 }
 // 4면 생성 (d=gather, t=편집된 텍스트)
@@ -1158,26 +1166,26 @@ function nlBuildV3_(d,t){
     +nlV3Stat_(d.완수율+'%','과제 완수율',(d.cls완수!=null?'반 평균 '+d.cls완수+'%':'완료 '+d.complete+'회'))+'</div>';
   var grid='<div class="nlp-grid2" style="margin-bottom:14px"><div class="nlp-card" style="padding:10px 14px"><div class="nlp-card-t">최근 과제 수행 흐름</div>'+nlV3Line_(d.flow)+'</div>'
     +'<div class="nlp-card" style="padding:10px 14px"><div class="nlp-card-t">단원별 수행 안정도</div><div style="padding:6px 2px 2px">'+d.unitsLow.map(function(u){return nlV3HBar_(u.unit,u.rate,u.rate+'%');}).join('')+'</div></div></div>';
-  var cmpRows=d.cmp.map(function(c){ return '<tr><td style="padding:9px 6px;color:#3a4154;font-size:.85rem;border-bottom:1px solid rgba(28,44,82,.07)">'+esc(c.label)+'</td><td style="padding:9px 6px;text-align:right;color:#1c2c52;font-weight:700;font-size:.9rem;border-bottom:1px solid rgba(28,44,82,.07)">'+esc(c.mine)+(c.good?'<span style="color:#3f7a59;font-size:.74rem;font-weight:700;margin-left:6px">▲ 우수</span>':'')+'</td><td style="padding:9px 6px;text-align:right;color:#8a8676;font-size:.85rem;border-bottom:1px solid rgba(28,44,82,.07)">'+esc(c.avg)+'</td></tr>'; }).join('');
+  var cmpRows=d.cmp.map(function(c){ return '<tr><td style="padding:9px 6px;color:#3a4154;font-size:.85rem;border-bottom:1px solid rgba(28,44,82,.07)">'+esc(c.label)+'</td><td style="padding:9px 6px;text-align:right;color:#1c2c52;font-weight:700;font-size:.9rem;border-bottom:1px solid rgba(28,44,82,.07)">'+esc(c.mine)+'</td><td style="padding:9px 6px;text-align:right;color:#8a8676;font-size:.85rem;border-bottom:1px solid rgba(28,44,82,.07)">'+esc(c.avg)+(c.delta?'<div style="font-size:.72rem;color:#9a958a;margin-top:1px;font-weight:400">'+esc(c.delta)+'</div>':'')+'</td></tr>'; }).join('');
   var cmpTbl='<div class="nlp-sec-t" style="margin-bottom:9px">반 평균과 비교한 위치 <span style="font-weight:400;color:#9a958a;font-size:.76rem">— 석차가 아닌, 같은 과제 수행 학생 평균 대비</span></div>'
     +'<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;padding:6px;font-size:.72rem;color:#7b8190;border-bottom:1px solid rgba(28,44,82,.16)">항목</th><th style="text-align:right;padding:6px;font-size:.72rem;color:#1c2c52;border-bottom:1px solid rgba(28,44,82,.16)">'+esc(d.name)+'</th><th style="text-align:right;padding:6px;font-size:.72rem;color:#7b8190;border-bottom:1px solid rgba(28,44,82,.16)">반 평균</th></tr></thead><tbody>'+cmpRows+'</tbody></table>';
   var logo=LOGO_NAVY_URL||LOGO_URL||'';
   var p1=nlV3Page_('<div class="nlp-head" style="padding-bottom:10px;margin-bottom:12px">'+(logo?'<img class="nlp-logo" src="'+logo+'" style="width:140px;margin-bottom:8px">':'')+'<div class="nlp-title">가정통신문</div><div class="nlp-brand">'+esc(BRAND)+'</div></div>'
     +'<div class="nlp-meta" style="margin-bottom:10px"><span><b style="color:#1c2c52">'+esc(d.name)+' 학생 학부모님</b> 귀하</span><span>'+dot+'</span></div>'
-    +'<div class="nlp-greet" style="margin-bottom:13px;padding:10px 15px;line-height:1.7">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 최근 '+esc(d.name)+' 학생이 과제를 풀어 온 모습을 하나하나 살펴보았습니다. 얼마나 정확하게 풀어 내는지, 어떤 단원이 제법 안정적으로 자리를 잡았는지, 또 같은 과제를 함께 해 온 친구들 사이에서 지금 어디쯤 와 있는지를 아래에 차근차근 정리해 전해 드립니다.</div>'
+    +'<div class="nlp-greet" style="margin-bottom:13px;padding:10px 15px;line-height:1.7">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 최근 과제 제출 데이터와 수업에서 관찰한 '+esc(d.name)+' 학생의 현재 학습 상태, 그리고 다음 학습에서 신경 쓰면 좋을 부분을 정리해 전해 드립니다.</div>'
     +'<div class="nlp-sec-t" style="margin-bottom:9px">'+esc(d.name)+' 학생 학습 데이터 리포트</div>'+stats+grid+cmpTbl);
   // 2면 오답 분석
   var oabSec='<div class="nlp-sec-t" style="margin-bottom:9px">이번 달 오답 들여다보기 <span style="font-weight:400;color:#9a958a;font-size:.78rem">— 대표 '+d.repOab.length+'문항</span></div>'+d.repOab.map(nlV3Oab_).join('');
-  var dnaSec='<div class="nlp-diag" style="margin-bottom:14px"><div class="h" style="margin-bottom:11px">'+esc(d.name)+' 학생의 오답 DNA</div>'+t.dna.map(function(x){return '<div style="display:flex;gap:11px;margin-bottom:9px"><div style="font-family:\'Noto Serif KR\';font-size:1.05rem;color:#b08d57;font-weight:700;flex:none;width:20px">'+x.n+'</div><div><div style="font-weight:700;color:#1c2c52;font-size:.86rem;margin-bottom:2px">'+esc(x.t)+'</div><div style="font-size:.82rem;color:#3a4154;line-height:1.6">'+esc(x.d)+'</div></div></div>';}).join('')+'</div>';
-  var sig='<div class="nlp-sec-t" style="margin-bottom:10px">이번 달 학습 신호</div><div style="display:flex;gap:12px">'
-    +'<div style="flex:1;background:rgba(95,143,110,.1);border:1px solid rgba(63,122,89,.3);border-radius:9px;padding:12px 14px"><div style="font-size:.8rem;font-weight:700;color:#3f7a59;margin-bottom:7px">● 안정 신호</div><ul style="margin:0;padding-left:16px;font-size:.8rem;color:#3a4154;line-height:1.7">'+t.stable.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>'
-    +'<div style="flex:1;background:rgba(176,141,87,.1);border:1px solid rgba(176,141,87,.35);border-radius:9px;padding:12px 14px"><div style="font-size:.8rem;font-weight:700;color:#a9802f;margin-bottom:7px">● 주의 신호</div><ul style="margin:0;padding-left:16px;font-size:.8rem;color:#3a4154;line-height:1.7">'+t.caution.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div></div>';
+  var dnaSec='<div class="nlp-diag" style="margin-bottom:14px"><div class="h" style="margin-bottom:9px">오답에서 확인된 공통 경향</div><div style="font-size:.85rem;color:#3a4154;line-height:1.75;white-space:pre-wrap">'+esc(t.common)+'</div></div>';
+  var sig='<div class="nlp-sec-t" style="margin-bottom:10px">이번 회차 점검</div><div style="display:flex;gap:12px">'
+    +'<div style="flex:1;background:rgba(95,143,110,.1);border:1px solid rgba(63,122,89,.3);border-radius:9px;padding:12px 14px"><div style="font-size:.8rem;font-weight:700;color:#3f7a59;margin-bottom:7px">이번 회차에서 확인된 점</div><ul style="margin:0;padding-left:16px;font-size:.8rem;color:#3a4154;line-height:1.7">'+t.checked.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>'
+    +'<div style="flex:1;background:rgba(176,141,87,.1);border:1px solid rgba(176,141,87,.35);border-radius:9px;padding:12px 14px"><div style="font-size:.8rem;font-weight:700;color:#a9802f;margin-bottom:7px">다음 회차에서 확인할 점</div><ul style="margin:0;padding-left:16px;font-size:.8rem;color:#3a4154;line-height:1.7">'+t.tocheck.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div></div>';
   var p2=nlV3Page_(nlV3Head_('오답 분석',esc(d.name)+' 학생 · '+esc(BRAND))+oabSec+dnaSec+sig);
   // 3면 해석·처방·가정연계
-  var tag='<div style="background:linear-gradient(90deg,#1c2c52,#33456f);border-radius:10px;padding:13px 20px;color:#f4efe4;margin-bottom:16px"><div style="font-size:.72rem;letter-spacing:2px;color:#c9b487;margin-bottom:4px">이번 달 학습 유형</div><div style="font-family:\'Noto Serif KR\';font-size:1.1rem;font-weight:700;letter-spacing:1px">'+esc(t.tag)+'</div></div>';
-  var sec=function(h,b){return '<div style="margin-bottom:15px"><div class="nlp-sec-t" style="margin-bottom:8px">'+h+'</div>'+b+'</div>';};
-  var presc='<ol style="margin:0;padding-left:20px;font-size:.86rem;color:#3a4154;line-height:1.9">'+t.presc.split('\n').filter(Boolean).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>';
-  var obs='<div style="background:#fffdf8;border:1px solid rgba(28,44,82,.1);border-left:3px solid #b08d57;border-radius:9px;padding:14px 17px"><div style="font-weight:700;color:#1c2c52;font-size:.88rem;margin-bottom:9px">가정에서 이렇게 확인해 주세요</div><div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.obs)+'</div></div>';
+  var tag='<div style="background:linear-gradient(90deg,#1c2c52,#33456f);border-radius:10px;padding:13px 20px;color:#f4efe4;margin-bottom:9px"><div style="font-size:.72rem;letter-spacing:2px;color:#c9b487;margin-bottom:4px">이번 과제에서 본 학습 단계</div><div style="font-family:\'Noto Serif KR\';font-size:1.05rem;font-weight:700;letter-spacing:.5px">'+esc(t.tag)+'</div></div>';
+  var sec=function(h,b){return '<div style="margin-bottom:9px"><div class="nlp-sec-t" style="margin-bottom:7px">'+h+'</div>'+b+'</div>';};
+  var presc='<ol style="margin:0;padding-left:20px;font-size:.86rem;color:#3a4154;line-height:1.72">'+t.presc.split('\n').filter(Boolean).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>';
+  var obs='<div style="background:#fffdf8;border:1px solid rgba(28,44,82,.1);border-left:3px solid #b08d57;border-radius:9px;padding:11px 15px"><div style="font-weight:700;color:#1c2c52;font-size:.88rem;margin-bottom:7px">가정에서 이렇게 확인해 주세요</div><div style="font-size:.86rem;color:#3a4154;line-height:1.72;white-space:pre-wrap">'+esc(t.obs)+'</div></div>';
   var cs=t.consult||{}; var cRow=function(k,v){return '<div style="display:flex;gap:10px;font-size:.85rem;line-height:1.75;margin-bottom:7px"><div style="flex:0 0 60px;color:#2c4a6e;font-weight:700">'+k+'</div><div style="flex:1;color:#26303f">'+v+'</div></div>';};
   var cRows='';
   if(cs.curr) cRows+=cRow('현황',esc(cs.curr));
@@ -1185,9 +1193,9 @@ function nlBuildV3_(d,t){
   if(cs.plan){ var pl=String(cs.plan).split('\n').map(function(x){return x.trim();}).filter(Boolean); if(pl.length) cRows+=cRow('학습 계획','<ul style="margin:0;padding-left:16px;line-height:1.7">'+pl.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'); }
   var consultBlock=cRows?'<div style="margin-bottom:15px;background:#eef2f8;border:1px solid #cdd9ea;border-radius:10px;padding:14px 18px 15px"><div class="nlp-sec-t" style="margin-bottom:11px;color:#1f3a5f;border-bottom:2px solid #2c4a6e;padding-bottom:6px">학습 상담과 목표 <span style="background:#2c4a6e;color:#fff;font-size:.62rem;font-weight:700;border-radius:12px;padding:2px 8px;margin-left:6px;vertical-align:2px">이번 상담 반영</span></div>'+cRows+'</div>':'';
   var profIn = gatonFor_(d.name) ? nlProfileBlock_(d.name,true) : '';
-  var p3=nlV3Page_(nlV3Head_('학습 해석과 처방, 가정 연계',esc(d.name)+' 학생 · '+esc(BRAND))+profIn+tag+sec('데이터로 본 학습 특징','<div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.feat)+'</div>')+sec('다음 학습 처방',presc)+consultBlock+sec('학부모님께 드리는 관찰 포인트',obs));
+  var p3=nlV3Page_(nlV3Head_('학습 해석과 처방, 가정 연계',esc(d.name)+' 학생 · '+esc(BRAND))+profIn+tag+sec('데이터로 본 학습 특징','<div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.feat)+'</div>')+sec('다음 과제에서 신경 쓸 순서',presc)+consultBlock+sec('학부모님께 드리는 관찰 포인트',obs));
   // 4면 종합 의견
-  var p4=nlV3Page_(nlV3Head_('가정통신문',esc(BRAND))+'<div class="nlp-greet" style="margin-bottom:22px">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 이 기간 동안 '+esc(d.name)+' 학생의 학습 모습을 살펴 전해 드립니다.</div><div class="nlp-sec-t" style="margin-bottom:18px">'+esc(d.name)+' 학생 · 가경T 종합 의견</div><div class="nlp-comment">'+esc(t.warm)+'</div><div class="nlp-sign"><div class="d">'+ko+'</div><div class="b">'+esc(BRAND)+'　'+esc(TEACHER)+' <span style="font-size:.88rem;color:#737a88;font-weight:400">드림</span></div></div>',true);
+  var p4=nlV3Page_(nlV3Head_('가정통신문',esc(BRAND))+'<div class="nlp-sec-t" style="margin-bottom:18px">'+esc(d.name)+' 학생 종합 의견</div><div class="nlp-comment">'+esc(t.warm)+'</div><div class="nlp-sign"><div class="d">'+ko+'</div><div class="b">'+esc(BRAND)+'　'+esc(TEACHER)+' <span style="font-size:.88rem;color:#737a88;font-weight:400">드림</span></div></div>',true);
   // 3쪽에 성향 진단(6축·상담)을 해석·처방·관찰과 함께 통합 → 총 4쪽.
   return '<div id="nlPages">'+p1+p2+p3+p4+'</div>';
 }
