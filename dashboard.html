@@ -721,8 +721,8 @@ function obsBuildKeymap_(){
   (NLW.dict.categories||[]).forEach(function(cat,ci){ cat.subs.forEach(function(sub,si){ sub.items.forEach(function(it,ii){
     var id='k:'+ci+'.'+si+'.'+ii, key='kw:'+cat.cat+'|'+it.kw; OBSKEY.idToKey[id]=key; OBSKEY.keyToId[key]=id; OBSKEY.metaByKey[key]={kw:it.kw,cat:cat.cat}; }); }); });
 }
-function obsLoad_(cb){
-  if(OBS.loaded){ cb&&cb(); return; }
+function obsLoad_(cb, force){
+  if(OBS.loaded && !force){ cb&&cb(); return; }   // force=true면 서버에서 다시 불러옴(조교가 방금 체크한 것 반영)
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ OBS.loaded=true; cb&&cb(); return; }
   fetch(SCRIPT_URL+'?action=observchecks&t='+Date.now()).then(function(r){return r.json();}).then(function(d){
     OBS.rows=Array.isArray(d)?d:[]; OBS.byStu={};
@@ -786,7 +786,7 @@ function nlSelectStudent(name){
   NLW.student=name||''; NLW.checks={}; NLW.data={};
   document.getElementById('nlBody').style.display=name?'':'none';
   if(!name) return;
-  obsLoad_(function(){ obsApplyToChecks_(name); nlRenderCards(); nlRenderChecklist(); nlAssemble(); });   // 서버 누적 관찰 → 자동 복원
+  obsLoad_(function(){ obsApplyToChecks_(name); nlRenderCards(); nlRenderChecklist(); nlAssemble(); }, true);   // 서버 누적 관찰 → 자동 복원(매번 최신 재조회 — 조교가 방금 체크한 것도 반영)
   nlRenderData(); nlRenderCards(); nlRenderChecklist(); nlAssemble();
   // ver3 자동 초안 채우기(학생 바뀌면 새로)
   try{ var d=nlGatherV3_(name); if(d&&d.n){ var t=nlDrafts_(d);
