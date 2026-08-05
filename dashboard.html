@@ -1184,14 +1184,12 @@ function nlBuildV3_(d,t){
   if(cs.goal) cRows+=cRow('목표',esc(cs.goal));
   if(cs.plan){ var pl=String(cs.plan).split('\n').map(function(x){return x.trim();}).filter(Boolean); if(pl.length) cRows+=cRow('학습 계획','<ul style="margin:0;padding-left:16px;line-height:1.7">'+pl.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'); }
   var consultBlock=cRows?'<div style="margin-bottom:15px;background:#eef2f8;border:1px solid #cdd9ea;border-radius:10px;padding:14px 18px 15px"><div class="nlp-sec-t" style="margin-bottom:11px;color:#1f3a5f;border-bottom:2px solid #2c4a6e;padding-bottom:6px">학습 상담과 목표 <span style="background:#2c4a6e;color:#fff;font-size:.62rem;font-weight:700;border-radius:12px;padding:2px 8px;margin-left:6px;vertical-align:2px">이번 상담 반영</span></div>'+cRows+'</div>':'';
-  var p3=nlV3Page_(nlV3Head_('학습 해석과 처방, 가정 연계',esc(d.name)+' 학생 · '+esc(BRAND))+tag+sec('데이터로 본 학습 특징','<div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.feat)+'</div>')+sec('다음 학습 처방',presc)+consultBlock+sec('학부모님께 드리는 관찰 포인트',obs));
+  var profIn = gatonFor_(d.name) ? nlProfileBlock_(d.name,true) : '';
+  var p3=nlV3Page_(nlV3Head_('학습 해석과 처방, 가정 연계',esc(d.name)+' 학생 · '+esc(BRAND))+profIn+tag+sec('데이터로 본 학습 특징','<div style="font-size:.86rem;color:#3a4154;line-height:1.8;white-space:pre-wrap">'+esc(t.feat)+'</div>')+sec('다음 학습 처방',presc)+consultBlock+sec('학부모님께 드리는 관찰 포인트',obs));
   // 4면 종합 의견
   var p4=nlV3Page_(nlV3Head_('가정통신문',esc(BRAND))+'<div class="nlp-greet" style="margin-bottom:22px">안녕하세요, '+esc(d.name)+' 학생 학부모님. '+esc(BRAND)+'입니다. 이 기간 동안 '+esc(d.name)+' 학생의 학습 모습을 살펴 전해 드립니다.</div><div class="nlp-sec-t" style="margin-bottom:18px">'+esc(d.name)+' 학생 · 가경T 종합 의견</div><div class="nlp-comment">'+esc(t.warm)+'</div><div class="nlp-sign"><div class="d">'+ko+'</div><div class="b">'+esc(BRAND)+'　'+esc(TEACHER)+' <span style="font-size:.88rem;color:#737a88;font-weight:400">드림</span></div></div>',true);
-  // 성향 진단·상담 — 독립 3쪽(페이지 잘림 방지). 프로필 없으면 생략.
-  var pProf = gatonFor_(d.name) ? nlV3Page_(nlV3Head_('학습 성향 진단과 상담',esc(d.name)+' 학생 · '+esc(BRAND))
-    +'<div style="font-size:.86rem;color:#3a4154;line-height:1.85;margin-bottom:16px">과제 점수만으로는 다 담기 어려운 '+esc(d.name)+' 학생의 공부 성향을, 여섯 갈래로 나누어 살핀 진단과 대면 상담에서 본 모습으로 함께 전해 드립니다.</div>'
-    +nlProfileBlock_(d.name,true)) : '';
-  return '<div id="nlPages">'+p1+p2+pProf+p3+p4+'</div>';
+  // 3쪽에 성향 진단(6축·상담)을 해석·처방·관찰과 함께 통합 → 총 4쪽.
+  return '<div id="nlPages">'+p1+p2+p3+p4+'</div>';
 }
 function nlMakePdf(){
   if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
