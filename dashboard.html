@@ -1333,7 +1333,7 @@ function smsClassify(){
     if(!rosterActiveJS(r)) return;                    // 휴원·퇴원
     if(smsExcluded_(name,cid)) return;                // 고3 화이트리스트/기한부 제외
     const nn=normNameR(name); if(seen[nn]) return; seen[nn]=1;
-    const phone=digitsJS(r.guardianPhone||r.studentPhone||'');
+    const phone=digitsJS(r.studentPhone||r.guardianPhone||'');   // 숙제 문자는 학생에게(학생 번호 우선), 없을 때만 학부모 폴백
     const t={name:name,phone:phone,consent:consentOK(r.consent),courseId:cid,solve:null,rate:null,checked:false};
     let key=sub[nn]?nn:null;
     if(!key){ const bb=baseNameJS(name); if(!baseDup[bb] && subBase[bb]) key=subBase[bb]; }   // 표기 차이(괄호 구분자) 폴백
