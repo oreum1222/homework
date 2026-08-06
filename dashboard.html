@@ -843,7 +843,7 @@ function nlProfileBlock_(name, bare){
     bars+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div style="width:80px;font-size:.73rem;color:#3a4154;flex:none">'+esc(k)+'</div><div style="flex:1;height:8px;background:#eee7d6;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+v+'%;background:'+col+';border-radius:4px"></div></div><div style="width:24px;text-align:right;font-size:.73rem;font-weight:700;color:#1c2c52;flex:none">'+v+'</div></div>'; }); }
   var rows=''; var addR=function(k,v){ if(v) rows+='<div style="font-size:.79rem;line-height:1.62;margin-bottom:3px"><span style="color:#2c4a6e;font-weight:700">'+k+'</span>　'+esc(v)+'</div>'; };
   // 학부모용: 부정 표현(부족·낮음·미흡·수치)을 걸러 긍정·중립 신호만 노출, '~형' 유형 낙인은 생략
-  var softSummer=function(s){ if(!s) return ''; return String(s).split(/[,，]/).map(function(x){return x.trim();}).filter(function(x){ return x && !/부족|낮음|낮은|약함|약한|미흡|부진|못함|안됨|\(\s*\d/.test(x); }).join(', '); };
+  var softSummer=function(s){ if(!s) return ''; return String(s).split(/[,，]/).map(function(x){return x.trim();}).filter(function(x){ return x && !/부족|낮음|낮은|약함|약한|미흡|부진|못함|안됨|미응답|없음|미상|해당\s*없|\(\s*\d/.test(x); }).join(', '); };
   addR('강점',(p.strong||[]).join(', ')); addR('확인할 점',(p.weak||[]).join(', '));
   addR('여름 진단',softSummer(p.summer));
   addR('취약 영역',p.weakAreas); addR('본인 목표',p.goal?('“'+p.goal+'”'):'');
