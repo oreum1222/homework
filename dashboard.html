@@ -706,7 +706,8 @@ function switchTab(t){
 var NLW={dict:null,loading:false,course:'all',student:'',checks:{},data:{},_sent:{},_dataLines:[]};
 // ── 성향 진단·상담 보충 데이터(숙제 검사 응답이 부실한 학생 통신문 보강용) ──
 var GATON_PROFILE={};
-(function(){ try{ fetch('data/gaton-profile.json?v=20260805&t='+Date.now()).then(function(r){return r.json();}).then(function(d){ GATON_PROFILE=d||{}; }).catch(function(){}); }catch(e){} })();
+var GATON_COURSE='hanti-jong-h1-gojeonbeop';   // 성향 프로필이 속한 반(고1 종합) — 가통 학생목록에 프로필 학생 포함 기준
+(function(){ try{ fetch('data/gaton-profile.json?v=20260806&t='+Date.now()).then(function(r){return r.json();}).then(function(d){ GATON_PROFILE=d||{}; if(typeof nlRenderStudents==='function') nlRenderStudents(); }).catch(function(){}); }catch(e){} })();
 function gatonFor_(name){ if(!GATON_PROFILE||!name) return null; if(GATON_PROFILE[name]) return GATON_PROFILE[name];
   var nk=(typeof normNameR==='function'?normNameR(name):name); for(var k in GATON_PROFILE){ if((typeof normNameR==='function'?normNameR(k):k)===nk) return GATON_PROFILE[k]; } return null; }
 // ── 관찰 문장 체크 서버 누적 저장(가통용) : 매주 체크할 때마다 학생별로 서버 저장 → 가통 작성 시 자동 복원 ──
@@ -782,6 +783,8 @@ function nlRenderStudents(){
   const names=new Set();
   (SMS.roster||[]).forEach(r=>{ if(String(r.courseId)==='courseId'||String(r.name)==='name') return; if((NLW.course==='all'||String(r.courseId)===NLW.course)&&!isTestName(r.name)){ const n=String(r.name).trim(); if(n) names.add(n); } });
   (REP.master||[]).forEach(m=>{ if((NLW.course==='all'||m.courseId===NLW.course)&&!isTestName(m.name)) names.add(m.name); });
+  // 성향 프로필만 있고 제출/명단엔 없는 학생(고1 종합)도 포함 — 프로필 데이터로 가통 생성 가능
+  if(NLW.course==='all'||NLW.course===GATON_COURSE){ Object.keys(GATON_PROFILE||{}).forEach(n=>{ if(n&&!isTestName(n)) names.add(n); }); }
   const arr=Array.from(names).sort((a,b)=>a.localeCompare(b)), cur=NLW.student;
   sel.innerHTML='<option value="">— 학생 선택 —</option>'+arr.map(n=>'<option value="'+esc(n)+'"'+(n===cur?' selected':'')+'>'+esc(n)+'</option>').join('');
   document.getElementById('nlStuMsg').textContent=arr.length+'명';
