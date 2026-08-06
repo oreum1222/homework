@@ -410,6 +410,16 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
         <select id="nlStudent" onchange="nlSelectStudent(this.value)" style="min-width:200px"></select>
         <span id="nlStuMsg" style="color:var(--text-muted);font-size:0.82rem"></span>
       </div>
+      <div id="nlPhoneEdit" style="display:none;margin-top:12px;padding:11px 13px;background:rgba(180,150,90,.08);border:1px solid rgba(180,150,90,.3);border-radius:8px">
+        <div class="row" style="gap:12px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:0.82rem;color:#cbb88a;font-weight:700">연락처 수정</span>
+          <label style="font-size:0.8rem;color:var(--text-muted)">학생 <input id="nlPhStudent" placeholder="010-0000-0000" style="width:150px;padding:6px 9px"></label>
+          <label style="font-size:0.8rem;color:var(--text-muted)">학부모 <input id="nlPhGuardian" placeholder="010-0000-0000" style="width:150px;padding:6px 9px"></label>
+          <button onclick="nlSavePhones()" style="padding:6px 14px">명단에 저장</button>
+          <span id="nlPhMsg" style="font-size:0.8rem;color:var(--text-muted)"></span>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:7px">※ 숙제 문자는 <b style="color:#cbb88a">학생 번호</b>로 발송됩니다. 저장 시 이 학생의 모든 강좌 명단 행에 반영됩니다.</div>
+      </div>
     </div>
     <div id="nlBody" style="display:none">
       <div class="section">
@@ -793,7 +803,9 @@ function nlFindMaster(name){ const ms=(REP.master||[]); return ms.find(m=>normNa
 function nlSelectStudent(name){
   NLW.student=name||''; NLW.checks={}; NLW.data={};
   document.getElementById('nlBody').style.display=name?'':'none';
+  var _pe=document.getElementById('nlPhoneEdit'); if(_pe) _pe.style.display=name?'':'none';
   if(!name) return;
+  nlLoadPhones_(name);
   obsLoad_(function(){ obsApplyToChecks_(name); nlRenderCards(); nlRenderChecklist(); nlAssemble(); }, true);   // 서버 누적 관찰 → 자동 복원(매번 최신 재조회 — 조교가 방금 체크한 것도 반영)
   nlRenderData(); nlRenderCards(); nlRenderChecklist(); nlAssemble();
   // ver3 자동 초안 채우기(학생 바뀌면 새로)
@@ -808,6 +820,47 @@ function nlSelectStudent(name){
     if(!(cv.curr||cv.goal||cv.plan)){ var sd=NL_CONSULT_SEED[normNameR(name)]; if(sd) cv=sd; }   // 저장분 없으면 시드
     s2('nlCurr',cv.curr||''); s2('nlGoal',cv.goal||''); s2('nlPlan',cv.plan||'');
   }catch(e){}
+}
+// ── 연락처(학생/학부모 번호) 명단 수정 — adminRoster(POST). 키는 코드에 없고 세션에만 보관 ──
+function nlRosterRowsFor_(name){ var nn=normNameR(name); return (SMS.roster||[]).filter(function(r){ return String(r.courseId)!=='courseId' && normNameR(r.name)===nn; }); }
+function nlLoadPhones_(name){
+  var box=document.getElementById('nlPhoneEdit'); if(!box) return;
+  var rows=nlRosterRowsFor_(name), sp='', gp='';
+  if(rows.length){ sp=rows[0].studentPhone||''; gp=rows[0].guardianPhone||''; }
+  var se=document.getElementById('nlPhStudent'), ge=document.getElementById('nlPhGuardian'), me=document.getElementById('nlPhMsg');
+  if(se) se.value=sp; if(ge) ge.value=gp;
+  if(me) me.textContent = rows.length ? (rows.length>1?('명단 '+rows.length+'개 강좌에 반영됩니다'):'') : '⚠ 명단에 없는 학생(성향 프로필만) — 저장 불가';
+  box.style.display='';
+}
+function nlAdminKey_(){
+  var k=''; try{ k=sessionStorage.getItem('hwAdminKey')||''; }catch(e){}
+  if(k) return k;
+  k=(prompt('명단 수정 권한(관리자 키)를 입력하세요')||'').trim();
+  if(k){ try{ sessionStorage.setItem('hwAdminKey',k); }catch(e){} }
+  return k;
+}
+function nlClearAdminKey_(){ try{ sessionStorage.removeItem('hwAdminKey'); }catch(e){} }
+function nlSavePhones(){
+  var name=NLW.student; if(!name){ alert('학생을 먼저 선택하세요.'); return; }
+  var me=document.getElementById('nlPhMsg');
+  var sp=(document.getElementById('nlPhStudent').value||'').trim();
+  var gp=(document.getElementById('nlPhGuardian').value||'').trim();
+  var rows=nlRosterRowsFor_(name);
+  if(!rows.length){ alert('이 학생은 명단에 없어 번호를 저장할 수 없습니다. 명단(원생) 등록이 먼저 필요합니다.'); return; }
+  var ok=function(v){ return !v || /^01[016789][- ]?\d{3,4}[- ]?\d{4}$/.test(v); };
+  if(!ok(sp)||!ok(gp)){ alert('번호 형식을 확인하세요. 예: 010-1234-5678'); return; }
+  if(!sp && !gp){ alert('학생 또는 학부모 번호를 입력하세요.'); return; }
+  var key=nlAdminKey_(); if(!key){ if(me) me.textContent='취소됨(키 미입력)'; return; }
+  var cids={}; rows.forEach(function(r){ cids[String(r.courseId)]=1; });
+  var payload=Object.keys(cids).map(function(cid){ var o={courseId:cid,name:name}; if(sp) o.studentPhone=sp; if(gp) o.guardianPhone=gp; return o; });
+  if(me){ me.style.color='var(--text-muted)'; me.textContent='저장 중…'; }
+  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+    body:'action=adminRoster&key='+encodeURIComponent(key)+'&rows='+encodeURIComponent(JSON.stringify(payload))})
+    .then(function(r){return r.json();}).then(function(d){
+      if(!d || d.ok===false){ var er=(d&&d.error)||'오류'; if(me){ me.style.color='#e08a8a'; me.textContent='실패: '+er; } if(/키/.test(er)) nlClearAdminKey_(); return; }
+      rows.forEach(function(r){ if(sp) r.studentPhone=sp; if(gp) r.guardianPhone=gp; });   // 로컬 명단 즉시 반영
+      if(me){ me.style.color='#9fd0ad'; me.textContent='저장됨 ✓ ('+((d.updated||[]).length)+'개 강좌)'; }
+    }).catch(function(e){ if(me){ me.style.color='#e08a8a'; me.textContent='요청 실패: '+e.message; } });
 }
 function nlConsultKey_(name){ return 'nlConsult|'+(NLW.course||'')+'|'+normNameR(name||NLW.student||''); }
 function nlSaveConsult(){ try{ if(!NLW.student) return; var g=function(id){var e=document.getElementById(id);return e?e.value:'';};
