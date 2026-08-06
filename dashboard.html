@@ -469,10 +469,12 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
       </div>
       <div class="section">
         <div class="section-title">가정통신문 PDF <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(4면: 데이터 리포트 · 오답 분석 · 성향·해석·처방 · 종합 의견)</span></div>
-        <div class="row" style="gap:10px;align-items:center">
-          <button onclick="nlMakePdf()" style="background:var(--gold);color:var(--bg-dark);font-weight:700;border:none">가정통신문 PDF 저장</button>
+        <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+          <button onclick="nlOpenEditor()" style="background:var(--gold);color:var(--bg-dark);font-weight:700;border:none">가정통신문 편집·인쇄 창 열기</button>
+          <button onclick="nlMakePdf()" style="background:transparent;color:var(--text-secondary);border:1px solid var(--border-line)">빠른 PDF(편집 없이)</button>
           <span id="nlPdfMsg" style="color:var(--text-muted);font-size:0.82rem"></span>
         </div>
+        <div style="font-size:0.76rem;color:var(--text-muted);margin-top:7px">※ "편집·인쇄 창"에서 문장을 직접 고치고 <b style="color:var(--gold)">편집 저장</b>을 누르면 서버에 저장되어 다음에 열어도 유지됩니다. 인쇄/PDF도 그 창에서 하세요.</div>
       </div>
     </div>
   </div>
@@ -1281,6 +1283,83 @@ function nlMakePdf(){
     }).then(function(){ pdf.save('가정통신문_'+NLW.student+'.pdf'); })
     .catch(function(e){ alert('가정통신문 생성 오류: '+(e.message||e)); })
     .then(function(){ host.innerHTML=''; repHideOverlay(); });
+}
+
+// ════════ 가정통신문 편집 창(문장 직접 수정 + 서버 저장) ════════
+function nlStudentCourse_(name){
+  var m=nlFindMaster(name); if(m&&m.courseId) return m.courseId;
+  var rr=(SMS.roster||[]).find(function(r){ return String(r.courseId)!=='courseId' && normNameR(r.name)===normNameR(name); });
+  if(rr&&rr.courseId) return rr.courseId;
+  return (NLW.course&&NLW.course!=='all')?NLW.course:'';
+}
+function nlComposeHtml_(){   // 편집칸 반영한 '신규 생성본' HTML
+  var name=NLW.student; if(!name) return null;
+  var d=nlGatherV3_(name);
+  if(!d || (!d.n && !gatonFor_(name))) return null;
+  var t=nlDrafts_(d);
+  var gv=function(id){var e=document.getElementById(id);return e&&e.value.trim()?e.value.trim():null;};
+  t.feat=gv('nlFeat')||t.feat; t.presc=gv('nlPresc')||t.presc; t.obs=gv('nlObs')||t.obs; t.tag=gv('nlTag')||t.tag;
+  t.consult={ curr:gv('nlCurr')||'', goal:gv('nlGoal')||'', plan:gv('nlPlan')||'' };
+  t.warm=(document.getElementById('nlComment')&&document.getElementById('nlComment').value.trim())||t.warm;
+  return { html:nlBuildV3_(d,t), name:name };
+}
+function nlEditServerSave(cid,nm,html,del){   // 편집 창에서 opener 통해 호출
+  var body='action=gatonEditSave&courseId='+encodeURIComponent(cid||'')+'&name='+encodeURIComponent(nm)+(del?'&del=1':'&html='+encodeURIComponent(html||''));
+  return fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body}).then(function(r){return r.json();});
+}
+function nlOpenEditor(){
+  if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
+  if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ alert('SCRIPT_URL 미설정 — 서버 저장을 쓸 수 없습니다.'); return; }
+  var c=nlComposeHtml_();
+  if(!c){ alert('이 학생의 제출 데이터도, 성향 진단 데이터도 없습니다.'); return; }
+  var cid=nlStudentCourse_(c.name);
+  var w=window.open('','_blank','width=940,height=1000');
+  if(!w){ alert('팝업이 차단되었습니다. 브라우저에서 이 사이트의 팝업을 허용한 뒤 다시 시도하세요.'); return; }
+  try{ w.document.write('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;padding:40px;color:#666">가정통신문 불러오는 중…</body>'); w.document.close(); }catch(e){}
+  fetch(SCRIPT_URL+'?action=gatonEditLoad&course='+encodeURIComponent(cid)+'&name='+encodeURIComponent(c.name)+'&t='+Date.now())
+    .then(function(r){return r.json();}).catch(function(){return {html:''};})
+    .then(function(saved){
+      var hasSaved=!!(saved&&saved.html);
+      var initial=hasSaved?saved.html:c.html;
+      var note=hasSaved?('서버 저장본 불러옴 · '+(saved.ts||'')):'자동 초안(아직 저장 안 됨)';
+      nlWriteEditorDoc_(w, c.name, cid, initial, c.html, note);
+    });
+}
+function nlWriteEditorDoc_(w, name, cid, html, freshHtml, note){
+  var css=Array.prototype.map.call(document.querySelectorAll('style'),function(s){return s.textContent;}).join('\n');
+  var links=Array.prototype.map.call(document.querySelectorAll('link[rel="stylesheet"]'),function(l){return l.outerHTML;}).join('\n');
+  var e2=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});};
+  var jFresh=JSON.stringify(freshHtml).replace(/<\//g,'<\\/');
+  var TB="<div class='nlp-toolbar no-print'>"
+    +"<span class='hint'>&#9998; 아무 문장이나 클릭해 직접 고칠 수 있어요. 고친 뒤 <b>편집 저장</b>을 누르면 다음에 열어도 유지됩니다. 인쇄·PDF 저장 시 '배경 그래픽'을 꼭 켜세요.</span>"
+    +"<button class='save' id='btnSave'>편집 저장</button>"
+    +"<button class='print' id='btnPrint'>인쇄 / PDF</button>"
+    +"<button class='reset' id='btnReset'>원본으로</button>"
+    +"<span class='st' id='stMsg'>"+e2(note)+"</span></div>";
+  var STYLE="<style>"
+    +"body{background:#e9e6df;margin:0;padding:0}"
+    +".nlp-page{width:760px;height:1075px}"
+    +".nlp-toolbar{position:sticky;top:0;z-index:50;background:#1c2c52;color:#f4efe4;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-family:'Noto Sans KR',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.25)}"
+    +".nlp-toolbar .hint{font-size:12px;color:#cbb488;flex:1;min-width:220px;line-height:1.5}"
+    +".nlp-toolbar button{padding:8px 15px;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:13px}"
+    +".nlp-toolbar .save{background:#b08d57;color:#1c2c52}.nlp-toolbar .print{background:#f4efe4;color:#1c2c52}.nlp-toolbar .reset{background:transparent;color:#cbb488;border:1px solid #6a7590}"
+    +".nlp-toolbar .st{font-size:12px;color:#9fd0ad;min-width:130px}"
+    +"#nlEditWrap{padding:24px;display:flex;flex-direction:column;align-items:center;gap:20px}"
+    +"#nlEditRoot .nlp-page{box-shadow:0 6px 24px rgba(0,0,0,.18)}"
+    +"#nlEditRoot [contenteditable]{outline:none}"
+    +"@media print{.nlp-toolbar{display:none!important}body{background:#fff}#nlEditWrap{padding:0;gap:0}#nlEditRoot .nlp-page{box-shadow:none;page-break-after:always}}"
+    +"@page{size:A4;margin:0}</style>";
+  var SCRIPT="<scr"+"ipt>"
+    +"var CID="+JSON.stringify(cid)+",NAME="+JSON.stringify(name)+",FRESH="+jFresh+";"
+    +"var root=document.getElementById('nlEditRoot'),st=document.getElementById('stMsg');"
+    +"document.getElementById('btnPrint').onclick=function(){window.print();};"
+    +"document.getElementById('btnReset').onclick=function(){if(confirm('편집 내용을 버리고 자동초안 원본으로 되돌릴까요? (서버 저장본도 삭제)')){root.innerHTML=FRESH;st.textContent='원본으로 되돌림';try{window.opener.nlEditServerSave(CID,NAME,'',true).then(function(){st.textContent='서버 저장본 삭제됨';});}catch(e){}}};"
+    +"document.getElementById('btnSave').onclick=function(){var b=this;b.disabled=true;b.textContent='저장 중…';st.textContent='';try{window.opener.nlEditServerSave(CID,NAME,root.innerHTML,false).then(function(r){b.disabled=false;b.textContent='편집 저장';st.textContent=(r&&r.ok)?('저장됨 ✓ ('+(r.len||0)+'자)'):('실패: '+((r&&r.error)||'오류'));}).catch(function(e){b.disabled=false;b.textContent='편집 저장';st.textContent='요청 실패: '+e.message;});}catch(e){b.disabled=false;b.textContent='편집 저장';st.textContent='창 연결 오류: '+e.message;}};"
+    +"<\/scr"+"ipt>";
+  var doc="<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>"+e2(name)+" 가정통신문 · 편집</title>"
+    +links+"<style>"+css+"</style>"+STYLE+"</head><body>"
+    +TB+"<div id='nlEditWrap'><div id='nlEditRoot' contenteditable='true'>"+html+"</div></div>"+SCRIPT+"</body></html>";
+  try{ w.document.open(); w.document.write(doc); w.document.close(); }catch(e){ alert('편집 창 작성 오류: '+e.message); }
 }
 
 // ════════════════════════ 문자 발송 ════════════════════════
