@@ -1264,7 +1264,7 @@ function nlMakePdf(){
   if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
   if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
   var d=nlGatherV3_(NLW.student);
-  if(!d || (!d.n && !gatonFor_(NLW.student))){ alert('이 학생의 제출 데이터도, 성향 진단 데이터도 없습니다.'); return; }
+  if(!d){ alert('학생 데이터를 불러오지 못했습니다.'); return; }   // 데이터 없어도 빈 양식 PDF 생성(가통은 전원 발송)
   var t=nlDrafts_(d);
   // 편집칸 값으로 덮어쓰기(있으면)
   var gv=function(id){var e=document.getElementById(id);return e&&e.value.trim()?e.value.trim():null;};
@@ -1294,8 +1294,7 @@ function nlStudentCourse_(name){
 }
 function nlComposeHtml_(){   // 편집칸 반영한 '신규 생성본' HTML
   var name=NLW.student; if(!name) return null;
-  var d=nlGatherV3_(name);
-  if(!d || (!d.n && !gatonFor_(name))) return null;
+  var d=nlGatherV3_(name); if(!d) return null;   // 제출·성향 데이터가 없어도 빈 양식으로 열어 직접 편집(가통은 전원 발송)
   var t=nlDrafts_(d);
   var gv=function(id){var e=document.getElementById(id);return e&&e.value.trim()?e.value.trim():null;};
   t.feat=gv('nlFeat')||t.feat; t.presc=gv('nlPresc')||t.presc; t.obs=gv('nlObs')||t.obs; t.tag=gv('nlTag')||t.tag;
@@ -1304,15 +1303,18 @@ function nlComposeHtml_(){   // 편집칸 반영한 '신규 생성본' HTML
   return { html:nlBuildV3_(d,t), name:name };
 }
 function nlEditServerSave(cid,nm,html,del){   // 편집 창에서 opener 통해 호출
-  var body='action=gatonEditSave&courseId='+encodeURIComponent(cid||'')+'&name='+encodeURIComponent(nm)+(del?'&del=1':'&html='+encodeURIComponent(html||''));
+  // 로고 data URI(대용량·반복)를 토큰으로 치환해 저장 → 셀 용량 절약(로드 시 복원)
+  var slim = del ? '' : String(html||'').replace(/src="data:[^"]*"/g,'src="__LOGO__"');
+  var body='action=gatonEditSave&courseId='+encodeURIComponent(cid||'')+'&name='+encodeURIComponent(nm)+(del?'&del=1':'&html='+encodeURIComponent(slim));
   return fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body}).then(function(r){return r.json();});
 }
 function nlOpenEditor(){
   if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ alert('SCRIPT_URL 미설정 — 서버 저장을 쓸 수 없습니다.'); return; }
   var c=nlComposeHtml_();
-  if(!c){ alert('이 학생의 제출 데이터도, 성향 진단 데이터도 없습니다.'); return; }
+  if(!c){ alert('학생을 먼저 선택하세요.'); return; }
   var cid=nlStudentCourse_(c.name);
+  var _logo=(typeof LOGO_NAVY_URL!=='undefined'&&LOGO_NAVY_URL)||(typeof LOGO_URL!=='undefined'&&LOGO_URL)||'';
   var w=window.open('','_blank','width=940,height=1000');
   if(!w){ alert('팝업이 차단되었습니다. 브라우저에서 이 사이트의 팝업을 허용한 뒤 다시 시도하세요.'); return; }
   try{ w.document.write('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;padding:40px;color:#666">가정통신문 불러오는 중…</body>'); w.document.close(); }catch(e){}
@@ -1320,7 +1322,7 @@ function nlOpenEditor(){
     .then(function(r){return r.json();}).catch(function(){return {html:''};})
     .then(function(saved){
       var hasSaved=!!(saved&&saved.html);
-      var initial=hasSaved?saved.html:c.html;
+      var initial=hasSaved? String(saved.html).replace(/__LOGO__/g,_logo) : c.html;   // 저장본이면 로고 복원
       var note=hasSaved?('서버 저장본 불러옴 · '+(saved.ts||'')):'자동 초안(아직 저장 안 됨)';
       nlWriteEditorDoc_(w, c.name, cid, initial, c.html, note);
     });
