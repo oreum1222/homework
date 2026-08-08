@@ -21,7 +21,7 @@
  *    각 강좌의 academy 값이 아래 id와 연결됩니다. (academy 없으면 'oreum'으로 간주) */
 window.ACADEMY_LIST = [
   { id: 'oreum', name: '[오름] 국어학원', desc: '고3 정규반과 문법 강좌' },
-  { id: 'hanti', name: '한티 MEXX 학원', desc: '종합반과 단과 강좌' }
+  { id: 'hanti', name: 'MEXX 학원', desc: '종합반과 단과 강좌' }
 ];
 
 window.COURSE_LIST = [
@@ -74,12 +74,12 @@ window.COURSE_LIST = [
     grade: '전체',
     period: '오름 문법',
     desc: '현대문법 — 품사, 문장성분, 형태소와 단어. 틀린 문항을 교재 번호 그대로 체크하세요.',
-    // 1~3주차 과제는 한티 MEXX 단과 고2 화법과 언어 1~3주차와 동일(복사본)
+    // 1~3주차 과제는 MEXX 단과 고2 화법과 언어 1~3주차와 동일(복사본)
     weeks: [
       { week: 1, file: 'data/hw-oreum-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
       { week: 2, file: 'data/hw-oreum-hyeonbeop-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
       { week: 3, file: 'data/hw-oreum-hyeonbeop-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' },
-      // 4주차 = 한티 화법과 언어 4주차(음운의 체계) + 5주차(음운의 변동) 합본
+      // 4주차 = MEXX 화법과 언어 4주차(음운의 체계) + 5주차(음운의 변동) 합본
       { week: 4, file: 'data/hw-oreum-hyeonbeop-w4.json', label: '4주차 · 음운의 체계와 변동', area: '음운', status: 'active' }
     ]
   },
@@ -90,7 +90,7 @@ window.COURSE_LIST = [
     grade: '전체',
     period: '오름 문법',
     desc: '고전문법 — 훈민정음, 표기법, 문법 요소 등. 틀린 문항을 교재 번호 그대로 체크하세요.',
-    // 한티 MEXX 고전문법과 '문법 교재 과제'만 동일(문학 제외). 4주 과정 = 교재 1~92 + 수능 기출 12
+    // MEXX 고전문법과 '문법 교재 과제'만 동일(문학 제외). 4주 과정 = 교재 1~92 + 수능 기출 12
     weeks: [
       { week: 1, file: 'data/hw-oreum-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
       { week: 2, file: 'data/hw-oreum-gojeonbeop-w2.json', label: '2주차 · 27~52', area: '고전 문법', status: 'active' },
@@ -100,13 +100,13 @@ window.COURSE_LIST = [
     ]
   },
 
-  // ═══ 한티 MEXX (여름 강의) — 교재 확정 후 weeks에 주차+data/hw-<id>-w<n>.json 채워 넣기 (비어 있으면 '준비 중') ═══
+  // ═══ MEXX (여름 강의) — 교재 확정 후 weeks에 주차+data/hw-<id>-w<n>.json 채워 넣기 (비어 있으면 '준비 중') ═══
   {
     id: 'hanti-jong-m3-hyeonbeop',
     academy: 'hanti',
-    name: '한티 MEXX 종합반 중3 현대문법',
+    name: 'MEXX 종합반 중3 현대문법',
     grade: '중3',
-    period: '한티 MEXX 종합반',
+    period: 'MEXX 종합반',
     desc: '중3 현대문법 — 3주 과정(품사 · 문장성분 · 형태소와 단어).',
     weeks: [
       { week: 1, file: 'data/hw-hanti-jong-m3-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
@@ -117,9 +117,9 @@ window.COURSE_LIST = [
   {
     id: 'hanti-jong-h1-gojeonbeop',
     academy: 'hanti',
-    name: '한티 MEXX 종합반 고1 고전문법',
+    name: 'MEXX 종합반 고1 고전문법',
     grade: '고1',
-    period: '한티 MEXX 종합반',
+    period: 'MEXX 종합반',
     desc: '고1 고전문법 — 3주 과정(주당 약 35문항). 틀린 문항을 교재 번호 그대로 체크하세요.',
     weeks: [
       { week: 1, file: 'data/hw-hanti-jong-h1-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
@@ -131,9 +131,9 @@ window.COURSE_LIST = [
   {
     id: 'hanti-dan-h1-gojeon',
     academy: 'hanti',
-    name: '한티 MEXX 단과 고1 고전 영역',
+    name: 'MEXX 단과 고1 고전 영역',
     grade: '고1',
-    period: '한티 MEXX 단과',
+    period: 'MEXX 단과',
     desc: '고1 고전 영역 — 주차 안에서 고전 문학 먼저, 스크롤 내려 고전 문법을 체크하세요.',
     weeks: [
       { week: 1, file: 'data/hw-hanti-dan-h1-gojeon-w1.json', label: '1주차 · 고대가요 (고전 문학)', area: '고전 문학', status: 'active' },
@@ -146,9 +146,9 @@ window.COURSE_LIST = [
   {
     id: 'hanti-dan-h2-hwaeon',
     academy: 'hanti',
-    name: '한티 MEXX 단과 고2 화법과 언어',
+    name: 'MEXX 단과 고2 화법과 언어',
     grade: '고2',
-    period: '한티 MEXX 단과',
+    period: 'MEXX 단과',
     desc: '고2 화법과 언어 — 언어(문법) 5주 과정(품사 · 문장성분 · 형태소와 단어 · 음운의 체계 · 음운의 변동).',
     weeks: [
       { week: 1, file: 'data/hw-hanti-dan-h2-hwaeon-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
