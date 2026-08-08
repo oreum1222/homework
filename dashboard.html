@@ -1020,7 +1020,7 @@ function nlBarSVG(m){
   var W=300,H=112,padX=14,padTop=20,padBot=24,n=seq.length;
   var bw=Math.min(48,(W-2*padX)/n-12), gap=n>1?(W-2*padX-bw*n)/(n-1):0, plotH=H-padTop-padBot;
   var pwByWeek={}; (m.perWeek||[]).forEach(function(pw){ pwByWeek[pw.week]=pw; });
-  var labOf=function(w){ var pw=pwByWeek[w], s=(pw&&pw.area)?String(pw.area):weekShort(w).replace('주차','주'); return s.length>6?s.slice(0,6):s; };
+  var labOf=function(w){ var pw=pwByWeek[w], s=(pw&&pw.area)?String(pw.area):weekShort(w).replace('주차','주'); s=s.replace(/\s+/g,''); return s.length>7?s.slice(0,7):s; };
   var yOf=function(v){return padTop+plotH*(1-v/100);}, b80=yOf(80), bars='';
   bars+='<line x1="'+padX+'" y1="'+b80.toFixed(1)+'" x2="'+(W-padX)+'" y2="'+b80.toFixed(1)+'" stroke="rgba(176,141,87,.55)" stroke-dasharray="3 3"/>';
   seq.forEach(function(w,i){ var r=rates[i]||0, x=padX+i*(bw+gap), y=yOf(r), bh=padTop+plotH-y;
@@ -1123,8 +1123,8 @@ function nlV3Line_(items){
   items.forEach(function(it,i){ var cx=X(i),cy=Y(it[1]);
     s+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="4" fill="'+nlNavy_(it[1])+'" stroke="#fffdf8" stroke-width="1.5"/>';
     s+='<text x="'+cx.toFixed(1)+'" y="'+(cy-9).toFixed(1)+'" text-anchor="middle" style="font-family:\'Noto Serif KR\';font-size:12.5px;fill:#1c2c52;font-weight:700">'+it[1]+'</text>';
-    s+='<text x="'+cx.toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" style="font-size:10.5px;fill:#8a8676">'+esc(String(it[0]).slice(0,6))+'</text>'; });
-  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+s+'</svg>';
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" style="font-size:9.5px;fill:#8a8676">'+esc(String(it[0]).replace(/\s+/g,'').slice(0,7))+'</text>'; });
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;overflow:visible">'+s+'</svg>';
 }
 function nlV3HBar_(label,pct,right){ return '<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;align-items:baseline;font-size:.82rem;color:#3a4154;margin-bottom:3px"><span>'+esc(label)+'</span><span style="color:#1c2c52;font-weight:700">'+right+'</span></div><div style="height:8px;background:#eee7d6;border-radius:5px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+nlNavy_(pct)+';border-radius:5px"></div></div></div>'; }
 function nlV3Stat_(big,label,sub){ return '<div class="nlp-stat" style="padding:11px 6px"><div class="v" style="line-height:1.05">'+big+'</div><div class="l">'+esc(label)+'</div><div style="font-size:.66rem;color:#9a958a;margin-top:4px">'+esc(sub)+'</div></div>'; }
