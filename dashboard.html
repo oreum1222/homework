@@ -2247,15 +2247,15 @@ function renderReports(){
       +'<span class="rc-tw">누적 오답 '+m.totalWrong+'개</span>'
       +'<button class="rpdf-btn no-print" onclick="printNewsletter(\''+sid+'\')" style="border-color:#9fd0ad;color:#9fd0ad">가정통신문 PDF</button>'
       +'<button class="rpdf-btn no-print" onclick="printOneReport(\''+sid+'\')">이 학생 PDF</button></div></div>'
-      +'<div class="rc-row1"><div><div class="rblk-t">주차별 정답률</div>'+rSpark(m)+'</div>'
+      +'<div class="rc-row1" data-page="1"><div><div class="rblk-t">주차별 정답률</div>'+rSpark(m)+'</div>'
       +'<div><div class="rblk-t">영역별 누적 오답 비중</div>'+rDonut(m)+'</div></div>'
-      +'<div class="rc-blk"><div class="rblk-t gold">성실도 · 과제 해결 추세 <span class="rblk-sub">(막대=성실도, 위 숫자=과제 해결 정도'+(m.avgDil!=null?' · 평균 성실도 '+m.avgDil:'')+')</span></div>'+rDiligenceSpark(m)+'</div>'
-      +'<div class="rc-blk"><div class="rblk-t">주차별 기록</div>'
+      +'<div class="rc-blk" data-page="1"><div class="rblk-t gold">성실도 · 과제 해결 추세 <span class="rblk-sub">(막대=성실도, 위 숫자=과제 해결 정도'+(m.avgDil!=null?' · 평균 성실도 '+m.avgDil:'')+')</span></div>'+rDiligenceSpark(m)+'</div>'
+      +'<div class="rc-blk" data-page="1"><div class="rblk-t">주차별 기록</div>'
       +'<table class="rtbl2"><thead><tr><th>주차</th><th>정답률</th><th>영역</th><th>틀린 문항</th></tr></thead><tbody>'+rWeekRows(m)+'</tbody></table></div>'
-      +(areaTableBlock?'<div class="rc-blk"><div class="rblk-t gold">영역별 정답률 <span class="rblk-sub">(약한 영역 순)</span></div>'+areaTableBlock+typeLine+'</div>':'')
-      +'<div class="rc-blk rstr"><div class="rblk-t" style="color:var(--ok)">강점 진단</div>'+strBlock+'</div>'
-      +'<div class="rc-blk rweak"><div class="rblk-t gold">진단 약점 <span class="rblk-sub">(주차 통합)</span></div><ul class="rdlist">'+integ+'</ul></div>'
-      +'<div class="rc-blk rtime"><div class="rblk-t gold">과제 성실도 · 완수</div>'+studyBlock+'</div>'
+      +(areaTableBlock?'<div class="rc-blk" data-page="2"><div class="rblk-t gold">영역별 정답률 <span class="rblk-sub">(약한 영역 순)</span></div>'+areaTableBlock+typeLine+'</div>':'')
+      +'<div class="rc-blk rstr" data-page="3"><div class="rblk-t" style="color:var(--ok)">강점 진단</div>'+strBlock+'</div>'
+      +'<div class="rc-blk rweak" data-page="3"><div class="rblk-t gold">진단 약점 <span class="rblk-sub">(주차 통합)</span></div><ul class="rdlist">'+integ+'</ul></div>'
+      +'<div class="rc-blk rtime" data-page="3"><div class="rblk-t gold">과제 성실도 · 완수</div>'+studyBlock+'</div>'
       +commentBlock(sid, ctx, pw)
       +'<div class="rc-foot"><span class="m">'+esc(TEACHER)+' · '+esc(BRAND)+'</span><span class="n">'+(i+1)+' / '+master.length+'</span></div></div>';
   });
@@ -2287,6 +2287,24 @@ async function repCapture(t){
   try{ c=await html2canvas(t,{scale:2,backgroundColor:pdfCapBg('#1d242b'),useCORS:true,logging:false,windowWidth:t.scrollWidth}); }
   finally{ hidden.forEach((e,i)=>e.style.display=prev[i]); if(light) t.classList.remove('pdf-light'); }
   return c; }
+// A4 3쪽 분할 캡처: 1쪽(주차별 기록까지)·2쪽(영역별 정답률)·3쪽(나머지). data-page 없는 요소(머리·꼬리)는 매 쪽에 유지.
+async function repCapturePaged(t){
+  const light=PDF_LIGHT; if(light) t.classList.add('pdf-light');
+  const hb=[].slice.call(t.querySelectorAll('.rc-cmt, .rpdf-btn'));
+  const hbp=hb.map(e=>e.style.display); hb.forEach(e=>e.style.display='none');
+  const paged=[].slice.call(t.querySelectorAll('[data-page]'));
+  const pages=['1','2','3'].filter(function(p){ return paged.some(function(e){return e.getAttribute('data-page')===p;}); });
+  const canvases=[];
+  try{
+    for(const p of pages){
+      const prev=paged.map(e=>e.style.display);
+      paged.forEach(function(e){ e.style.display=(e.getAttribute('data-page')===p)?'':'none'; });
+      const c=await html2canvas(t,{scale:2,backgroundColor:pdfCapBg('#1d242b'),useCORS:true,logging:false,windowWidth:t.scrollWidth});
+      canvases.push(c);
+      paged.forEach(function(e,i){ e.style.display=prev[i]; });
+    }
+  } finally { hb.forEach((e,i)=>e.style.display=hbp[i]); if(light) t.classList.remove('pdf-light'); }
+  return canvases; }
 function repA4(pdf,c,first){ const pw=210,ph=297; if(!first)pdf.addPage(); pdfPageFill(pdf); pdf.rect(0,0,pw,ph,'F');
   const ratio=c.height/c.width; let w=pw,h=w*ratio; if(h>ph){h=ph;w=h/ratio;} const x=(pw-w)/2,y=(ph-h)/2; pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',x,y,w,h); }
 async function printOneReport(id){ const t=document.getElementById(id); if(!t)return;
@@ -2294,9 +2312,9 @@ async function printOneReport(id){ const t=document.getElementById(id); if(!t)re
   const name=t.dataset.name||'학생'; repOverlay(name+' PDF 생성 중…');
   try{ if(document.fonts&&document.fonts.ready)await document.fonts.ready; }catch(e){}
   await new Promise(r=>setTimeout(r,120));
-  try{ const c=await repCapture(t); const jsPDF=getJsPDF(); const ratio=c.height/c.width;
-    const pdf=new jsPDF({orientation:(210*ratio)>=210?'portrait':'landscape',unit:'mm',format:[210,210*ratio]});
-    pdfPageFill(pdf); pdf.rect(0,0,210,210*ratio,'F'); pdf.addImage(c.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,210*ratio);
+  try{ const cs=await repCapturePaged(t); const jsPDF=getJsPDF();
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    cs.forEach(function(c,i){ repA4(pdf,c,i===0); c.width=0;c.height=0; });
     pdf.save('숙제리포트_'+name+(PDF_LIGHT?'_인쇄용':'')+'.pdf');
   }catch(err){ alert('PDF 생성 오류: '+(err.message||err)); }finally{ repHideOverlay(); }}
 async function printAllReports(){
@@ -2308,9 +2326,10 @@ async function printAllReports(){
   try{ if(document.fonts&&document.fonts.ready)await document.fonts.ready; }catch(e){}
   await new Promise(r=>setTimeout(r,150));
   try{ const jsPDF=getJsPDF(); const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    let firstPage=true;
     for(let i=0;i<cards.length;i++){ const name=cards[i].dataset.name||('학생'+(i+1));
       repOverlay('전체 PDF 생성 중… ('+(i+1)+'/'+cards.length+') · '+name); await new Promise(r=>setTimeout(r,20));
-      const c=await repCapture(cards[i]); repA4(pdf,c,i===0); c.width=0;c.height=0; }
+      const cs=await repCapturePaged(cards[i]); cs.forEach(function(c){ repA4(pdf,c,firstPage); firstPage=false; c.width=0;c.height=0; }); }
     repOverlay('PDF 저장 중…'); await new Promise(r=>setTimeout(r,30)); pdf.save('숙제리포트_전체'+(PDF_LIGHT?'_인쇄용':'')+'.pdf');
   }catch(err){ alert('전체 PDF 오류: '+(err.message||err)); }finally{ if(btn)btn.disabled=false; repHideOverlay(); }}
 function repOverlay(t){ const ov=document.getElementById('pdfOverlay'); ov.querySelector('.pdf-overlay-text').textContent=t||'PDF 생성 중…'; ov.style.display='flex'; }
