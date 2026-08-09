@@ -1166,7 +1166,10 @@ function nlGatherV3_(name){
   var 완수율=n?Math.round(complete/n*100):0;
   var units=Object.keys(unitMap).map(function(a){var u=unitMap[a];return {unit:a,rate:Math.round(u.rates.reduce(function(x,y){return x+y;},0)/u.rates.length),wrong:u.wrong};});
   var unitsLow=units.slice().sort(function(a,b){return a.rate-b.rate;});
-  var flow=weeks.map(function(w){var r=byW[w];return [val(r,'area','')||('회차'+w),+(val(r,'정답률','')||0)];});
+  var flow=weeks.map(function(w){var r=byW[w];
+    var lab=val(r,'area','')||('회차'+w);
+    if(String(r.courseId)==='hanti-dan-h1-gojeon') lab='고전 문학·고전 문법';   // 고1 단과는 매주 문학+문법 → 전 주차 통일 라벨
+    return [lab,+(val(r,'정답률','')||0)];});
   var topW=Object.keys(areaAgg).map(function(a){return {a:a,w:areaAgg[a].wrong};}).filter(function(x){return x.w>0;}).sort(function(x,y){return y.w-x.w;});
   var weakNames=topW.slice(0,3).map(function(x){return x.a;});
   // 강점: areaAgg total≥2 정답률 상위
