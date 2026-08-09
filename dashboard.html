@@ -2075,7 +2075,7 @@ function rDonut(m){
   const segs=Object.entries(m.areaAgg).filter(([a,v])=>v.wrong>0).map(([a,v],i)=>[a,v.wrong,palette[i%palette.length]]);
   const totalQ=Object.values(m.areaAgg).reduce((a,v)=>a+v.total,0);
   const totalWrong=Object.values(m.areaAgg).reduce((a,v)=>a+v.wrong,0);
-  const overallRate=totalQ?Math.round((totalQ-totalWrong)/totalQ*100):0;
+  const overallRate=(m.avgRate!=null)?m.avgRate:(totalQ?Math.round((totalQ-totalWrong)/totalQ*100):0);   // 상단 '평균 정답률'과 일치(영역 태그 합이 아닌 실제 채점 기준)
   if(!segs.length) return '<div class="rdonut-empty">누적 오답 없음 — 전 영역 안정적</div>';
   const total=segs.reduce((a,s)=>a+s[1],0)||1,R=52,CX=64,CY=64,SW=20,C=2*Math.PI*R; let off=0,arcs='';
   segs.forEach(s=>{ const fr=s[1]/total,dash=C*fr,gap=C-dash;
