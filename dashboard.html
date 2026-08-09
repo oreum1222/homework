@@ -134,6 +134,11 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .r-rnd{width:80px;font-weight:600;color:var(--text-secondary)}
 .r-sc{width:110px;font-weight:600;white-space:nowrap}
 .r-wrong{color:var(--text-secondary);font-size:0.82rem;line-height:1.7}
+.rtbl2-wk{table-layout:fixed}
+.rtbl2-wk th:nth-child(1),.rtbl2-wk td:nth-child(1){width:64px}
+.rtbl2-wk th:nth-child(2),.rtbl2-wk td:nth-child(2){width:116px}
+.rtbl2-wk th:nth-child(3),.rtbl2-wk td:nth-child(3){width:92px}
+.rtbl2-wk th:nth-child(4),.rtbl2-wk td:nth-child(4){white-space:normal;word-break:break-word;overflow-wrap:anywhere}
 .rweak{background:var(--bg-dark);border:1px solid var(--border-line);border-left:3px solid var(--gold);border-radius:8px;padding:17px 20px}
 .rstr{background:var(--bg-dark);border:1px solid var(--border-line);border-left:3px solid var(--ok);border-radius:8px;padding:17px 20px}
 .rdiag{background:var(--bg-dark);border:1px solid var(--border-line);border-radius:8px;padding:17px 20px}
@@ -2283,7 +2288,7 @@ function renderReports(){
       +'<div><div class="rblk-t">영역별 누적 오답 비중</div>'+rDonut(m)+'</div></div>'
       +'<div class="rc-blk" data-page="1"><div class="rblk-t gold">성실도 · 과제 해결 추세 <span class="rblk-sub">(막대=성실도, 위 숫자=과제 해결 정도'+(m.avgDil!=null?' · 평균 성실도 '+m.avgDil:'')+')</span></div>'+rDiligenceSpark(m)+'</div>'
       +'<div class="rc-blk" data-page="1"><div class="rblk-t">주차별 기록</div>'
-      +'<table class="rtbl2"><thead><tr><th>주차</th><th>정답률</th><th>영역</th><th>틀린 문항</th></tr></thead><tbody>'+rWeekRows(m)+'</tbody></table></div>'
+      +'<table class="rtbl2 rtbl2-wk"><thead><tr><th>주차</th><th>정답률</th><th>영역</th><th>틀린 문항</th></tr></thead><tbody>'+rWeekRows(m)+'</tbody></table></div>'
       +(areaTableBlock?'<div class="rc-blk" data-page="2"><div class="rblk-t gold">영역별 정답률 <span class="rblk-sub">(약한 영역 순)</span></div>'+areaTableBlock+typeLine+'</div>':'')
       +'<div class="rc-blk rstr" data-page="3"><div class="rblk-t" style="color:var(--ok)">강점 진단</div>'+strBlock+'</div>'
       +'<div class="rc-blk rweak" data-page="3"><div class="rblk-t gold">진단 약점 <span class="rblk-sub">(주차 통합)</span></div><ul class="rdlist">'+integ+'</ul></div>'
