@@ -154,6 +154,11 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .mode-mid{background:rgba(95,198,163,0.12);color:var(--gold-soft);border:1px solid rgba(95,198,163,0.35)}
 .mode-low{background:rgba(217,138,138,0.12);color:#e0a3a3;border:1px solid rgba(217,138,138,0.4)}
 .mode-none{background:rgba(122,134,150,0.18);color:var(--text-muted);border:1px solid var(--border-soft)}
+/* 인쇄용(pdf-light): 배지가 화면용 연한 색이라 흰 배경에서 안 보임 → 진한 색으로 override */
+.pdf-light .rtrend-up,.pdf-light .mode-high{background:#e6f1ea;color:#1f6b3f;border:1px solid #5a8f6e}
+.pdf-light .rtrend-keep,.pdf-light .mode-mid{background:#f3ecd6;color:#8a6a1e;border:1px solid #c2a25e}
+.pdf-light .rtrend-down,.pdf-light .mode-low{background:#f6e1de;color:#b0392b;border:1px solid #c66666}
+.pdf-light .rtrend-single,.pdf-light .mode-none{background:#eceae3;color:#5b6152;border:1px solid #b9b3a3}
 .cmt-area{width:100%;min-height:148px;background:var(--bg-dark);border:1px solid var(--border-soft);border-radius:8px;color:var(--cream);font-family:'Noto Sans KR',sans-serif;font-size:0.92rem;line-height:1.8;padding:16px 18px;resize:vertical;outline:none}
 .cmt-area:focus{border-color:var(--gold)}
 .cmt-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
