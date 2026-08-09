@@ -2338,7 +2338,7 @@ async function repCapturePaged(t){
   } finally { hb.forEach((e,i)=>e.style.display=hbp[i]); if(light) t.classList.remove('pdf-light'); }
   return canvases; }
 function repA4(pdf,c,first){ const pw=210,ph=297; if(!first)pdf.addPage(); pdfPageFill(pdf); pdf.rect(0,0,pw,ph,'F');
-  const ratio=c.height/c.width; let w=pw,h=w*ratio; if(h>ph){h=ph;w=h/ratio;} const x=(pw-w)/2,y=(ph-h)/2; pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',x,y,w,h); }
+  const ratio=c.height/c.width; let w=pw,h=w*ratio; if(h>ph){h=ph;w=h/ratio;} const x=(pw-w)/2,y=Math.min(6,ph-h); pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',x,y,w,h); }   // 상단 정렬(위 여백 6mm)
 async function printOneReport(id){ const t=document.getElementById(id); if(!t)return;
   if(!repLibsReady()){ alert('PDF 기능을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.'); return; }
   const name=t.dataset.name||'학생'; repOverlay(name+' PDF 생성 중…');
