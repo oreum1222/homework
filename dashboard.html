@@ -1121,19 +1121,14 @@ function nlCap_(node){ return html2canvas(node,{scale:2,backgroundColor:'#f7f4ec
 function nlNavy_(r){ var t=Math.max(0,Math.min(1,(r-60)/40)),a=[176,190,216],b=[20,34,62]; return 'rgb('+a.map(function(v,i){return Math.round(v+(b[i]-v)*t);}).join(',')+')'; }
 function nlV3Line_(items){
   if(!items.length) return '<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:34px 0">데이터 없음</div>';
-  var W=300,H=130,padX=26,padTop=24,padBot=30,n=items.length,plotW=W-2*padX,plotH=H-padTop-padBot,lo=60,hi=100;
+  var W=300,H=104,padX=26,padTop=24,padBot=16,n=items.length,plotW=W-2*padX,plotH=H-padTop-padBot,lo=60,hi=100;
   var X=function(i){return padX+(n>1?plotW*(i/(n-1)):plotW/2);}, Y=function(v){return padTop+plotH*(1-(v-lo)/(hi-lo));};
   var s='<line x1="'+padX+'" y1="'+Y(80).toFixed(1)+'" x2="'+(W-padX)+'" y2="'+Y(80).toFixed(1)+'" stroke="rgba(176,141,87,.5)" stroke-dasharray="3 3"/>';
   s+='<polyline points="'+items.map(function(it,i){return X(i).toFixed(1)+','+Y(it[1]).toFixed(1);}).join(' ')+'" fill="none" stroke="#2f4374" stroke-width="2.2"/>';
   items.forEach(function(it,i){ var cx=X(i),cy=Y(it[1]);
     s+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="4" fill="'+nlNavy_(it[1])+'" stroke="#fffdf8" stroke-width="1.5"/>';
-    s+='<text x="'+cx.toFixed(1)+'" y="'+(cy-9).toFixed(1)+'" text-anchor="middle" style="font-family:\'Noto Serif KR\';font-size:12.5px;fill:#1c2c52;font-weight:700">'+it[1]+'</text>';
-    var lab=String(it[0]||'').trim(), ci=lab.indexOf('·'), parts;
-    if(ci>=0){ var la=lab.slice(0,ci).trim(), lb=lab.slice(ci+1).trim(), head=la.split(/\s+/)[0];
-      if(lb && lb.indexOf(head)!==0 && lb.indexOf(' ')<0) lb=head+' '+lb;   // '문법' → '고전 문법'
-      parts=[la, '·'+lb]; }                                                 // '·' 있으면 둘째 줄로(고전 문학 / ·고전 문법)
-    else parts=[lab.length>8?lab.slice(0,8):lab];
-    parts.forEach(function(p,li){ var yy = parts.length>1 ? (H-19+li*11) : (H-13); s+='<text x="'+cx.toFixed(1)+'" y="'+yy+'" text-anchor="middle" style="font-size:9.5px;fill:#8a8676">'+esc(p)+'</text>'; }); });
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(cy-9).toFixed(1)+'" text-anchor="middle" style="font-family:\'Noto Serif KR\';font-size:12.5px;fill:#1c2c52;font-weight:700">'+it[1]+'</text>'; });
+    // x축 영역 라벨(고전 문학…)은 제거 — 전 학생 공통
   return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;overflow:visible">'+s+'</svg>';
 }
 function nlV3HBar_(label,pct,right){ return '<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;align-items:baseline;font-size:.82rem;color:#3a4154;margin-bottom:3px"><span>'+esc(label)+'</span><span style="color:#1c2c52;font-weight:700">'+right+'</span></div><div style="height:8px;background:#eee7d6;border-radius:5px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+nlNavy_(pct)+';border-radius:5px"></div></div></div>'; }
