@@ -1919,6 +1919,8 @@ function buildReports(){
     g.weeks[week]={
       week, weekLabel:val(r,'weekLabel','주차명'), area:val(r,'area','영역'),
       rate:parseFloat(val(r,'정답률','정답률'))||0,
+      total:parseInt(val(r,'총문항','총문항'),10)||0,
+      correct:parseInt(val(r,'맞은개수','맞은개수'),10)||0,
       wrongN:parseInt(val(r,'틀린개수','틀린개수'),10)||0,
       wrongs:wrongsOf(r),
       patterns:jparse(val(r,'patternsJson','patternsJson'))||[],
@@ -1966,7 +1968,8 @@ function buildReports(){
     perWeek.forEach(pw=>(pw.wrongDetails||[]).forEach(q=>{ if(q&&q.type){ const t=String(q.type).split(/[,\/]/)[0].trim(); if(t) typeAgg[t]=(typeAgg[t]||0)+1; } }));
     const typeTop=Object.entries(typeAgg).map(([t,c])=>({t,c})).sort((a,b)=>b.c-a.c);
     const totalWrong=perWeek.reduce((a,pw)=>a+pw.wrongN,0);
-    const avgRate=Math.round(rates.reduce((a,b)=>a+b,0)/rates.length);
+    var _tc=0,_tt=0; perWeek.forEach(pw=>{ var tt=pw.total||0,cc=pw.correct||0; if(!tt) tt=cc+(pw.wrongN||0); _tc+=cc; _tt+=tt; });
+    const avgRate=_tt?Math.round(_tc/_tt*100):(rates.length?Math.round(rates.reduce((a,b)=>a+b,0)/rates.length):0);   // 맞은÷총문항(가중) — 가정통신문과 동일 방식
     // 성실도·완수 추세
     const dilSeq=perWeek.map(pw=>pw.diligence);          // 성실도(0~100, 없으면 null)
     const doneSeq=perWeek.map(pw=>pwDoneRate(pw));        // 완수율(0~100, 없으면 null)
