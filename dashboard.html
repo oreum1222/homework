@@ -1121,8 +1121,11 @@ function nlCap_(node){ return html2canvas(node,{scale:2,backgroundColor:'#f7f4ec
 function nlNavy_(r){ var t=Math.max(0,Math.min(1,(r-60)/40)),a=[176,190,216],b=[20,34,62]; return 'rgb('+a.map(function(v,i){return Math.round(v+(b[i]-v)*t);}).join(',')+')'; }
 function nlV3Line_(items){
   if(!items.length) return '<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:34px 0">데이터 없음</div>';
-  var W=300,H=104,padX=26,padTop=24,padBot=16,n=items.length,plotW=W-2*padX,plotH=H-padTop-padBot,lo=60,hi=100;
-  var X=function(i){return padX+(n>1?plotW*(i/(n-1)):plotW/2);}, Y=function(v){return padTop+plotH*(1-(v-lo)/(hi-lo));};
+  var W=300,H=104,padX=26,padTop=24,padBot=16,n=items.length,plotW=W-2*padX,plotH=H-padTop-padBot,hi=100;
+  var vals=items.map(function(it){return +it[1]||0;});
+  var lo=Math.max(0,Math.min(60,Math.floor((Math.min.apply(null,vals)-4)/10)*10));   // 낮은 점수(각서 0 등)도 차트 안에 들어오게 하한 적응
+  var X=function(i){return padX+(n>1?plotW*(i/(n-1)):plotW/2);};
+  var Y=function(v){var yy=padTop+plotH*(1-(v-lo)/(hi-lo));return Math.max(padTop,Math.min(padTop+plotH,yy));};   // 박스 밖으로 안 나가게 클램프
   var s='<line x1="'+padX+'" y1="'+Y(80).toFixed(1)+'" x2="'+(W-padX)+'" y2="'+Y(80).toFixed(1)+'" stroke="rgba(176,141,87,.5)" stroke-dasharray="3 3"/>';
   s+='<polyline points="'+items.map(function(it,i){return X(i).toFixed(1)+','+Y(it[1]).toFixed(1);}).join(' ')+'" fill="none" stroke="#2f4374" stroke-width="2.2"/>';
   items.forEach(function(it,i){ var cx=X(i),cy=Y(it[1]);
