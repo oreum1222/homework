@@ -1128,8 +1128,11 @@ function nlV3Line_(items){
   items.forEach(function(it,i){ var cx=X(i),cy=Y(it[1]);
     s+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="4" fill="'+nlNavy_(it[1])+'" stroke="#fffdf8" stroke-width="1.5"/>';
     s+='<text x="'+cx.toFixed(1)+'" y="'+(cy-9).toFixed(1)+'" text-anchor="middle" style="font-family:\'Noto Serif KR\';font-size:12.5px;fill:#1c2c52;font-weight:700">'+it[1]+'</text>';
-    var lab=String(it[0]||'').trim(), ci=lab.indexOf('·');
-    var parts = ci>=0 ? [lab.slice(0,ci).trim(), '·'+lab.slice(ci+1).trim()] : [lab.length>8?lab.slice(0,8):lab];  // '·' 있으면 둘째 줄로(고전 문학 / ·문법) — 잘림·폭넘침 방지
+    var lab=String(it[0]||'').trim(), ci=lab.indexOf('·'), parts;
+    if(ci>=0){ var la=lab.slice(0,ci).trim(), lb=lab.slice(ci+1).trim(), head=la.split(/\s+/)[0];
+      if(lb && lb.indexOf(head)!==0 && lb.indexOf(' ')<0) lb=head+' '+lb;   // '문법' → '고전 문법'
+      parts=[la, '·'+lb]; }                                                 // '·' 있으면 둘째 줄로(고전 문학 / ·고전 문법)
+    else parts=[lab.length>8?lab.slice(0,8):lab];
     parts.forEach(function(p,li){ var yy = parts.length>1 ? (H-19+li*11) : (H-13); s+='<text x="'+cx.toFixed(1)+'" y="'+yy+'" text-anchor="middle" style="font-size:9.5px;fill:#8a8676">'+esc(p)+'</text>'; }); });
   return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;overflow:visible">'+s+'</svg>';
 }
