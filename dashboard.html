@@ -1166,11 +1166,12 @@ function nlGatherV3_(name){
   var weeks=Object.keys(byW).map(Number).sort(function(a,b){return a-b;});
   var _cid=(NLW.course&&NLW.course!=='all')?NLW.course:((m&&m.courseId)||'');
   var TOTR=nlCourseRounds_(_cid);   // 강좌에 나간 총 회차(=완수율 분모)
-  var totalQ=0,correctQ=0,wrongN=0,complete=0,partial=0,onTime=0,doneRounds=0,wrongItems=[],unitMap={},areaAgg={},wkRates=[];
+  var totalQ=0,correctQ=0,wrongN=0,complete=0,partial=0,onTime=0,doneRounds=0,sumSolve=0,wrongItems=[],unitMap={},areaAgg={},wkRates=[];
   weeks.forEach(function(w){ var r=byW[w];
     var tot=+(val(r,'총문항','')||0),cor=+(val(r,'맞은개수','')||0),wr=+(val(r,'틀린개수','')||0),rate=+(val(r,'정답률','')||0);
     if(!tot) tot=cor+wr; totalQ+=tot; correctQ+=cor; wrongN+=wr; if(tot>0) wkRates.push(rate);   // 채점된 회차만 주차평균에
     if(tot>0 && (TOTR<=0||w<=TOTR)) doneRounds++;   // 실제 완수한(각서 아닌) 회차 수
+    if(TOTR<=0||w<=TOTR){ var _srw=parseFloat(String(val(r,'과제해결정도','')).replace('%','').trim()); if(isNaN(_srw)) _srw=(tot>0?100:0); else if(_srw<=1) _srw=_srw*100; sumSolve+=_srw; }   // 완수율=회차별 과제해결정도 합
     if(val(r,'완수상태','')==='전부 끝냄') complete++; else partial++;
     if(String(val(r,'제출시점','')).indexOf('여유')>=0) onTime++;
     var area=val(r,'area','')||val(r,'weekLabel','')||('회차'+w);
@@ -1181,7 +1182,7 @@ function nlGatherV3_(name){
   });
   var n=weeks.length, avgRate=wkRates.length?nlAvgRate_(wkRates):(m?m.avgRate:0);   // §1 주차별 정답률 단순평균
   var _denom=TOTR>0?TOTR:(n||1);
-  var 완수율=Math.min(100,Math.round(doneRounds/_denom*100));   // 완수율 = 완수 회차 ÷ 총 나간 회차
+  var 완수율=Math.min(100,Math.round(sumSolve/_denom));   // 완수율 = 회차별 과제해결정도 평균(미제출 회차=0)
   var units=Object.keys(unitMap).map(function(a){var u=unitMap[a];return {unit:a,rate:Math.round(u.rates.reduce(function(x,y){return x+y;},0)/u.rates.length),wrong:u.wrong};});
   var unitsLow=units.slice().sort(function(a,b){return a.rate-b.rate;});
   var flow=weeks.map(function(w){var r=byW[w];
@@ -1203,11 +1204,12 @@ function nlGatherV3_(name){
     var a=val(r,'area',''); if(a){ if(!pu[a])pu[a]=[]; pu[a].push(rate);}
     var pnm=normNameR(val(r,'name','이름')), pw=+val(r,'week','주차')||0;
     if(pw && (TOTR<=0||pw<=TOTR)){ var pt=+(val(r,'총문항','')||0); if(!pt) pt=(+(val(r,'맞은개수','')||0))+(+(val(r,'틀린개수','')||0));
-      if(!stuDone[pnm]) stuDone[pnm]={}; if(pt>0) stuDone[pnm][pw]=1; } });   // 제출 학생별 완수 회차(각서만이면 0)
+      var _psr=parseFloat(String(val(r,'과제해결정도','')).replace('%','').trim()); if(isNaN(_psr)) _psr=(pt>0?100:0); else if(_psr<=1) _psr=_psr*100;
+      if(!stuDone[pnm]) stuDone[pnm]={}; stuDone[pnm][pw]=_psr; } });   // 제출 학생별 회차 과제해결정도
   var _peersR=(REP.master||[]).filter(function(p){return (NLW.course==='all'||p.courseId===(m?m.courseId:NLW.course))&&!isTestName(p.name)&&(p.perWeek||[]).some(function(pw){return (pw.total||0)>0;});});   // 과제 수행(채점) 학생만
   var clsRate=_peersR.length?Math.round(_peersR.reduce(function(s,p){return s+(p.avgRate||0);},0)/_peersR.length):null;   // §1 반 평균 = 학생별 주차평균 평균
-  var _cw=Object.keys(stuDone).map(function(k){ return Math.min(100,Math.round(Object.keys(stuDone[k]).length/(TOTR>0?TOTR:1)*100)); });
-  var cls완수=_cw.length?Math.round(_cw.reduce(function(x,y){return x+y;},0)/_cw.length):null;   // 반 평균 = 개별 완수율 평균
+  var _cw=Object.keys(stuDone).map(function(k){ var ss=0; Object.keys(stuDone[k]).forEach(function(w){ ss+=stuDone[k][w]; }); return Math.min(100,Math.round(ss/(TOTR>0?TOTR:1))); });
+  var cls완수=_cw.length?Math.round(_cw.reduce(function(x,y){return x+y;},0)/_cw.length):null;   // 반 평균 = 개별 완수율(과제해결정도 평균) 평균
   var peers=(REP.master||[]).filter(function(p){return (NLW.course==='all'||p.courseId===(m?m.courseId:NLW.course))&&!isTestName(p.name);});
   var clsWrong=peers.length?Math.round(peers.reduce(function(s,p){return s+(p.totalWrong||0);},0)/peers.length):null;
   // 대표 단원(강점 단원) 반평균
