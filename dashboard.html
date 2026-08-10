@@ -1090,7 +1090,7 @@ function nlBuildPage1(name, m){
     +'<div class="nlp-title">가정통신문</div><div class="nlp-brand">'+esc(BRAND)+'</div></div>'
     +'<div class="nlp-meta"><span><b style="color:#1c2c52">'+esc(name)+' 학생 학부모님</b> 귀하</span><span>'+dDot+'</span></div>';
   var stats='<div class="nlp-stats">'
-    +'<div class="nlp-stat"><div class="v">'+(m.avgRate!=null?m.avgRate+'%':'—')+'</div><div class="l">평균 정답률</div></div>'
+    +'<div class="nlp-stat"><div class="v">'+(m.avgRate!=null?m.avgRate+'%':'—')+'</div><div class="l">주차 평균 정답률</div></div>'
     +'<div class="nlp-stat"><div class="v">'+nlTrendTxt(m)+'</div><div class="l">정답률 추세</div></div>'
     +'<div class="nlp-stat"><div class="v">'+(m.n||0)+'<span style="font-size:.8rem">회</span></div><div class="l">제출 회차</div></div>'
     +'<div class="nlp-stat"><div class="v">'+(m.totalWrong||0)+'<span style="font-size:.8rem">개</span></div><div class="l">누적 오답</div></div></div>';
@@ -1166,10 +1166,10 @@ function nlGatherV3_(name){
   var weeks=Object.keys(byW).map(Number).sort(function(a,b){return a-b;});
   var _cid=(NLW.course&&NLW.course!=='all')?NLW.course:((m&&m.courseId)||'');
   var TOTR=nlCourseRounds_(_cid);   // 강좌에 나간 총 회차(=완수율 분모)
-  var totalQ=0,correctQ=0,wrongN=0,complete=0,partial=0,onTime=0,doneRounds=0,wrongItems=[],unitMap={},areaAgg={};
+  var totalQ=0,correctQ=0,wrongN=0,complete=0,partial=0,onTime=0,doneRounds=0,wrongItems=[],unitMap={},areaAgg={},wkRates=[];
   weeks.forEach(function(w){ var r=byW[w];
     var tot=+(val(r,'총문항','')||0),cor=+(val(r,'맞은개수','')||0),wr=+(val(r,'틀린개수','')||0),rate=+(val(r,'정답률','')||0);
-    if(!tot) tot=cor+wr; totalQ+=tot; correctQ+=cor; wrongN+=wr;
+    if(!tot) tot=cor+wr; totalQ+=tot; correctQ+=cor; wrongN+=wr; wkRates.push(rate);
     if(tot>0 && (TOTR<=0||w<=TOTR)) doneRounds++;   // 실제 완수한(각서 아닌) 회차 수
     if(val(r,'완수상태','')==='전부 끝냄') complete++; else partial++;
     if(String(val(r,'제출시점','')).indexOf('여유')>=0) onTime++;
@@ -1179,7 +1179,7 @@ function nlGatherV3_(name){
     wd.forEach(function(x){ var _k=String(r.courseId)+'|'+w+'|'+x.no, _fx=NL_AREA_FIX[_k]; var _a=_fx?_fx.a:x.area, _c=_fx?(_fx.c||_fx.a):x.coreElement; wrongItems.push({no:x.no,area:_a,core:_c,wk:x.weakness1,rem:x.remediation}); var a=_a||'기타'; if(!areaAgg[a]) areaAgg[a]={wrong:0,total:0}; areaAgg[a].wrong++; });
     try{ var as=JSON.parse(r.areaStatJson||'{}'); Object.keys(as).forEach(function(a){ if(!areaAgg[a]) areaAgg[a]={wrong:0,total:0}; areaAgg[a].total+=(as[a].total||0); }); }catch(e){}
   });
-  var n=weeks.length, avgRate=totalQ?Math.round(correctQ/totalQ*100):(m?m.avgRate:0);
+  var n=weeks.length, avgRate=wkRates.length?nlAvgRate_(wkRates):(m?m.avgRate:0);   // §1 주차별 정답률 단순평균
   var _denom=TOTR>0?TOTR:(n||1);
   var 완수율=Math.min(100,Math.round(doneRounds/_denom*100));   // 완수율 = 완수 회차 ÷ 총 나간 회차
   var units=Object.keys(unitMap).map(function(a){var u=unitMap[a];return {unit:a,rate:Math.round(u.rates.reduce(function(x,y){return x+y;},0)/u.rates.length),wrong:u.wrong};});
@@ -1198,13 +1198,14 @@ function nlGatherV3_(name){
   if(repOab.length<2){ wrongItems.forEach(function(it){ if(repOab.length<3 && it.core && it.rem && repOab.indexOf(it)<0) repOab.push(it); }); }
   // 반 평균(같은 코스)
   var peerSubs=(ALL_DATA||[]).filter(function(r){ return (NLW.course==='all'||String(r.courseId)===(m?m.courseId:NLW.course)) && !isTestName(val(r,'name','이름')); });
-  var pr=[],pu={},stuDone={};
-  peerSubs.forEach(function(r){ var rate=+(val(r,'정답률','')||0); if(rate) pr.push(rate);
+  var pu={},stuDone={};
+  peerSubs.forEach(function(r){ var rate=+(val(r,'정답률','')||0);
     var a=val(r,'area',''); if(a){ if(!pu[a])pu[a]=[]; pu[a].push(rate);}
     var pnm=normNameR(val(r,'name','이름')), pw=+val(r,'week','주차')||0;
     if(pw && (TOTR<=0||pw<=TOTR)){ var pt=+(val(r,'총문항','')||0); if(!pt) pt=(+(val(r,'맞은개수','')||0))+(+(val(r,'틀린개수','')||0));
       if(!stuDone[pnm]) stuDone[pnm]={}; if(pt>0) stuDone[pnm][pw]=1; } });   // 제출 학생별 완수 회차(각서만이면 0)
-  var clsRate=pr.length?Math.round(pr.reduce(function(x,y){return x+y;},0)/pr.length):null;
+  var _peersR=(REP.master||[]).filter(function(p){return (NLW.course==='all'||p.courseId===(m?m.courseId:NLW.course))&&!isTestName(p.name);});
+  var clsRate=_peersR.length?Math.round(_peersR.reduce(function(s,p){return s+(p.avgRate||0);},0)/_peersR.length):null;   // §1 반 평균 = 학생별 주차평균 평균
   var _cw=Object.keys(stuDone).map(function(k){ return Math.min(100,Math.round(Object.keys(stuDone[k]).length/(TOTR>0?TOTR:1)*100)); });
   var cls완수=_cw.length?Math.round(_cw.reduce(function(x,y){return x+y;},0)/_cw.length):null;   // 반 평균 = 개별 완수율 평균
   var peers=(REP.master||[]).filter(function(p){return (NLW.course==='all'||p.courseId===(m?m.courseId:NLW.course))&&!isTestName(p.name);});
@@ -1215,7 +1216,7 @@ function nlGatherV3_(name){
   // 반 평균 대비를 '우수' 같은 평가어가 아니라 사실 그대로(동일/높음/낮음)로 표기
   var ppP=function(mine,cls){ if(cls==null) return ''; var diff=mine-cls; if(diff===0) return '반 평균과 동일'; return diff>0?('반 평균보다 '+diff+'%p 높음'):('반 평균보다 '+(-diff)+'%p 낮음'); };
   var cmp=[];
-  cmp.push({label:'평균 정답률',mine:avgRate+'%',avg:(clsRate!=null?clsRate+'%':'—'),delta:ppP(avgRate,clsRate)});
+  cmp.push({label:'주차 평균 정답률',mine:avgRate+'%',avg:(clsRate!=null?clsRate+'%':'—'),delta:ppP(avgRate,clsRate)});
   cmp.push({label:'과제 완수율',mine:완수율+'%',avg:(cls완수!=null?cls완수+'%':'—'),delta:ppP(완수율,cls완수)});
   cmp.push({label:'누적 오답 수',mine:wrongN+'개',avg:(clsWrong!=null?clsWrong+'개':'—'),delta:(clsWrong==null?'':(wrongN===clsWrong?'반 평균과 동일':(wrongN<clsWrong?('반 평균보다 '+(clsWrong-wrongN)+'문항 적음'):('반 평균보다 '+(wrongN-clsWrong)+'문항 많음'))))});
   if(bestUnit&&bestUnitCls!=null) cmp.push({label:bestUnit.unit+' 정답률',mine:bestUnit.rate+'%',avg:bestUnitCls+'%',delta:ppP(bestUnit.rate,bestUnitCls)});
@@ -1244,10 +1245,10 @@ function nlDrafts_(d){
   var lowComp = compGap >= 25;                 // 완수율이 반평균보다 크게 낮음(범위 미완)
   var fewWrong = WN>0 && WN<=3;                // 오답 소수 → 경향 대신 '이번 오답 확인'
   var feat;
-  if(lowComp) feat = nm+' 학생은 제출한 과제에서 '+TQ+'문항 가운데 '+CQ+'문항을 맞혔습니다. 전체 정답률은 '+R+'%로 '+ratePhrase+', 풀어 온 범위에서의 정확도는 안정적입니다. 다만 이번 기간 과제 완수율은 '+d['완수율']+'%로 반 평균보다 '+compGap+'%p 낮아, 남은 범위를 끝까지 채우는 것이 먼저입니다. 정확도가 이미 확보된 상태이므로, 남은 과제 범위를 끝까지 풀어 오는 것만으로도 성취가 눈에 띄게 올라갈 수 있습니다.';
-  else if(band===1) feat = nm+' 학생은 이번 과제를 정해진 범위까지 빠짐없이 제출했고, 전체 '+TQ+'문항 가운데 '+CQ+'문항을 맞혔습니다. 전체 정답률은 '+R+'%로 '+ratePhrase+', 문항을 푸는 과정에서 개념이 정확히 떠오르지 않은 지점이 여러 곳에서 확인됩니다. 지금은 문제 수를 늘리기보다, 틀린 문항에 걸린 개념을 하나씩 다시 정리하고 같은 개념이 다른 자료에서 어떻게 물어지는지 확인하는 과정이 먼저 필요합니다.';
-  else if(band===3) feat = nm+' 학생은 이번 과제를 빠짐없이 제출했고, 전체 '+TQ+'문항 가운데 '+CQ+'문항을 맞혔습니다. 전체 정답률은 '+R+'%로 '+ratePhrase+', 개념 이해와 적용은 이미 안정적인 수준입니다. 남은 오답 '+WN+'문항은 개념을 몰라서라기보다, 조건이 둘 이상 걸린 선지에서 검토를 한 단계 일찍 멈춘 데서 나왔습니다. 지금 필요한 것은 새로운 학습량이 아니라, 정답을 고른 뒤 나머지 선지의 탈락 근거까지 확인하는 마무리 절차입니다.';
-  else feat = nm+' 학생은 이번 과제를 빠짐없이 제출했고, 전체 '+TQ+'문항 가운데 '+CQ+'문항을 맞혔습니다. 전체 정답률은 '+R+'%로 '+ratePhrase+', 기본 개념을 이해하고 문제에 적용하는 힘은 확인됩니다. 이번 오답은 특정 단원의 지식이 크게 부족해서라기보다, 여러 조건을 함께 살펴야 하는 문항에서 판단 기준을 끝까지 대조하지 못한 데서 주로 나타났습니다. 따라서 새로운 내용을 많이 더하기보다, 이미 알고 있는 개념을 실제 자료와 선지에 정확히 연결하는 연습이 우선입니다.';
+  if(lowComp) feat = nm+' 학생은 제출한 과제에서 '+TQ+'문항 가운데 '+CQ+'문항을 맞혔습니다. 주차 평균 정답률은 '+R+'%로 '+ratePhrase+', 풀어 온 범위에서의 정확도는 안정적입니다. 다만 이번 기간 과제 완수율은 '+d['완수율']+'%로 반 평균보다 '+compGap+'%p 낮아, 남은 범위를 끝까지 채우는 것이 먼저입니다. 정확도가 이미 확보된 상태이므로, 남은 과제 범위를 끝까지 풀어 오는 것만으로도 성취가 눈에 띄게 올라갈 수 있습니다.';
+  else if(band===1) feat = nm+' 학생은 이번 과제를 정해진 범위까지 빠짐없이 제출했고, 전체 '+TQ+'문항 가운데 '+CQ+'문항을 맞혔습니다. 주차 평균 정답률은 '+R+'%로 '+ratePhrase+', 문항을 푸는 과정에서 개념이 정확히 떠오르지 않은 지점이 여러 곳에서 확인됩니다. 지금은 문제 수를 늘리기보다, 틀린 문항에 걸린 개념을 하나씩 다시 정리하고 같은 개념이 다른 자료에서 어떻게 물어지는지 확인하는 과정이 먼저 필요합니다.';
+  else if(band===3) feat = nm+' 학생은 이번 과제를 빠짐없이 제출했고, 전체 '+TQ+'문항 가운데 '+CQ+'문항을 맞혔습니다. 주차 평균 정답률은 '+R+'%로 '+ratePhrase+', 개념 이해와 적용은 이미 안정적인 수준입니다. 남은 오답 '+WN+'문항은 개념을 몰라서라기보다, 조건이 둘 이상 걸린 선지에서 검토를 한 단계 일찍 멈춘 데서 나왔습니다. 지금 필요한 것은 새로운 학습량이 아니라, 정답을 고른 뒤 나머지 선지의 탈락 근거까지 확인하는 마무리 절차입니다.';
+  else feat = nm+' 학생은 이번 과제를 빠짐없이 제출했고, 전체 '+TQ+'문항 가운데 '+CQ+'문항을 맞혔습니다. 주차 평균 정답률은 '+R+'%로 '+ratePhrase+', 기본 개념을 이해하고 문제에 적용하는 힘은 확인됩니다. 이번 오답은 특정 단원의 지식이 크게 부족해서라기보다, 여러 조건을 함께 살펴야 하는 문항에서 판단 기준을 끝까지 대조하지 못한 데서 주로 나타났습니다. 따라서 새로운 내용을 많이 더하기보다, 이미 알고 있는 개념을 실제 자료와 선지에 정확히 연결하는 연습이 우선입니다.';
   var commonTitle, common;
   if(fewWrong){ commonTitle='이번 오답 확인'; common='이번 과제에서 살펴본 오답은 '+WN+'문항으로, 수가 적어 경향으로 볼 단계는 아닙니다. 개념을 알고 있어도 실제 자료에서 조건을 확인하는 단계를 건너뛰면 놓치기 쉬운 유형이었습니다. 다음 회차에서 같은 조건이 걸린 문항을 어떻게 처리하는지 함께 확인하겠습니다.'; }
   else { commonTitle='오답에서 확인된 공통 경향';
@@ -1283,7 +1284,7 @@ function nlBuildV3_(d,t){
   // 1면
   var stats='<div class="nlp-stats" style="margin-bottom:13px">'
     +nlV3Stat_(d.correctQ+' '+sm('/ '+d.totalQ),'맞은 문항','오답 '+d.wrongN+'개')
-    +nlV3Stat_(d.avgRate+'%','평균 정답률','추세 '+(d.trend||'유지'))
+    +nlV3Stat_(d.avgRate+'%','주차 평균 정답률','추세 '+(d.trend||'유지'))
     +nlV3Stat_(d.n+sm('회'),'제출 회차','부분 완수 '+d.partial+'회')
     +nlV3Stat_(d.완수율+'%','과제 완수율',(d.cls완수!=null?'반 평균 '+d.cls완수+'%':'완료 '+d.complete+'회'))+'</div>';
   var flowBox=(d.flow&&d.flow.length<=1)?'<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:34px 0">회차가 누적되면 표시됩니다</div>':nlV3Line_(d.flow);
@@ -1901,6 +1902,8 @@ function dDayText(due){ // ISO/'YYYY-MM-DD' → D-표시 (KST 기준)
   return md+' (D-'+diff+')';
 }
 
+// §1 정답률 단일 함수 — 주차별 정답률의 단순평균(소수 첫째 자리 반올림). 전 지면이 이 함수/그 결과(m.avgRate)를 사용.
+function nlAvgRate_(rates){ var v=(rates||[]).map(Number).filter(function(x){return !isNaN(x);}); return v.length?Math.round(v.reduce(function(a,b){return a+b;},0)/v.length):0; }
 function buildReports(){
   // (수업,학생) 단위로 묶고 주차 오름차순
   const groups={};
@@ -1968,8 +1971,7 @@ function buildReports(){
     perWeek.forEach(pw=>(pw.wrongDetails||[]).forEach(q=>{ if(q&&q.type){ const t=String(q.type).split(/[,\/]/)[0].trim(); if(t) typeAgg[t]=(typeAgg[t]||0)+1; } }));
     const typeTop=Object.entries(typeAgg).map(([t,c])=>({t,c})).sort((a,b)=>b.c-a.c);
     const totalWrong=perWeek.reduce((a,pw)=>a+pw.wrongN,0);
-    var _tc=0,_tt=0; perWeek.forEach(pw=>{ var tt=pw.total||0,cc=pw.correct||0; if(!tt) tt=cc+(pw.wrongN||0); _tc+=cc; _tt+=tt; });
-    const avgRate=_tt?Math.round(_tc/_tt*100):(rates.length?Math.round(rates.reduce((a,b)=>a+b,0)/rates.length):0);   // 맞은÷총문항(가중) — 가정통신문과 동일 방식
+    const avgRate=nlAvgRate_(rates);   // §1 주차별 정답률 단순평균(단일 함수)
     // 성실도·완수 추세
     const dilSeq=perWeek.map(pw=>pw.diligence);          // 성실도(0~100, 없으면 null)
     const doneSeq=perWeek.map(pw=>pwDoneRate(pw));        // 완수율(0~100, 없으면 null)
@@ -2281,7 +2283,7 @@ function renderReports(){
     const rk=(rankByCourse[m.courseId]||{})[m.name];
     if(rk){ ctx.rank=rk.rank; ctx.rankN=rk.n; }
     html+='<div class="repcard" id="'+sid+'" data-n="'+m.n+'" data-trend="'+m.trend+'" data-name="'+esc(m.name)+'">'
-      +'<div class="rc-head"><div><div class="rc-name">'+esc(m.name)+'</div><div class="rc-meta">'+esc(m.school||'—')+' · '+esc(m.courseName)+' · '+m.n+'주차 제출 · 평균 정답률 '+m.avgRate+'%</div></div>'
+      +'<div class="rc-head"><div><div class="rc-name">'+esc(m.name)+'</div><div class="rc-meta">'+esc(m.school||'—')+' · '+esc(m.courseName)+' · '+m.n+'주차 제출 · 주차 평균 정답률 '+m.avgRate+'%</div></div>'
       +'<div class="rc-right"><span class="rtrend rtrend-'+rTcls(m.trend)+'">'+rTlabel(m.trend)+'</span>'
       +(rk?'<span class="rc-tw" style="color:var(--gold)">정답률 '+rk.rank+'등 / '+rk.n+'명</span>':'')
       +'<span class="rc-tw">누적 오답 '+m.totalWrong+'개</span>'
@@ -2578,7 +2580,7 @@ function buildNewsletterHTML(m, commentText){
     +'<div class="nl-head">'+(LOGO_URL?'<img class="nl-logo" src="'+LOGO_URL+'">':'')
       +'<div class="nl-brandtxt">'+esc(BRAND)+'</div>'
       +'<div class="nl-title">'+esc(m.name)+' 학생 과제 리포트</div>'
-      +'<div class="nl-sub">'+esc(m.courseName)+' · '+weekLabel+' · 제출 '+m.n+'회 · 평균 정답률 '+m.avgRate+'%</div></div>'
+      +'<div class="nl-sub">'+esc(m.courseName)+' · '+weekLabel+' · 제출 '+m.n+'회 · 주차 평균 정답률 '+m.avgRate+'%</div></div>'
     +'<div class="nl-greet">'+esc(nlGreeting(m))+'</div>'
     +'<div class="nl-sec"><div class="nl-sec-t">주차별 정답률 · 영역별 오답 비중</div><div class="rc-row1"><div>'+rSpark(m)+'</div><div>'+rDonut(m)+'</div></div></div>'
     +(areaTable?'<div class="nl-sec"><div class="nl-sec-t">영역별 정답률</div>'+areaTable+typeLine+'</div>':'')
