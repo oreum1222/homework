@@ -113,7 +113,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .rpdf-btn{background:transparent;border:1px solid var(--gold);color:var(--gold);font-size:0.72rem;padding:5px 12px;border-radius:6px;cursor:pointer;font-weight:500}
 .rpdf-btn:hover{background:var(--gold);color:var(--bg-dark)}
 .rc-row1{display:grid;grid-template-columns:320px 1fr;gap:28px;margin-bottom:22px;align-items:center}
-.rspark{width:320px;height:78px}.rspk-v{fill:var(--text-secondary);font-size:10px;font-weight:600}.rspk-x{fill:var(--text-muted);font-size:10px}
+.rspark{width:320px;height:78px;overflow:visible}.rspk-v{fill:var(--text-secondary);font-size:10px;font-weight:600}.rspk-x{fill:var(--text-muted);font-size:10px}
 .rblk-t{font-size:0.78rem;color:var(--text-muted);font-weight:500;letter-spacing:1.5px;margin-bottom:12px}
 .rblk-t.gold{color:var(--gold)}
 .rblk-sub{color:var(--text-muted);font-weight:400;font-size:0.72rem;letter-spacing:0}
@@ -1227,8 +1227,9 @@ function nlGatherV3_(name){
   var trend; if(flow.length<=1) trend='단일'; else { var fd=(+flow[flow.length-1][1]||0)-(+flow[0][1]||0); trend= fd>5?'상승':(fd<-5?'하강':'유지'); }
   repOab.sort(function(a,b){ return (+a.no||0)-(+b.no||0); });   // 오답 문항 오름차순
   var courseName=(m&&COURSE_NAME[m.courseId])||COURSE_NAME[NLW.course]||'';
+  var missW=[]; if(TOTR>0){ for(var _mw=1;_mw<=TOTR;_mw++){ if(weeks.indexOf(_mw)<0) missW.push(_mw); } }   // §5 미제출 회차
   return { name:name, m:m, courseName:courseName, totalQ:totalQ, correctQ:correctQ, wrongN:wrongN, avgRate:avgRate, trend:trend,
-    n:n, 완수율:완수율, complete:complete, partial:partial, onTime:onTime, units:units, unitsLow:unitsLow, flow:flow,
+    n:n, 완수율:완수율, complete:complete, partial:partial, onTime:onTime, units:units, unitsLow:unitsLow, flow:flow, TOTR:TOTR, missingWeeks:missW,
     weakNames:weakNames, strongNames:strongNames, repOab:repOab, cmp:cmp, cls완수:cls완수, tag:tag };
 }
 // 자동 초안 텍스트(편집 가능)
@@ -1285,7 +1286,7 @@ function nlBuildV3_(d,t){
   var stats='<div class="nlp-stats" style="margin-bottom:13px">'
     +nlV3Stat_(d.correctQ+' '+sm('/ '+d.totalQ),'맞은 문항','오답 '+d.wrongN+'개')
     +nlV3Stat_(d.avgRate+'%','주차 평균 정답률','추세 '+(d.trend||'유지'))
-    +nlV3Stat_(d.n+sm('회'),'제출 회차','부분 완수 '+d.partial+'회')
+    +nlV3Stat_(d.n+sm('회'),'제출 회차',(d.missingWeeks&&d.missingWeeks.length)? d.missingWeeks.map(function(x){return x+'주차';}).join(', ')+' 미제출' : '전 회차 제출')
     +nlV3Stat_(d.완수율+'%','과제 완수율',(d.cls완수!=null?'반 평균 '+d.cls완수+'%':'완료 '+d.complete+'회'))+'</div>';
   var flowBox=(d.flow&&d.flow.length<=1)?'<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:34px 0">회차가 누적되면 표시됩니다</div>':nlV3Line_(d.flow);
   var grid='<div class="nlp-grid2" style="margin-bottom:14px"><div class="nlp-card" style="padding:10px 14px"><div class="nlp-card-t">최근 과제 수행 흐름</div>'+flowBox+'</div>'
@@ -2065,9 +2066,9 @@ function rDiligenceSpark(m){
   m.seq.forEach((w,i)=>{
     const dil=m.dilSeq[i], dr=m.doneSeq[i];
     if(dil!=null||dr!=null) any=true;
-    const h=(dil!=null?dil:(dr!=null?dr:0)), bh=(h/100)*(H-24), x=pad+i*(bw+gap), y=H-bh-16;
-    bars+=`<rect x="${x.toFixed(0)}" y="${y.toFixed(1)}" width="${bw.toFixed(0)}" height="${Math.max(bh,1).toFixed(1)}" rx="2" fill="${dilCol(dr)}" opacity=".9"/>`;
-    const top = dr!=null ? dr+'%' : (dil!=null ? String(dil) : '–');
+    const v=(dil!=null?dil:(dr!=null?dr:0)), bh=(v/100)*(H-24), x=pad+i*(bw+gap), y=H-bh-16;   // §6 절대 스케일(0~100), 막대=성실도
+    bars+=`<rect x="${x.toFixed(0)}" y="${y.toFixed(1)}" width="${bw.toFixed(0)}" height="${Math.max(bh,1).toFixed(1)}" rx="2" fill="${dilCol(v)}" opacity=".9"/>`;
+    const top = dil!=null ? String(dil) : (dr!=null ? dr+'%' : '–');   // §6 막대와 같은 값(성실도) 표기
     bars+=`<text x="${(x+bw/2).toFixed(0)}" y="${(y-3).toFixed(0)}" text-anchor="middle" class="rspk-v">${top}</text>`;
     bars+=`<text x="${(x+bw/2).toFixed(0)}" y="${H-2}" text-anchor="middle" class="rspk-x">${esc(weekShort(w).replace('주차','주'))}</text>`;
   });
@@ -2117,8 +2118,12 @@ function rIntegrated(m){
   const areas=Object.entries(m.areaAgg).map(([a,v])=>({a,wrong:v.wrong,total:v.total,acc:v.total?(v.total-v.wrong)/v.total:1})).filter(x=>x.wrong>0).sort((x,y)=> y.wrong-x.wrong || x.acc-y.acc);
   if(areas.length){
     const t=areas[0];
-    out.push(`<b>${esc(t.a)}</b>에서 오답이 가장 많습니다 — ${t.total}문제 중 ${t.wrong}개(정답률 ${Math.round(t.acc*100)}%). 이 영역이 1순위 보강 대상입니다.`);
-    if(areas[1]&&areas[1].wrong>=2) out.push(`그다음은 <b>${esc(areas[1].a)}</b>(${areas[1].total}문제 중 ${areas[1].wrong}개)입니다.`);
+    out.push(`오답이 가장 많은 영역은 <b>${esc(t.a)}</b>입니다 — ${t.total}문제 중 ${t.wrong}개. 이 영역이 1순위 보강 대상입니다.`);
+    // §4 정답률이 가장 낮은 영역(오답 있는 영역 중, 최저 정답률 동률 모두)
+    const byAcc=areas.slice().sort((x,y)=> x.acc-y.acc || y.wrong-x.wrong);
+    const lo=byAcc[0].acc;
+    const lows=byAcc.filter(x=>Math.abs(x.acc-lo)<1e-9).map(x=>`${esc(x.a)}(${x.total-x.wrong}/${x.total})`);
+    out.push(`정답률이 가장 낮은 영역은 ${lows.join(', ')}입니다.`);
   }
   // 세부 유형(소분류)
   if(m.typeTop&&m.typeTop.length){
@@ -2291,7 +2296,7 @@ function renderReports(){
       +'<button class="rpdf-btn no-print" onclick="printOneReport(\''+sid+'\')">이 학생 PDF</button></div></div>'
       +'<div class="rc-row1" data-page="1"><div><div class="rblk-t">주차별 정답률</div>'+rSpark(m)+'</div>'
       +'<div><div class="rblk-t">영역별 누적 오답 비중</div>'+rDonut(m)+'</div></div>'
-      +'<div class="rc-blk" data-page="1"><div class="rblk-t gold">성실도 · 과제 해결 추세 <span class="rblk-sub">(막대=성실도, 위 숫자=과제 해결 정도'+(m.avgDil!=null?' · 평균 성실도 '+m.avgDil:'')+')</span></div>'+rDiligenceSpark(m)+'</div>'
+      +'<div class="rc-blk" data-page="1"><div class="rblk-t gold">성실도 추세 <span class="rblk-sub">(막대와 숫자=주차별 성실도'+(m.avgDil!=null?' · 본인 평균 성실도 '+m.avgDil:'')+')</span></div>'+rDiligenceSpark(m)+'</div>'
       +'<div class="rc-blk" data-page="1"><div class="rblk-t">주차별 기록</div>'
       +'<table class="rtbl2 rtbl2-wk"><thead><tr><th>주차</th><th>정답률</th><th>영역</th><th>틀린 문항</th></tr></thead><tbody>'+rWeekRows(m)+'</tbody></table></div>'
       +(areaTableBlock?'<div class="rc-blk" data-page="2"><div class="rblk-t gold">영역별 정답률 <span class="rblk-sub">(약한 영역 순)</span></div>'+areaTableBlock+typeLine+'</div>':'')
