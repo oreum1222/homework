@@ -1,364 +1,95 @@
 {
- "_doc": "고3 정규반 2026년 8월 4주차 — 오답 그리드(수능 기출/실전 모의고사 1~45번) + 완료 체크리스트.",
+ "_doc": "고3 정규반 2026년 8월 4주차 — 이매진 6호 1주차(독서+문학 데일리) 완료 체크리스트. 수능 기출은 2023학년도를 끝으로 잠시 중단, 상상 시즌4-2회 실모 병행.",
  "courseId": "go3-regular",
  "week": 4,
  "weekMeta": {
   "id": "go3-2608-w4",
-  "label": "4주차에 한 숙제 검사 — 2024학년도 수능",
-  "area": "수능 기출",
+  "label": "4주차에 한 숙제 검사 — 이매진 6호 1주차 + 상상 시즌4-2회",
+  "area": "이매진 6호",
   "month": "8월",
   "date": "2026-08-28",
-  "desc": "수능 기출 2024학년도 수능 — 그 주(8/24(월)~8/26(수))에 풀고 1차 검사 8/26(수), 분석 수업 8/28(금)·29(토). 수능완성 완주 후 매일 과제는 기출 풀이 중심."
+  "desc": "이매진 6호 1주차(8/22~8/26) 독서+문학 매일 1일치. 상상 시즌4-2회 실모(8/28·29 등원). 수능 기출은 2023학년도를 끝으로 잠시 중단."
  },
  "scoring": {
   "passRate": 80
  },
- "sections": [
-  {
-   "key": "k2024",
-   "title": "2024학년도 수능 (2023년 시행) · 오답 그리드",
-   "range": "1번~45번 (공통 1~34 · 선택 35~45는 언매/화작 각자)",
-   "group": "오답 그리드",
-   "questions": [
-    {
-     "no": 1,
-     "label": "1번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 2,
-     "label": "2번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 3,
-     "label": "3번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 4,
-     "label": "4번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 5,
-     "label": "5번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 6,
-     "label": "6번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 7,
-     "label": "7번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 8,
-     "label": "8번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 9,
-     "label": "9번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 10,
-     "label": "10번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 11,
-     "label": "11번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 12,
-     "label": "12번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 13,
-     "label": "13번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 14,
-     "label": "14번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 15,
-     "label": "15번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 16,
-     "label": "16번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 17,
-     "label": "17번",
-     "area": "독서",
-     "type": "독서",
-     "three": false
-    },
-    {
-     "no": 18,
-     "label": "18번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 19,
-     "label": "19번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 20,
-     "label": "20번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 21,
-     "label": "21번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 22,
-     "label": "22번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 23,
-     "label": "23번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 24,
-     "label": "24번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 25,
-     "label": "25번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 26,
-     "label": "26번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 27,
-     "label": "27번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 28,
-     "label": "28번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 29,
-     "label": "29번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 30,
-     "label": "30번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 31,
-     "label": "31번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 32,
-     "label": "32번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 33,
-     "label": "33번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 34,
-     "label": "34번",
-     "area": "문학",
-     "type": "문학",
-     "three": false
-    },
-    {
-     "no": 35,
-     "label": "35번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 36,
-     "label": "36번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 37,
-     "label": "37번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 38,
-     "label": "38번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 39,
-     "label": "39번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 40,
-     "label": "40번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 41,
-     "label": "41번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 42,
-     "label": "42번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 43,
-     "label": "43번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 44,
-     "label": "44번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    },
-    {
-     "no": 45,
-     "label": "45번",
-     "area": "선택과목",
-     "type": "선택과목",
-     "three": false
-    }
-   ]
-  }
- ],
+ "sections": [],
  "checklist": {
-  "title": "2024학년도 수능 기출 · 완료 체크",
-  "desc": "오답 그리드로 마킹하는 수능 기출은 여기 없습니다. 아래 진행 항목만 완료한 것에 체크해 주세요.",
+  "title": "이매진 6호 1주차 — 완료한 날에 체크 (8/22~8/26)",
+  "desc": "매일 독서 1지문 + 문학 1지문을 풀고, 완료한 항목에 체크해 주세요. (안 한 것은 비워 두기)",
   "groups": [
    {
-    "date": "풀이",
+    "date": "8/22(토) · Day1",
     "items": [
      {
-      "key": "g2024p",
-      "type": "기출",
-      "name": "2024학년도 수능 기출 풀이 (8/24(월)~8/26(수))"
+      "key": "d0822",
+      "type": "독서",
+      "name": "인식적 정당성과 명제적 지식"
+     },
+     {
+      "key": "l0822",
+      "type": "문학",
+      "name": "(가) 한계(천양희) · (나) 흐름에 대하여(문정희)"
      }
     ]
    },
    {
-    "date": "채점·오답",
+    "date": "8/23(일) · Day2",
     "items": [
      {
-      "key": "g2024r",
-      "type": "오답",
-      "name": "2024학년도 채점 및 오답 정리"
+      "key": "d0823",
+      "type": "독서",
+      "name": "마추카토의 기업가형 국가론"
+     },
+     {
+      "key": "l0823",
+      "type": "문학",
+      "name": "동경(오정희)"
+     }
+    ]
+   },
+   {
+    "date": "8/24(월) · Day3",
+    "items": [
+     {
+      "key": "d0824",
+      "type": "독서",
+      "name": "미토콘드리아와 세포 노화"
+     },
+     {
+      "key": "l0824",
+      "type": "문학",
+      "name": "(가) 몽천요(윤선도) · (나) 만분가(조위) · (다) 아기설(안정복)"
+     }
+    ]
+   },
+   {
+    "date": "8/25(화) · Day4",
+    "items": [
+     {
+      "key": "d0825",
+      "type": "독서",
+      "name": "활성화 함수와 인공 신경망"
+     },
+     {
+      "key": "l0825",
+      "type": "문학",
+      "name": "두껍전(작자 미상)"
+     }
+    ]
+   },
+   {
+    "date": "8/26(수) · Day5",
+    "items": [
+     {
+      "key": "d0826",
+      "type": "독서",
+      "name": "새로운 매체에 따른 예술의 변화"
+     },
+     {
+      "key": "l0826",
+      "type": "문학",
+      "name": "응계설(이첨)"
      }
     ]
    }
