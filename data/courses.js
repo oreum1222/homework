@@ -54,12 +54,12 @@ window.COURSE_LIST = [
         ]
       },
       {
-        key: '2026-08', month: '8월', status: 'active', desc: '8월 수능완성 실전편 마무리 + 주간 수능 기출(2021~2024학년도) — 완료한 것을 체크하세요.',
+        key: '2026-08', month: '8월', status: 'active', desc: '8월 수능완성 실전편 마무리 + 수능 기출(2021~2023학년도) → 8/22부터 이매진 6호 매일 과제 · 상상 시즌4 실모.',
         weeks: [
           { week: 1, file: 'data/hw-go3-2608-w1.json', label: '1주차에 한 숙제 검사 · 수능완성 실전편 마무리(4·5회) + 2021학년도 수능', date: '8/7(금)~8/8(토)', area: '실전 모의고사 + 수능 기출', status: 'active' },
           { week: 2, file: 'data/hw-go3-2608-w2.json', label: '2주차에 한 숙제 검사 · 2022학년도 수능', date: '8/14(금)~8/15(토)', area: '수능 기출', status: 'active' },
-          { week: 3, file: 'data/hw-go3-2608-w3.json', label: '3주차에 한 숙제 검사 · 2023학년도 수능', date: '8/21(금)~8/22(토)', area: '수능 기출', status: 'active' },
-          { week: 4, file: 'data/hw-go3-2608-w4.json', label: '4주차에 한 숙제 검사 · 2024학년도 수능', date: '8/28(금)~8/29(토)', area: '수능 기출', status: 'active' }
+          { week: 3, file: 'data/hw-go3-2608-w3.json', label: '3주차에 한 숙제 검사 · 2023학년도 수능(마지막) + 상상 시즌4-1회', date: '8/21(금)~8/22(토)', area: '수능 기출', status: 'active' },
+          { week: 4, file: 'data/hw-go3-2608-w4.json', label: '4주차에 한 숙제 검사 · 이매진 6호 1주차 + 상상 시즌4-2회', date: '8/28(금)~8/29(토)', area: '이매진 6호', status: 'active' }
         ]
       },
       // (9월·10월 등 다음 달은 여기에 months 항목 추가)
