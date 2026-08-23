@@ -602,9 +602,10 @@ function weekSubmitOverview(courseFilter){
     const nm=val(r,'name','이름').trim(); if(!nm||isTestName(nm)) return;
     const w=parseInt(val(r,'week','주차'),10); if(isNaN(w)) return;
     const bb=baseNameJS(nm); if(!bb) return;
-    const d=dataByC[cid]=dataByC[cid]||{weeks:new Map(), all:new Set(), disp:{}};
+    const d=dataByC[cid]=dataByC[cid]||{weeks:new Map(), all:new Set(), disp:{}, lab:{}};
     let s=d.weeks.get(w); if(!s){ s=new Set(); d.weeks.set(w,s); } s.add(bb); d.all.add(bb);
-    if(!d.disp[bb]) d.disp[bb]=nm; });
+    if(!d.disp[bb]) d.disp[bb]=nm;
+    { const _wl=String(val(r,'weekLabel','')||''); if(_wl && !d.lab[w]) d.lab[w]=_wl.split('·')[0].trim(); } });   // 강좌별 실제 회차 라벨 보관
   let cids=Object.keys(dataByC).filter(c=>courseShown(c));
   if(courseFilter && courseFilter!=='all') cids=cids.filter(c=>c===courseFilter);
   if(!cids.length) return '';
@@ -617,12 +618,12 @@ function weekSubmitOverview(courseFilter){
     const weeks=Array.from(d.weeks.keys()).sort((a,b)=>a-b);
     let rows='';
     weeks.forEach(w=>{ const sub=d.weeks.get(w); const n=sub.size; const pct=Math.round(n/total*100); const col=barColor(pct);
-      const wlab=esc(weekShort(w));
+      const wlab=esc((d.lab&&d.lab[w])||weekShort(w));   // 강좌별 실제 라벨(전역 weekShort는 타 강좌 라벨 섞여 '5주차' 오표기)
       const missing=[]; uni.forEach(b=>{ if(!sub.has(b)) missing.push(dispOf(b)); });
       missing.sort((a,b)=>a.localeCompare(b));
       const shown=missing.slice(0,40).map(esc).join(' · ')+(missing.length>40?(' 외 '+(missing.length-40)+'명'):'');
       const tip = missing.length
-        ? '<div class="wsub-tip"><span class="wt-h">'+esc(weekShort(w))+' 미제출 '+missing.length+'명</span><span class="wt-n">'+shown+'</span></div>'
+        ? '<div class="wsub-tip"><span class="wt-h">'+wlab+' 미제출 '+missing.length+'명</span><span class="wt-n">'+shown+'</span></div>'
         : '';
       rows+='<div class="wsub-row'+(missing.length?' has-miss':'')+'" style="display:flex;align-items:center;gap:12px;margin:7px 0;padding:2px 0">'
         +'<div title="'+wlab+'" style="flex:0 0 110px;color:var(--cream);font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+wlab+'</div>'
