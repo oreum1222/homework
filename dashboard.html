@@ -1230,8 +1230,10 @@ function nlGatherV3_(name){
   repOab.sort(function(a,b){ return (+a.no||0)-(+b.no||0); });   // 오답 문항 오름차순
   var courseName=(m&&COURSE_NAME[m.courseId])||COURSE_NAME[NLW.course]||'';
   var missW=[]; if(TOTR>0){ for(var _mw=1;_mw<=TOTR;_mw++){ if(weeks.indexOf(_mw)<0) missW.push(_mw); } }   // §5 미제출 회차
+  var _clab={}; (ALL_DATA||[]).forEach(function(r){ if(String(r.courseId)!==_cid) return; var _w=+val(r,'week','주차')||0; if(!_w||_clab[_w]) return; var _L=String(val(r,'weekLabel','')||''); if(_L) _clab[_w]=_L.split('·')[0].trim(); });   // 회차 실제 라벨(예: '2주차 (2)') — 주차번호만 쓰면 '5주차' 식 오표기
+  var missLabels=missW.map(function(w){ return (_clab[w]||(w+'주차')); });
   return { name:name, m:m, courseName:courseName, totalQ:totalQ, correctQ:correctQ, wrongN:wrongN, avgRate:avgRate, trend:trend,
-    n:n, 완수율:완수율, complete:complete, partial:partial, onTime:onTime, units:units, unitsLow:unitsLow, flow:flow, TOTR:TOTR, missingWeeks:missW,
+    n:n, 완수율:완수율, complete:complete, partial:partial, onTime:onTime, units:units, unitsLow:unitsLow, flow:flow, TOTR:TOTR, missingWeeks:missW, missingLabels:missLabels,
     weakNames:weakNames, strongNames:strongNames, repOab:repOab, cmp:cmp, cls완수:cls완수, tag:tag };
 }
 // 자동 초안 텍스트(편집 가능)
@@ -1288,7 +1290,7 @@ function nlBuildV3_(d,t){
   var stats='<div class="nlp-stats" style="margin-bottom:13px">'
     +nlV3Stat_(d.correctQ+' '+sm('/ '+d.totalQ),'맞은 문항','오답 '+d.wrongN+'개')
     +nlV3Stat_(d.avgRate+'%','주차 평균 정답률','추세 '+(d.trend||'유지'))
-    +nlV3Stat_(d.n+sm('회'),'제출 회차',(d.missingWeeks&&d.missingWeeks.length)? d.missingWeeks.map(function(x){return x+'주차';}).join(', ')+' 미제출' : '전 회차 제출')
+    +nlV3Stat_(d.n+sm('회'),'제출 회차',(d.missingLabels&&d.missingLabels.length)? d.missingLabels.join(', ')+' 미제출' : '전 회차 제출')
     +nlV3Stat_(d.완수율+'%','과제 완수율',(d.cls완수!=null?'반 평균 '+d.cls완수+'%':'완료 '+d.complete+'회'))+'</div>';
   var flowBox=(d.flow&&d.flow.length<=1)?'<div style="color:#9a958a;font-size:.82rem;text-align:center;padding:34px 0">회차가 누적되면 표시됩니다</div>':nlV3Line_(d.flow);
   var grid='<div class="nlp-grid2" style="margin-bottom:14px"><div class="nlp-card" style="padding:10px 14px"><div class="nlp-card-t">최근 과제 수행 흐름</div>'+flowBox+'</div>'
