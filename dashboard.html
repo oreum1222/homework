@@ -615,7 +615,9 @@ function weekSubmitOverview(courseFilter){
     const rmap=rosterByC[cid]||new Map();
     const uni=new Set(d.all); rmap.forEach((nm,b)=>uni.add(b)); const total=uni.size||1;
     const dispOf=b=> rmap.get(b) || d.disp[b] || b;   // 명단 표기 우선
-    const weeks=Array.from(d.weeks.keys()).sort((a,b)=>a-b);
+    const _baseW={}; Array.from(d.weeks.keys()).forEach(function(w){ var L=(d.lab&&d.lab[w])||''; var mm=L.match(/^\s*(\d+주차)\s*$/); if(mm) _baseW[mm[1]]=w; });
+    const _skey=function(w){ var L=(d.lab&&d.lab[w])||weekShort(w)||''; var pm=L.match(/^\s*(\d+주차)\s*\((\d+)\)/); if(pm && _baseW[pm[1]]!=null) return _baseW[pm[1]]+(+pm[2])*0.01; return +w||0; };
+    const weeks=Array.from(d.weeks.keys()).sort((a,b)=>_skey(a)-_skey(b));   // '2주차 (2)'는 '2주차' 바로 뒤에 정렬(그 외 주차번호순)
     let rows='';
     weeks.forEach(w=>{ const sub=d.weeks.get(w); const n=sub.size; const pct=Math.round(n/total*100); const col=barColor(pct);
       const wlab=esc((d.lab&&d.lab[w])||weekShort(w));   // 강좌별 실제 라벨(전역 weekShort는 타 강좌 라벨 섞여 '5주차' 오표기)
