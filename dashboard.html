@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>김가경 국어 · 방학 과제 검사 — 강사 대시보드</title>
+<title>김가경 국어 · 과제 검사 — 강사 대시보드</title>
 <link rel="icon" href="favicon.ico?v=2" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=2">
@@ -299,7 +299,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 <body>
 <img class="corner-logo" alt="" onerror="this.style.display='none'">
 <div class="wrap">
-<h1>방학 과제 검사 — 강사 대시보드</h1>
+<h1>과제 검사 — 강사 대시보드</h1>
 <p class="sub" id="brandSub">가경T · 김가경 국어 연구소</p>
 
 <!-- 비밀번호 게이트 -->
@@ -503,7 +503,8 @@ let SCRIPT_URL=null, DASH_PASSWORD=null, BRAND='오름 국어 연구소', TEACHE
 const COURSES = window.COURSE_LIST || [];
 const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 // 삭제된(과거) 반 — 제출 이력이 남아 있어 반명만 유지 (드롭다운·리포트에 raw ID 대신 표시)
-const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머)', 'hanti-dan-h1-gojeonmunhak':'단과 고1 고전 영역(문학)', 'hanti-dan-h1-gojeonbeop':'단과 고1 고전 영역(문법)' };
+const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머)', 'hanti-dan-h1-gojeonmunhak':'단과 고1 고전 영역(문학)', 'hanti-dan-h1-gojeonbeop':'단과 고1 고전 영역(문법)',
+  'hanti-jong-m3-hyeonbeop':'MEXX 종합반 중3 현대문법', 'hanti-jong-h1-gojeonbeop':'MEXX 종합반 고1 고전문법', 'hanti-dan-h1-gojeon':'MEXX 단과 고1 고전 영역', 'hanti-dan-h2-hwaeon':'MEXX 단과 고2 화법과 언어' };   // 종강 강좌 — 학생 화면엔 없지만 대시보드 이력 이름 보존
 Object.keys(LEGACY_COURSE_NAME).forEach(k=>{ if(!COURSE_NAME[k]) COURSE_NAME[k]=LEGACY_COURSE_NAME[k]; });
 // 대시보드에서 '숨길' 반만 지정(블록리스트). 나머지는 전부 표시 →
 // courses.js에 새 반을 추가하면 대시보드 코드 수정 없이 자동으로 나타납니다.

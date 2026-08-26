@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>김가경 국어 · 방학 과제 검사 시스템</title>
+<title>김가경 국어 · 과제 검사 시스템</title>
 <link rel="icon" href="favicon.ico?v=2" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=2">
@@ -386,7 +386,7 @@ function brandHeader(lead){
   }
   return el('header',{class:'header'},
     brandMark,
-    el('h1',{class:'title',html:'방학 과제 <span class="title-accent">검사 시스템</span>'}),
+    el('h1',{class:'title',html:'과제 <span class="title-accent">검사 시스템</span>'}),
     el('p',{class:'lead',html:lead})
   );
 }
@@ -1478,7 +1478,7 @@ function submitResult(isManual){
 function appendFooter(){
   root.appendChild(el('div',{class:'footer'},
     el('span',{class:'footer-mark'}, BRAND),
-    el('div',{html:TEACHER+' · 방학 과제 검사 시스템'})
+    el('div',{html:TEACHER+' · 과제 검사 시스템'})
   ));
 }
 
