@@ -100,6 +100,32 @@ window.COURSE_LIST = [
     ]
   },
 
+
+  // ═══ MEXX 2학기 단과 (고2) ═══
+  {
+    id: 'hanti-dan-h2-hwaeon2',
+    academy: 'hanti',
+    name: 'MEXX 단과 고2 화법과 언어',
+    grade: '고2',
+    period: 'MEXX 단과',
+    desc: '고2 화법과 언어 — 언어(문법) 4주 과정(품사 · 형태소와 단어 · 음운의 정의와 체계 · 음운변동).',
+    weeks: [
+      { week: 1, file: 'data/hw-hanti-dan-h2-hwaeon2-w1.json', label: '1주차 · 국어의 품사', area: '품사', status: 'active' },
+      { week: 2, file: 'data/hw-hanti-dan-h2-hwaeon2-w2.json', label: '2주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-dan-h2-hwaeon2-w3.json', label: '3주차 · 음운의 정의와 체계', area: '음운의 체계', status: 'active' },
+      { week: 4, file: 'data/hw-hanti-dan-h2-hwaeon2-w4.json', label: '4주차 · 음운변동', area: '음운의 변동', status: 'active' }
+    ]
+  },
+  {
+    id: 'hanti-dan-h2-suneung',
+    academy: 'hanti',
+    name: 'MEXX 단과 고2 수능 대비',
+    grade: '고2',
+    period: 'MEXX 단과',
+    desc: '고2 수능 대비 — 우리들의 첫 수능 국어(문학·독서). 주차 과제는 준비 중입니다.',
+    weeks: []
+  },
+
   // ┌─ 새 수업 추가 예시 (주석 해제해서 사용) ─────────────────────────
   // {
   //   id: 'dokseo',
