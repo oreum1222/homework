@@ -100,65 +100,6 @@ window.COURSE_LIST = [
     ]
   },
 
-  // ═══ MEXX (여름 강의) — 교재 확정 후 weeks에 주차+data/hw-<id>-w<n>.json 채워 넣기 (비어 있으면 '준비 중') ═══
-  {
-    id: 'hanti-jong-m3-hyeonbeop',
-    academy: 'hanti',
-    name: 'MEXX 종합반 중3 현대문법',
-    grade: '중3',
-    period: 'MEXX 종합반',
-    desc: '중3 현대문법 — 3주 과정(품사 · 문장성분 · 형태소와 단어).',
-    weeks: [
-      { week: 1, file: 'data/hw-hanti-jong-m3-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-jong-m3-hyeonbeop-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-jong-m3-hyeonbeop-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' }
-    ]
-  },
-  {
-    id: 'hanti-jong-h1-gojeonbeop',
-    academy: 'hanti',
-    name: 'MEXX 종합반 고1 고전문법',
-    grade: '고1',
-    period: 'MEXX 종합반',
-    desc: '고1 고전문법 — 3주 과정(주당 약 35문항). 틀린 문항을 교재 번호 그대로 체크하세요.',
-    weeks: [
-      { week: 1, file: 'data/hw-hanti-jong-h1-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-jong-h1-gojeonbeop-w2.json', label: '2주차 · 27~70', area: '고전 문법', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-jong-h1-gojeonbeop-w3.json', label: '3주차 · 71~92 + 수능 기출', area: '고전 문법', status: 'active' }
-    ]
-  },
-  // 고1 단과 = '고전 영역' 한 강좌. 주차(1~5) 선택 → 그 주차 안에서 고전 문학(위) 체크 후 스크롤하면 고전 문법(아래) 체크.
-  {
-    id: 'hanti-dan-h1-gojeon',
-    academy: 'hanti',
-    name: 'MEXX 단과 고1 고전 영역',
-    grade: '고1',
-    period: 'MEXX 단과',
-    desc: '고1 고전 영역 — 주차 안에서 고전 문학 먼저, 스크롤 내려 고전 문법을 체크하세요.',
-    weeks: [
-      { week: 1, file: 'data/hw-hanti-dan-h1-gojeon-w1.json', label: '1주차 · 고대가요 (고전 문학)', area: '고전 문학', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-dan-h1-gojeon-w2.json', label: '2주차 · 향가 + 고전 문법 1~26', area: '문학+문법', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h1-gojeon-w3.json', label: '3주차 · 고려가요 + 고전 문법 27~52', area: '문학+문법', status: 'active' },
-      { week: 4, file: 'data/hw-hanti-dan-h1-gojeon-w4.json', label: '4주차 · 시조와 가사 + 고전 문법 53~78', area: '문학+문법', status: 'active' },
-      { week: 5, file: 'data/hw-hanti-dan-h1-gojeon-w5.json', label: '5주차 · 가사 + 고전 문법 79~92', area: '문학+문법', status: 'active' }
-    ]
-  },
-  {
-    id: 'hanti-dan-h2-hwaeon',
-    academy: 'hanti',
-    name: 'MEXX 단과 고2 화법과 언어',
-    grade: '고2',
-    period: 'MEXX 단과',
-    desc: '고2 화법과 언어 — 언어(문법) 5주 과정(품사 · 문장성분 · 형태소와 단어 · 음운의 체계 · 음운의 변동).',
-    weeks: [
-      { week: 1, file: 'data/hw-hanti-dan-h2-hwaeon-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-dan-h2-hwaeon-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h2-hwaeon-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' },
-      { week: 4, file: 'data/hw-hanti-dan-h2-hwaeon-w4.json', label: '4주차 · 음운의 체계', area: '음운의 체계', status: 'active' },
-      { week: 5, file: 'data/hw-hanti-dan-h2-hwaeon-w5.json', label: '5주차 · 음운의 변동', area: '음운의 변동', status: 'active' }
-    ]
-  },
-
   // ┌─ 새 수업 추가 예시 (주석 해제해서 사용) ─────────────────────────
   // {
   //   id: 'dokseo',
