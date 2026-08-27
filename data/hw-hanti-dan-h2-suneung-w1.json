@@ -12,6 +12,7 @@
  "scoring": {
   "passRate": 80
  },
+ "completionByChecklist": true,
  "sections": [
   {
    "key": "gyo1",
