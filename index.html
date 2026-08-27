@@ -597,7 +597,7 @@ function loadWeek(courseId, monthKey, week){
     document.getElementById('loading').style.display='none';
     STATE.data = d;
     STATE.week = monthKey ? weekUid : (d.week!=null ? d.week : week);
-    STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.notSolved = new Set(); STATE.solvedTotal = null; STATE.solvedBySec = {}; STATE.studyAns = {}; STATE.result = null;
+    STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.notSolved = new Set(); STATE.solvedTotal = null; STATE.solvedBySec = {}; STATE.checkedSecs = new Set(); STATE.studyAns = {}; STATE.result = null;
     STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null; STATE.oathMethod = null;
     // 학년 기본값 = 선택한 코스의 학년(예: 중3 코스 → '중3'). 예전에 중3 옵션이 없어 다른 학년을 고르던 문제 방지. (명단 매칭은 이름 기준이라 학년값은 표시용)
     var _c = COURSES.find(function(c){ return c.id===STATE.courseId; });
@@ -827,9 +827,32 @@ function renderStep2(){
   const secsQ = secs.filter(s=>(s.questions||[]).length);
   const weekTotal = secsQ.reduce((n,s)=>n+s.questions.length,0);
   const bySection = !!STATE.data.completionBySection && secsQ.length>1;   // 파트(섹션)별로 완수 입력
+  const byChecklist = !!STATE.data.completionByChecklist && secsQ.length>1;   // 세트별 체크리스트로 완수 입력(수능반: 세트마다 문항번호가 달라 세기 어려움 → 체크로 대체)
   const compCard = el('div',{class:'section comp-card'});
-  compCard.appendChild(el('div',{class:'comp-title'},'이번 주, 몇 문항 풀었나요? (필수)'));
-  if(bySection){
+  compCard.appendChild(el('div',{class:'comp-title'}, byChecklist?'이번 주, 어떤 세트를 풀었나요? (필수)':'이번 주, 몇 문항 풀었나요? (필수)'));
+  if(byChecklist){
+    compCard.appendChild(el('div',{class:'comp-desc'},'실제로 푼 세트에 체크해 주세요. 체크한 세트의 문항 수로 완수율이 계산됩니다. (전체 '+weekTotal+'문항 · '+secsQ.length+'세트)'));
+    if(!STATE.checkedSecs) STATE.checkedSecs=new Set();
+    const compRate=el('span',{class:'comp-rate', style:'margin-left:12px'});
+    const boxes=[];
+    const recalc=()=>{ let sum=0; secsQ.forEach((s,i)=>{ if(STATE.checkedSecs.has(i)) sum+=s.questions.length; });
+      STATE.solvedTotal=sum; compCard.classList.remove('comp-need');
+      compRate.textContent = weekTotal?('완수율 '+Math.round(sum/weekTotal*100)+'% · '+sum+'문항'):''; };
+    secsQ.forEach((s,i)=>{
+      const tot=s.questions.length;
+      const row=el('label',{class:'chk-item'+(STATE.checkedSecs.has(i)?' on':''), style:'display:flex;align-items:center;gap:11px;padding:10px 13px;margin:5px 0;border:1px solid var(--border-soft);border-radius:10px;cursor:pointer'});
+      const cb=el('input',{type:'checkbox', style:'width:18px;height:18px;flex-shrink:0'}); cb.checked=STATE.checkedSecs.has(i); boxes.push(cb);
+      cb.onchange=()=>{ if(cb.checked) STATE.checkedSecs.add(i); else STATE.checkedSecs.delete(i); row.classList.toggle('on',cb.checked); recalc(); };
+      row.appendChild(cb);
+      row.appendChild(el('span',{style:'flex:1;line-height:1.4'}, s.title));
+      row.appendChild(el('span',{class:'comp-unit', style:'white-space:nowrap;font-weight:600'}, tot+'문항'));
+      compCard.appendChild(row);
+    });
+    const allBtn=el('button',{class:'btn btn-ghost comp-all', onclick:()=>{ secsQ.forEach((s,i)=>STATE.checkedSecs.add(i)); boxes.forEach(cb=>cb.checked=true); Array.from(compCard.querySelectorAll('.chk-item')).forEach(r=>r.classList.add('on')); recalc(); }}, '전부 했어요 ('+secsQ.length+'세트 · '+weekTotal+'문항)');
+    compCard.appendChild(el('div',{class:'comp-row', style:'margin-top:12px'}, allBtn, compRate));
+    compCard.appendChild(el('div',{class:'comp-warn'}, '푼 세트에 체크해 주세요.'));
+    recalc();
+  } else if(bySection){
     compCard.appendChild(el('div',{class:'comp-desc'},'이번 주 과제는 파트별로 나눠 검사해요. 파트마다 실제로 푼 문항 수를 각각 적어 주세요. (전체 '+weekTotal+'문항)'));
     if(!STATE.solvedBySec) STATE.solvedBySec={};
     const compRate = el('span',{class:'comp-rate'});
