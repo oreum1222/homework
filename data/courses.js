@@ -124,7 +124,7 @@ window.COURSE_LIST = [
     period: 'MEXX 단과',
     desc: '고2 수능 대비 — 우리들의 첫 수능 국어(문학·독서).',
     weeks: [
-      { week: 1, file: 'data/hw-hanti-dan-h2-suneung-w1.json', label: '1주차 · 현대소설·독서 (복습 워크북)', area: '수능 문학·독서', status: 'active' }
+      { week: 1, file: 'data/hw-hanti-dan-h2-suneung-w1.json', label: '1주차 · 교재+워크북 (현대소설·독서)', area: '수능 문학·독서', status: 'active' }
     ]
   },
 
