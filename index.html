@@ -622,7 +622,7 @@ function renderDiag(){
   root.appendChild(el('div',{class:'diag-header'},
     el('span',{class:'exam-tag'}, (course?course.name:'') + ' · 숙제 진단'),
     el('h1',{class:'diag-title'}, wm.label),
-    el('p',{class:'diag-sub'}, '4단계 진단 — 기본 정보 → 오답 마킹 → 과제 점검 → 진단 리포트')
+    el('p',{class:'diag-sub'}, STATE.data.solvedCountOnly ? '진단 — 기본 정보 → 풀이 확인(몇 문항) → 과제 점검 → 리포트 · 오답은 모고 진단 시스템에서' : '4단계 진단 — 기본 정보 → 오답 마킹 → 과제 점검 → 진단 리포트')
   ));
   if(STATE.step==='oath'){
     root.appendChild(el('div',{class:'step-bar'}, stepEl(1,'기본 정보'), el('div',{class:'step active'}, el('span',{class:'step-num'},'2단계'), el('span',{class:'step-label'},'각서 작성'))));
@@ -646,15 +646,16 @@ function renderDiag(){
   // 일반 흐름 (체크리스트 있으면 오답 마킹 다음에 '일일학습 체크' 단계 삽입)
   const sEl=(num,label,active,done)=>el('div',{class:active?'step active':(done?'step done':'step')}, el('span',{class:'step-num'},num+'단계'), el('span',{class:'step-label'},label));
   const isImg = STATE.step==='imagine';
+  const s2lab = STATE.data.solvedCountOnly ? '풀이 확인' : '오답 마킹';
   const bar=[];
   if(cl){
     bar.push(sEl(1,'기본 정보', STATE.step===1, STATE.step!==1));
-    bar.push(sEl(2,'오답 마킹', STATE.step===2, isImg||STATE.step===3||STATE.step===4));
+    bar.push(sEl(2,s2lab, STATE.step===2, isImg||STATE.step===3||STATE.step===4));
     bar.push(sEl(3,'일일학습 체크', isImg, STATE.step===3||STATE.step===4));
     bar.push(sEl(4,'과제 점검', STATE.step===3, STATE.step===4));
     bar.push(sEl(5,'진단 결과', STATE.step===4, false));
   } else {
-    bar.push(stepEl(1,'기본 정보'), stepEl(2,'오답 마킹'), stepEl(3,'과제 점검'), stepEl(4,'진단 결과'));
+    bar.push(stepEl(1,'기본 정보'), stepEl(2,s2lab), stepEl(3,'과제 점검'), stepEl(4,'진단 결과'));
   }
   root.appendChild(el('div',{class:'step-bar'}, ...bar));
   if(STATE.step===1) renderStep1();
@@ -893,16 +894,23 @@ function renderStep2(){
   }
   root.appendChild(compCard);
 
-  root.appendChild(el('div',{class:'section'},
-    el('h2',{class:'section-title'},'오답 마킹'),
-    el('p',{class:'section-desc', html:'푼 문항 중 <strong>틀린 문항</strong>을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항의 <strong>유형</strong>입니다.'})
-  ));
-  let _curGroup=null;
-  secs.forEach((sec,si)=>{
-    if(sec.group && sec.group!==_curGroup){ _curGroup=sec.group;
-      root.appendChild(el('div',{class:'subject-divider'}, sec.group)); }
-    root.appendChild(areaBlock(sec, si));
-  });
+  if(STATE.data.solvedCountOnly){
+    root.appendChild(el('div',{class:'section'},
+      el('h2',{class:'section-title'},'오답은 모고 진단 시스템에서'),
+      el('p',{class:'section-desc', html:'이 과제는 <strong>몇 문항 풀었는지만</strong> 확인합니다. 틀린 문항(오답) 입력은 <strong>모고 진단 시스템</strong>에서 진행해 주세요.'})
+    ));
+  } else {
+    root.appendChild(el('div',{class:'section'},
+      el('h2',{class:'section-title'},'오답 마킹'),
+      el('p',{class:'section-desc', html:'푼 문항 중 <strong>틀린 문항</strong>을 <strong>번호 순서대로</strong> 찾아 모두 클릭해 주세요. 다시 클릭하면 해제됩니다. 각 칸 오른쪽의 작은 글씨는 그 문항의 <strong>유형</strong>입니다.'})
+    ));
+    let _curGroup=null;
+    secs.forEach((sec,si)=>{
+      if(sec.group && sec.group!==_curGroup){ _curGroup=sec.group;
+        root.appendChild(el('div',{class:'subject-divider'}, sec.group)); }
+      root.appendChild(areaBlock(sec, si));
+    });
+  }
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
     el('button',{class:'btn btn-primary', onclick:()=>{
