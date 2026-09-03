@@ -62,7 +62,16 @@ window.COURSE_LIST = [
           { week: 4, file: 'data/hw-go3-2608-w4.json', label: '4주차에 한 숙제 검사 · 이매진 6호 1주차 + 상상 시즌4-2회', date: '8/28(금)~8/29(토)', area: '이매진 6호', status: 'active' }
         ]
       },
-      // (9월·10월 등 다음 달은 여기에 months 항목 추가)
+      {
+        key: '2026-09', month: '9월', status: 'active', desc: '9월 이매진 6호 3·4주차 완주(9/1~10) + 수능 분석 수업(9평·2023·2024·2025). 2024·2025수능은 그 주 숙제.',
+        weeks: [
+          { week: 1, file: 'data/hw-go3-2609-w1.json', label: '1주차에 한 숙제 검사 · 이매진 6호 3주차 + 9월 평가원 분석', date: '9/4(금)~9/5(토)', area: '이매진 6호', status: 'active' },
+          { week: 2, file: 'data/hw-go3-2609-w2.json', label: '2주차에 한 숙제 검사 · 이매진 6호 4주차(완주) + 2023학년도 수능 분석', date: '9/11(금)~9/12(토)', area: '이매진 6호', status: 'active' },
+          { week: 3, file: 'data/hw-go3-2609-w3.json', label: '3주차에 한 숙제 검사 · 2024학년도 수능(풀이) + 분석', date: '9/18(금)~9/19(토)', area: '수능 기출', status: 'active' },
+          { week: 4, file: 'data/hw-go3-2609-w4.json', label: '4주차에 한 숙제 검사 · 2025학년도 수능(풀이) + 분석', date: '9/25(금)~9/26(토)', area: '수능 기출', status: 'active' }
+        ]
+      },
+      // (10월 등 다음 달은 여기에 months 항목 추가)
     ]
   },
 
