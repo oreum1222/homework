@@ -1,0 +1,1536 @@
+{
+ "_doc": "고2 수능 대비반 3주차 — 교재(평가원 문학 20세트 + 독서 1세트 = 21세트, 83문항). 워크북 미도착 시 교재만. 완수=세트 체크리스트.",
+ "courseId": "hanti-dan-h2-suneung",
+ "week": 3,
+ "weekMeta": {
+  "id": "hanti-dan-h2-suneung-w3",
+  "label": "3주차 · 교재 (문학·독서)",
+  "area": "수능 문학·독서",
+  "date": "",
+  "desc": "우리들의 첫 수능 국어 3주차 — 평가원 기출 세트 체크"
+ },
+ "scoring": {
+  "passRate": 80
+ },
+ "completionByChecklist": true,
+ "sections": [
+  {
+   "key": "g01",
+   "title": "[교재 6쪽] 고전소설 · 「조웅전」 · 2018 6월 [35~38]",
+   "questions": [
+    {
+     "no": 1,
+     "id": "S1",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "35번"
+    },
+    {
+     "no": 2,
+     "id": "S2",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "36번"
+    },
+    {
+     "no": 3,
+     "id": "S3",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "37번"
+    },
+    {
+     "no": 4,
+     "id": "S4",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "38번"
+    }
+   ],
+   "range": "35~38번"
+  },
+  {
+   "key": "g02",
+   "title": "[교재 12쪽] 현대소설 · 이호철 「큰 산」 · 2018 6월 [39~41]",
+   "questions": [
+    {
+     "no": 5,
+     "id": "S5",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "39번"
+    },
+    {
+     "no": 6,
+     "id": "S6",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "40번"
+    },
+    {
+     "no": 7,
+     "id": "S7",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "41번"
+    }
+   ],
+   "range": "39~41번"
+  },
+  {
+   "key": "g03",
+   "title": "[교재 16쪽] 현대시 · 2019 6월 [27~31]",
+   "questions": [
+    {
+     "no": 8,
+     "id": "S8",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "27번"
+    },
+    {
+     "no": 9,
+     "id": "S9",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "28번"
+    },
+    {
+     "no": 10,
+     "id": "S10",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "29번"
+    },
+    {
+     "no": 11,
+     "id": "S11",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "30번"
+    },
+    {
+     "no": 12,
+     "id": "S12",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "31번"
+    }
+   ],
+   "range": "27~31번"
+  },
+  {
+   "key": "g04",
+   "title": "[교재 18쪽] 고전소설 · 「옹고집전」 · 2019 6월 [39~42]",
+   "questions": [
+    {
+     "no": 13,
+     "id": "S13",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "39번"
+    },
+    {
+     "no": 14,
+     "id": "S14",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "40번"
+    },
+    {
+     "no": 15,
+     "id": "S15",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "41번"
+    },
+    {
+     "no": 16,
+     "id": "S16",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "42번"
+    }
+   ],
+   "range": "39~42번"
+  },
+  {
+   "key": "g05",
+   "title": "[교재 22쪽] 현대소설 · 양귀자 「한계령」 · 2019 6월 [43~45]",
+   "questions": [
+    {
+     "no": 17,
+     "id": "S17",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "43번"
+    },
+    {
+     "no": 18,
+     "id": "S18",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "44번"
+    },
+    {
+     "no": 19,
+     "id": "S19",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "45번"
+    }
+   ],
+   "range": "43~45번"
+  },
+  {
+   "key": "g06",
+   "title": "[교재 26쪽] 고전소설 · 「조웅전」 · 2020 6월 [23~26]",
+   "questions": [
+    {
+     "no": 20,
+     "id": "S20",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "23번"
+    },
+    {
+     "no": 21,
+     "id": "S21",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "24번"
+    },
+    {
+     "no": 22,
+     "id": "S22",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "25번"
+    },
+    {
+     "no": 23,
+     "id": "S23",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "26번"
+    }
+   ],
+   "range": "23~26번"
+  },
+  {
+   "key": "g07",
+   "title": "[교재 32쪽] 현대시 · 2020 6월 [43~45]",
+   "questions": [
+    {
+     "no": 24,
+     "id": "S24",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "43번"
+    },
+    {
+     "no": 25,
+     "id": "S25",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "44번"
+    },
+    {
+     "no": 26,
+     "id": "S26",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "45번"
+    }
+   ],
+   "range": "43~45번"
+  },
+  {
+   "key": "g08",
+   "title": "[교재 34쪽] 고전소설 · 「장끼전」 · 2020 9월 [32~34]",
+   "questions": [
+    {
+     "no": 27,
+     "id": "S27",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "32번"
+    },
+    {
+     "no": 28,
+     "id": "S28",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "33번"
+    },
+    {
+     "no": 29,
+     "id": "S29",
+     "three": false,
+     "wr": null,
+     "area": "고전소설",
+     "type": "고전소설",
+     "coreElement": "고전소설",
+     "weakness1": "‘고전소설’ 고전소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+     "parentNote": "",
+     "note": "",
+     "label": "34번"
+    }
+   ],
+   "range": "32~34번"
+  },
+  {
+   "key": "g09",
+   "title": "[교재 38쪽] 현대시 · 2021 6월 [22~24]",
+   "questions": [
+    {
+     "no": 30,
+     "id": "S30",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "22번"
+    },
+    {
+     "no": 31,
+     "id": "S31",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "23번"
+    },
+    {
+     "no": 32,
+     "id": "S32",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "24번"
+    }
+   ],
+   "range": "22~24번"
+  },
+  {
+   "key": "g10",
+   "title": "[교재 40쪽] 고전시가 · 정철 「관동별곡」 · 2021 6월 [38~40]",
+   "questions": [
+    {
+     "no": 33,
+     "id": "S33",
+     "three": false,
+     "wr": null,
+     "area": "고전시가",
+     "type": "고전시가",
+     "coreElement": "고전시가",
+     "weakness1": "‘고전시가’ 고전시가 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "시적 상황과 화자의 정서를 어휘 풀이와 함께 정리",
+     "parentNote": "",
+     "note": "",
+     "label": "38번"
+    },
+    {
+     "no": 34,
+     "id": "S34",
+     "three": false,
+     "wr": null,
+     "area": "고전시가",
+     "type": "고전시가",
+     "coreElement": "고전시가",
+     "weakness1": "‘고전시가’ 고전시가 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "시적 상황과 화자의 정서를 어휘 풀이와 함께 정리",
+     "parentNote": "",
+     "note": "",
+     "label": "39번"
+    },
+    {
+     "no": 35,
+     "id": "S35",
+     "three": false,
+     "wr": null,
+     "area": "고전시가",
+     "type": "고전시가",
+     "coreElement": "고전시가",
+     "weakness1": "‘고전시가’ 고전시가 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "시적 상황과 화자의 정서를 어휘 풀이와 함께 정리",
+     "parentNote": "",
+     "note": "",
+     "label": "40번"
+    }
+   ],
+   "range": "38~40번"
+  },
+  {
+   "key": "g11",
+   "title": "[교재 44쪽] 현대소설 · 2021 9월 [16~19]",
+   "questions": [
+    {
+     "no": 36,
+     "id": "S36",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "16번"
+    },
+    {
+     "no": 37,
+     "id": "S37",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "17번"
+    },
+    {
+     "no": 38,
+     "id": "S38",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "18번"
+    },
+    {
+     "no": 39,
+     "id": "S39",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "19번"
+    }
+   ],
+   "range": "16~19번"
+  },
+  {
+   "key": "g12",
+   "title": "[교재 48쪽] 현대시 · 2021 9월 [43~45]",
+   "questions": [
+    {
+     "no": 40,
+     "id": "S40",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "43번"
+    },
+    {
+     "no": 41,
+     "id": "S41",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "44번"
+    },
+    {
+     "no": 42,
+     "id": "S42",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "45번"
+    }
+   ],
+   "range": "43~45번"
+  },
+  {
+   "key": "g13",
+   "title": "[교재 52쪽] 갈래 복합 · 2021 수능 [38~42]",
+   "questions": [
+    {
+     "no": 43,
+     "id": "S43",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "38번"
+    },
+    {
+     "no": 44,
+     "id": "S44",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "39번"
+    },
+    {
+     "no": 45,
+     "id": "S45",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "40번"
+    },
+    {
+     "no": 46,
+     "id": "S46",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "41번"
+    },
+    {
+     "no": 47,
+     "id": "S47",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "42번"
+    }
+   ],
+   "range": "38~42번"
+  },
+  {
+   "key": "g14",
+   "title": "[교재 56쪽] 현대시 · 2022 6월 [32~34]",
+   "questions": [
+    {
+     "no": 48,
+     "id": "S48",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "32번"
+    },
+    {
+     "no": 49,
+     "id": "S49",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "33번"
+    },
+    {
+     "no": 50,
+     "id": "S50",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "34번"
+    }
+   ],
+   "range": "32~34번"
+  },
+  {
+   "key": "g15",
+   "title": "[교재 60쪽] 현대소설 · 2022 수능 [24~27]",
+   "questions": [
+    {
+     "no": 51,
+     "id": "S51",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "24번"
+    },
+    {
+     "no": 52,
+     "id": "S52",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "25번"
+    },
+    {
+     "no": 53,
+     "id": "S53",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "26번"
+    },
+    {
+     "no": 54,
+     "id": "S54",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "27번"
+    }
+   ],
+   "range": "24~27번"
+  },
+  {
+   "key": "g16",
+   "title": "[교재 64쪽] 현대시 · 2023 6월 [32~34]",
+   "questions": [
+    {
+     "no": 55,
+     "id": "S55",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "32번"
+    },
+    {
+     "no": 56,
+     "id": "S56",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "33번"
+    },
+    {
+     "no": 57,
+     "id": "S57",
+     "three": false,
+     "wr": null,
+     "area": "현대시",
+     "type": "현대시",
+     "coreElement": "현대시",
+     "weakness1": "‘현대시’ 현대시 감상에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "화자의 태도와 시어의 함축을 〈보기〉 관점과 연결해 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "34번"
+    }
+   ],
+   "range": "32~34번"
+  },
+  {
+   "key": "g17",
+   "title": "[교재 68쪽] 갈래 복합 · 2023 9월 [22~27]",
+   "questions": [
+    {
+     "no": 58,
+     "id": "S58",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "22번"
+    },
+    {
+     "no": 59,
+     "id": "S59",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "23번"
+    },
+    {
+     "no": 60,
+     "id": "S60",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "24번"
+    },
+    {
+     "no": 61,
+     "id": "S61",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "25번"
+    },
+    {
+     "no": 62,
+     "id": "S62",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "26번"
+    },
+    {
+     "no": 63,
+     "id": "S63",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "27번"
+    }
+   ],
+   "range": "22~27번"
+  },
+  {
+   "key": "g18",
+   "title": "[교재 70쪽] 현대소설 · 2023 9월 [28~31]",
+   "questions": [
+    {
+     "no": 64,
+     "id": "S64",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "28번"
+    },
+    {
+     "no": 65,
+     "id": "S65",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "29번"
+    },
+    {
+     "no": 66,
+     "id": "S66",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "30번"
+    },
+    {
+     "no": 67,
+     "id": "S67",
+     "three": false,
+     "wr": null,
+     "area": "현대소설",
+     "type": "현대소설",
+     "coreElement": "현대소설",
+     "weakness1": "‘현대소설’ 현대소설 독해에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "서술 시점과 인물의 심리·태도를 지문 근거와 함께 파악",
+     "parentNote": "",
+     "note": "",
+     "label": "31번"
+    }
+   ],
+   "range": "28~31번"
+  },
+  {
+   "key": "g19",
+   "title": "[교재 74쪽] 갈래 복합 · 2024 9월 [22~27]",
+   "questions": [
+    {
+     "no": 68,
+     "id": "S68",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "22번"
+    },
+    {
+     "no": 69,
+     "id": "S69",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "23번"
+    },
+    {
+     "no": 70,
+     "id": "S70",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "24번"
+    },
+    {
+     "no": 71,
+     "id": "S71",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "25번"
+    },
+    {
+     "no": 72,
+     "id": "S72",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "26번"
+    },
+    {
+     "no": 73,
+     "id": "S73",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "27번"
+    }
+   ],
+   "range": "22~27번"
+  },
+  {
+   "key": "g20",
+   "title": "[교재 76쪽] 갈래 복합 · 2024 수능 [22~27]",
+   "questions": [
+    {
+     "no": 74,
+     "id": "S74",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "22번"
+    },
+    {
+     "no": 75,
+     "id": "S75",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "23번"
+    },
+    {
+     "no": 76,
+     "id": "S76",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "24번"
+    },
+    {
+     "no": 77,
+     "id": "S77",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "25번"
+    },
+    {
+     "no": 78,
+     "id": "S78",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "26번"
+    },
+    {
+     "no": 79,
+     "id": "S79",
+     "three": false,
+     "wr": null,
+     "area": "갈래 복합",
+     "type": "갈래 복합",
+     "coreElement": "갈래 복합",
+     "weakness1": "‘갈래 복합’ 갈래 복합 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "작품 간 공통점과 차이를 〈보기〉 기준으로 비교하며 감상",
+     "parentNote": "",
+     "note": "",
+     "label": "27번"
+    }
+   ],
+   "range": "22~27번"
+  },
+  {
+   "key": "g21",
+   "title": "[교재 80쪽] 독서(과학) · 혈액 응고와 칼슘의 역설 · 2022 6월 [10~13]",
+   "questions": [
+    {
+     "no": 80,
+     "id": "S80",
+     "three": false,
+     "wr": null,
+     "area": "독서(과학)",
+     "type": "독서(과학)",
+     "coreElement": "독서(과학)",
+     "weakness1": "‘독서(과학)’ 독서(과학) 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "과정·인과와 조건을 정리하고 선지를 지문 근거와 대조",
+     "parentNote": "",
+     "note": "",
+     "label": "10번"
+    },
+    {
+     "no": 81,
+     "id": "S81",
+     "three": false,
+     "wr": null,
+     "area": "독서(과학)",
+     "type": "독서(과학)",
+     "coreElement": "독서(과학)",
+     "weakness1": "‘독서(과학)’ 독서(과학) 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "과정·인과와 조건을 정리하고 선지를 지문 근거와 대조",
+     "parentNote": "",
+     "note": "",
+     "label": "11번"
+    },
+    {
+     "no": 82,
+     "id": "S82",
+     "three": false,
+     "wr": null,
+     "area": "독서(과학)",
+     "type": "독서(과학)",
+     "coreElement": "독서(과학)",
+     "weakness1": "‘독서(과학)’ 독서(과학) 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "과정·인과와 조건을 정리하고 선지를 지문 근거와 대조",
+     "parentNote": "",
+     "note": "",
+     "label": "12번"
+    },
+    {
+     "no": 83,
+     "id": "S83",
+     "three": false,
+     "wr": null,
+     "area": "독서(과학)",
+     "type": "독서(과학)",
+     "coreElement": "독서(과학)",
+     "weakness1": "‘독서(과학)’ 독서(과학) 지문에서 놓친 부분이 있어요.",
+     "weakness2": "",
+     "remediation": "과정·인과와 조건을 정리하고 선지를 지문 근거와 대조",
+     "parentNote": "",
+     "note": "",
+     "label": "13번"
+    }
+   ],
+   "range": "10~13번"
+  }
+ ],
+ "studyCheck": [
+  {
+   "num": 1,
+   "tag": "done",
+   "q": "이번 과제, 어디까지 했나요?",
+   "opts": [
+    "전부 끝냄",
+    "대부분(70% 이상)",
+    "절반쯤",
+    "조금만(30% 이하)",
+    "아직 시작 못 함"
+   ]
+  },
+  {
+   "num": 2,
+   "tag": "dueDate",
+   "type": "date",
+   "q": "남은 분량을 언제까지 끝낼 건가요? (완수 예정일)",
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  },
+  {
+   "num": 3,
+   "tag": "duePledge",
+   "q": "완수 약속",
+   "opts": [
+    "오늘 안에",
+    "내일까지",
+    "이번 주 안",
+    "다음 수업 전까지",
+    "솔직히 자신 없음"
+   ],
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  },
+  {
+   "num": 4,
+   "tag": "timeliness",
+   "q": "제출 시점은 마감 기준 어땠나요?",
+   "opts": [
+    "여유 있게 미리",
+    "마감 임박해서",
+    "마감 지나서(지각)",
+    "아직 미제출"
+   ]
+  },
+  {
+   "num": 5,
+   "tag": "review",
+   "q": "채점·오답 정리까지 했나요?",
+   "opts": [
+    "채점 + 오답 정리까지",
+    "채점만 함",
+    "풀기만 하고 채점 안 함"
+   ]
+  },
+  {
+   "num": 6,
+   "tag": "trend",
+   "q": "최근 과제들, 스스로 평가하면?",
+   "opts": [
+    "매번 빠짐없이 함",
+    "대체로 하는 편",
+    "자주 빠지거나 밀림",
+    "거의 못 따라감"
+   ]
+  },
+  {
+   "num": 7,
+   "tag": "reason",
+   "q": "(밀렸거나 못 했다면) 가장 큰 이유는?",
+   "opts": [
+    "시간이 없어서(다른 과목·학원)",
+    "너무 어려워서",
+    "깜빡/마감을 놓쳐서",
+    "의욕이 안 나서",
+    "양이 너무 많아서"
+   ],
+   "showIf": {
+    "q": 1,
+    "minIndex": 1
+   }
+  }
+ ],
+ "studyDiagnosticCodes": {
+  "D_done": {
+   "label": "과제 완수",
+   "feedback": "이번 과제를 끝까지 완료했어요. 꾸준함이 실력으로 쌓이고 있습니다."
+  },
+  "D_partial": {
+   "label": "부분 완수",
+   "feedback": "아직 남은 분량이 있어요. 약속한 기한 안에 꼭 마무리합시다."
+  },
+  "D_undone": {
+   "label": "미완 — 완수 필요",
+   "feedback": "이번 과제를 거의 못 했어요. 약속한 날까지 반드시 끝내서 따라잡읍시다."
+  },
+  "D_ontime": {
+   "label": "여유 제출",
+   "feedback": "마감에 여유 있게 끝냈어요. 좋은 페이스입니다."
+  },
+  "D_rush": {
+   "label": "마감 임박형",
+   "feedback": "마감에 임박해서 끝내는 편이에요. 하루만 앞당겨도 훨씬 안정적입니다."
+  },
+  "D_late": {
+   "label": "지각 제출",
+   "feedback": "제출이 늦었어요. 다음 주엔 마감 안에 들어오는 걸 목표로 합시다."
+  },
+  "D_revfull": {
+   "label": "오답 정리까지",
+   "feedback": "채점·오답 정리까지 마쳤어요. 가장 중요한 부분을 잘 챙겼습니다."
+  },
+  "D_norev": {
+   "label": "오답 정리 부족",
+   "feedback": "채점·오답 정리가 빠졌어요. 틀린 문제를 다시 보는 게 실력 상승의 핵심이에요."
+  },
+  "D_lagging": {
+   "label": "최근 누적 부진",
+   "feedback": "최근 과제가 자주 밀리고 있어요. 분량·시간을 함께 점검해 봅시다."
+  }
+ }
+}
