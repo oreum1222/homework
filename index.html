@@ -74,6 +74,7 @@ body.landing .corner-logo{display:none}
 .status-active{background:rgba(47,107,82,0.45);color:var(--cream);border:1px solid var(--green-deep)}
 .status-tentative{background:rgba(95,198,163,0.12);color:var(--gold-soft);border:1px solid rgba(95,198,163,0.3)}
 .status-closed{background:rgba(122,116,102,0.18);color:var(--text-muted);border:1px solid var(--border-soft)}
+.status-done{background:rgba(47,107,82,0.14);color:var(--gold-soft);border:1px solid rgba(74,169,126,0.32)}
 .card-arrow{font-family:'Noto Serif KR',serif;font-size:1.4rem;color:var(--text-muted);transition:color 0.2s,transform 0.2s;line-height:1;align-self:center}
 .exam-card:hover .card-arrow{color:var(--gold);transform:translateX(4px)}
 .card-name{font-family:'Noto Serif KR',serif;font-weight:500;font-size:1.32rem;color:var(--cream);margin-bottom:8px;letter-spacing:-0.3px}
@@ -352,8 +353,8 @@ function el(tag, attrs={}, ...children){
 }
 function clear(node){ while(node.firstChild) node.removeChild(node.firstChild); }
 function escapeHtml(s){ return String(s||'').replace(/[<>&"]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
-function statusClass(s){ return s==='active'?'status-active':(s==='closed'?'status-closed':'status-tentative'); }
-function statusLabel(s){ return s==='active'?'진행중':(s==='closed'?'마감':'준비중'); }
+function statusClass(s){ return s==='active'?'status-active':(s==='done'?'status-done':(s==='closed'?'status-closed':'status-tentative')); }
+function statusLabel(s){ return s==='active'?'진행중':(s==='done'?'완료':(s==='closed'?'마감':'준비중')); }
 
 function loadConfig(){
   return new Promise(resolve=>{
@@ -559,15 +560,19 @@ function renderWeeks(courseId, monthKey){
   ));
   if(!weeks.length){ root.appendChild(el('div',{class:'error-box'},'아직 등록된 주차가 없습니다.')); appendFooter(); return; }
   const list = el('div',{class:'exam-list'});
+  // 마지막(가장 높은) active 주차만 '진행중', 그 앞의 active 주차는 '완료'로 표시
+  const _activeWks = weeks.filter(w=>w.status==='active').map(w=>w.week);
+  const _curWk = _activeWks.length ? Math.max.apply(null,_activeWks) : null;
   weeks.forEach(w=>{
     const tentative = w.status==='tentative';
+    const effStatus = (w.status==='active' && _curWk!=null && w.week!==_curWk) ? 'done' : w.status;
     const card = el('button',{class:'exam-card', onclick: tentative?(()=>alert('아직 준비 중인 주차입니다.')):(()=>loadWeek(courseId, monthKey||null, w.week))});
     if(tentative) card.style.opacity='0.6';
     card.appendChild(el('div',{class:'card-top'},
       el('div',{class:'card-meta-left'},
         el('span',{class:'card-num'}, w.tag || ('주차 '+String(w.week).padStart(2,'0'))),
         w.area ? el('span',{class:'card-grade'}, w.area) : null,
-        el('span',{class:'card-status '+statusClass(w.status)}, statusLabel(w.status)),
+        el('span',{class:'card-status '+statusClass(effStatus)}, statusLabel(effStatus)),
         w.date ? el('span',{class:'card-date'}, '검사일 '+w.date) : null
       ),
       el('span',{class:'card-arrow'},'→')
