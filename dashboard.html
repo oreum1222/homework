@@ -1236,7 +1236,8 @@ function nlGatherV3_(name){
   var missW=[]; if(TOTR>0){ for(var _mw=1;_mw<=TOTR;_mw++){ if(weeks.indexOf(_mw)<0) missW.push(_mw); } }   // §5 미제출 회차
   var _clab={}; (ALL_DATA||[]).forEach(function(r){ if(String(r.courseId)!==_cid) return; var _w=+val(r,'week','주차')||0; if(!_w||_clab[_w]) return; var _L=String(val(r,'weekLabel','')||''); if(_L) _clab[_w]=_L.split('·')[0].trim(); });   // 회차 실제 라벨(예: '2주차 (2)') — 주차번호만 쓰면 '5주차' 식 오표기
   var missLabels=missW.map(function(w){ return (_clab[w]||(w+'주차')); });
-  return { name:name, m:m, courseName:courseName, totalQ:totalQ, correctQ:correctQ, wrongN:wrongN, avgRate:avgRate, trend:trend,
+  var noData=(subs.length===0)||(totalQ===0&&correctQ===0&&wrongN===0);   // 숙제 검사 시스템 응시 기록/채점 데이터 없음 → 미제출(정답률 계산·서술 생성 금지)
+  return { name:name, m:m, noData:noData, courseName:courseName, totalQ:totalQ, correctQ:correctQ, wrongN:wrongN, avgRate:avgRate, trend:trend,
     n:n, 완수율:완수율, complete:complete, partial:partial, onTime:onTime, units:units, unitsLow:unitsLow, flow:flow, TOTR:TOTR, missingWeeks:missW, missingLabels:missLabels,
     weakNames:weakNames, strongNames:strongNames, repOab:repOab, cmp:cmp, cls완수:cls완수, tag:tag };
 }
@@ -1288,6 +1289,17 @@ function nlDrafts_(d){
 }
 // 4면 생성 (d=gather, t=편집된 텍스트)
 function nlBuildV3_(d,t){
+  // 데이터 없는 학생(숙제 검사 시스템 미응시) → 정답률/서술 없이 '미제출'로만 표시(데이터 왜곡·타 학생 서술 누출 방지)
+  if(d && d.noData){
+    return nlV3Page_(
+      nlV3Head_('숙제 검사 리포트', esc(d.name)+' 학생 · '+esc(BRAND))
+      +'<div style="margin-top:26px;padding:30px 28px;border:1px solid var(--border-line);border-left:3px solid #d68a8a;border-radius:10px;background:#fbf2f2">'
+      +'<div style="font-size:1.05rem;font-weight:700;color:#b5433a;margin-bottom:8px">미제출</div>'
+      +'<div style="font-size:.9rem;color:#5a5148;line-height:1.75">'+esc(d.name)+' 학생은 아직 숙제 검사 시스템에 응시한 기록이 없어 이번 회차의 데이터가 없습니다. 학생이 시스템에 접속해 완료 여부와 오답을 입력하면 리포트가 생성됩니다.</div>'
+      +'<div style="font-size:.8rem;color:#9a958a;margin-top:10px">※ 데이터가 없는 상태라 정답률·완수율·반 평균 비교는 표시하지 않습니다(미제출이므로 저조한 점수로 계산하지 않습니다).</div>'
+      +'</div>'
+    );
+  }
   var dd=new Date(), dot=dd.getFullYear()+'. '+(dd.getMonth()+1)+'. '+dd.getDate()+'.', ko=dd.getFullYear()+'년 '+(dd.getMonth()+1)+'월 '+dd.getDate()+'일';
   var sm=function(x){return '<span style="font-size:.78rem;color:#7b8190;font-weight:400">'+x+'</span>';};
   // 1면
@@ -2269,7 +2281,8 @@ function renderReports(){
   }
   // ── 주차별 과제 현황 (아코디언: 미응답/미완료/완료) ──
   ensureReportData();   // 명단+예외처리 로드(1회) → 완료 시 자동 재렌더
-  let undoneHtml=weekStatusPanel(REP.master);   // 항상 전체 반(수업) 기준으로 반별 표시
+  // 주차별 과제 현황: '전체 수업'일 때만 표시. 특정 반을 고르면 숨겨 리포트로 바로 스크롤(요청).
+  let undoneHtml=(REP.course==='all') ? weekStatusPanel(REP.master) : '';
 
   // ── 순위 계산: 수업별, 코멘트 대상 주차의 정답률 기준 ──
   const trate=m=>{ const tw=REP.week; if(tw==='latest') return m.rates[m.rates.length-1]; const idx=m.seq.indexOf(+tw); return idx>=0?m.rates[idx]:null; };
