@@ -114,7 +114,11 @@ body.landing .corner-logo{display:none}
 .form-row{display:flex;flex-direction:column;gap:9px;margin-bottom:20px}
 .form-row label{font-size:0.92rem;color:var(--cream);font-weight:600;letter-spacing:-0.2px}
 .form-row label .req{color:var(--gold);margin-left:3px}
-.form-row input[type="text"],.form-row input[type="number"],.form-row select{background:rgba(255,255,255,.04);border:1px solid var(--border-line);border-radius:11px;padding:14px 16px;color:var(--cream);font-family:inherit;font-size:0.98rem;width:100%;box-sizing:border-box;transition:border-color .15s,box-shadow .15s,background .15s}
+.form-row input[type="text"],.form-row input[type="number"],.form-row input[type="date"],.form-row select{background:rgba(255,255,255,.04);border:1px solid var(--border-line);border-radius:11px;padding:14px 16px;color:var(--cream);font-family:inherit;font-size:0.98rem;width:100%;box-sizing:border-box;transition:border-color .15s,box-shadow .15s,background .15s}
+.form-row input[type="date"]{color-scheme:dark;letter-spacing:.3px}
+.form-row input[type="date"]::-webkit-datetime-edit{color:var(--cream)}
+.form-row input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(72%) sepia(38%) saturate(560%) hue-rotate(110deg);cursor:pointer;opacity:.85;padding:3px;border-radius:6px;transition:opacity .15s,background .15s}
+.form-row input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1;background:rgba(95,198,163,.14)}
 .form-row input:hover,.form-row select:hover{background:rgba(255,255,255,.06)}
 .form-row input::placeholder{color:var(--text-muted);opacity:.75}
 .form-row input:focus,.form-row select:focus{outline:none;border-color:var(--gold);background:rgba(95,198,163,.05);box-shadow:0 0 0 3px rgba(95,198,163,.16)}
@@ -505,7 +509,7 @@ function renderMonths(courseId){
   const months = course.months||[];
   if(!months.length){ root.appendChild(el('div',{class:'error-box'},'아직 등록된 월이 없습니다.')); appendFooter(); return; }
   const list = el('div',{class:'exam-list'});
-  months.forEach((m,i)=>{
+  months.map((m,i)=>({m,i})).reverse().forEach(({m,i})=>{   // 최신 월을 위로(번호 i는 원래 순서 유지)
     const tentative = m.status==='tentative';
     const wkN = (m.weeks||[]).filter(w=>w.status!=='tentative').length;
     const card = el('button',{class:'exam-card', onclick: tentative?(()=>alert('아직 준비 중인 월입니다.')):(()=>renderWeeks(courseId, m.key))});
@@ -832,6 +836,8 @@ function renderStep2(){
   // ── 과제 완수율(정확한 푼 문항 수) — 매주 필수 조사 (오답 기입 전) ──
   const secsQ = secs.filter(s=>(s.questions||[]).length);
   const weekTotal = secsQ.reduce((n,s)=>n+s.questions.length,0);
+  // 수능 과제(고3 정규반·고2 수능 대비)에서만 '수능 문항'으로 명시 — 일반 개념·유형 과제엔 붙이지 않음
+  const qKind = (['go3-regular','hanti-dan-h2-suneung'].indexOf(STATE.courseId)>=0) ? '수능 문항 ' : '';
   const bySection = !!STATE.data.completionBySection && secsQ.length>1;   // 파트(섹션)별로 완수 입력
   const byChecklist = !!STATE.data.completionByChecklist && secsQ.length>1;   // 세트별 체크리스트로 완수 입력(수능반: 세트마다 문항번호가 달라 세기 어려움 → 체크로 대체)
   const compCard = el('div',{class:'section comp-card'});
@@ -880,7 +886,7 @@ function renderStep2(){
     compCard.appendChild(el('div',{class:'comp-warn'}, '각 파트의 푼 문항 수를 모두 입력해 주세요.'));
     recalc();
   } else {
-    compCard.appendChild(el('div',{class:'comp-desc'},'이번 주 과제로 낸 '+weekTotal+'문항 중, 실제로 푼 문항 수를 적어 주세요. 매주 확인하는 항목이라 꼭 입력해야 다음으로 넘어갈 수 있어요.'));
+    compCard.appendChild(el('div',{class:'comp-desc'},'이번 주 과제로 낸 '+qKind+weekTotal+'문항 중, 실제로 푼 문항 수를 적어 주세요. 매주 확인하는 항목이라 꼭 입력해야 다음으로 넘어갈 수 있어요.'));
     const compRate = el('span',{class:'comp-rate'});
     const inp = el('input',{type:'number', class:'comp-input', min:0, max:weekTotal, step:1, placeholder:'숫자 입력', value:(STATE.solvedTotal!=null?String(STATE.solvedTotal):'')});
     function syncRate(){ const raw=String(inp.value).trim(); if(raw===''){ compRate.textContent=''; return; }
@@ -893,7 +899,7 @@ function renderStep2(){
     const allBtn = el('button',{class:'btn btn-ghost comp-all', onclick:()=>{ inp.value=String(weekTotal); STATE.solvedTotal=weekTotal; compCard.classList.remove('comp-need'); syncRate(); }}, '전부 풀었어요 ('+weekTotal+'문항)');
     syncRate();
     compCard.appendChild(el('div',{class:'comp-row'},
-      el('span',{class:'comp-total'}, weekTotal+'문항 중'), inp, el('span',{class:'comp-unit'},'문항'), compRate));
+      el('span',{class:'comp-total'}, qKind+weekTotal+'문항 중'), inp, el('span',{class:'comp-unit'},'문항'), compRate));
     compCard.appendChild(el('div',{class:'comp-row', style:'margin-top:10px'}, allBtn));
     compCard.appendChild(el('div',{class:'comp-warn'}, '푼 문항 수를 입력해 주세요.'));
   }
