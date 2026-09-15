@@ -115,9 +115,10 @@ window.COURSE_LIST = [
   {
     id: 'hanti-dan-h2-hwaeon2',
     academy: 'hanti',
-    name: 'MEXX 단과 고2 화법과 언어',
+    name: '화법과언어(연합반)',
     grade: '고2',
-    period: 'MEXX 단과',
+    period: '연합반',
+    roster: ['김도윤','김서윤','박호진','배지환','손영서','유현승','장이준'],
     desc: '고2 화법과 언어 — 언어(문법) 4주 과정(품사 · 형태소와 단어 · 음운의 정의와 체계 · 음운변동).',
     weeks: [
       { week: 1, file: 'data/hw-hanti-dan-h2-hwaeon2-w1.json', label: '1주차 · 국어의 품사', area: '품사', status: 'active' },
@@ -134,10 +135,10 @@ window.COURSE_LIST = [
     period: 'MEXX 단과',
     desc: '고2 수능 대비 — 우리들의 첫 수능 국어(문학·독서).',
     weeks: [
-      { week: 1, file: 'data/hw-hanti-dan-h2-suneung-w1.json', label: '1주차 · 교재+워크북 (현대소설·독서)', area: '수능 문학·독서', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-dan-h2-suneung-w2.json', label: '2주차 · 교재+워크북 (소설·독서)', area: '수능 소설·독서', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h2-suneung-w3.json', label: '3주차 · 교재 (문학·독서)', area: '수능 문학·독서', status: 'active' },
-      { week: 4, file: 'data/hw-hanti-dan-h2-suneung-w4.json', label: '4주차 · 교재+워크북 (문학·독서)', area: '수능 문학·독서', status: 'active' }
+      { week: 1, file: 'data/hw-hanti-dan-h2-suneung-w1.json', label: '1주차 · 교재+워크북 (현대소설·독서)', date: '8/30(일)', area: '수능 문학·독서', status: 'active' },
+      { week: 2, file: 'data/hw-hanti-dan-h2-suneung-w2.json', label: '2주차 · 교재+워크북 (소설·독서)', date: '9/6(일)', area: '수능 소설·독서', status: 'active' },
+      { week: 3, file: 'data/hw-hanti-dan-h2-suneung-w3.json', label: '3주차 · 교재 (문학·독서)', date: '9/13(일)', area: '수능 문학·독서', status: 'active' },
+      { week: 4, tag: '3주차 (2)', file: 'data/hw-hanti-dan-h2-suneung-w4.json', label: '3주차 워크북 (문학·독서)', date: '9/13(일)', area: '수능 문학·독서', status: 'active' }
     ]
   },
 
