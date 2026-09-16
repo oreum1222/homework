@@ -119,12 +119,11 @@ window.COURSE_LIST = [
     grade: '고2',
     period: '연합반',
     roster: ['김도윤','김서윤','박호진','배지환','손영서','유현승','장이준'],
-    desc: '고2 화법과 언어 — 언어(문법) 4주 과정(품사 · 형태소와 단어 · 음운의 정의와 체계 · 음운변동).',
+    desc: '고2 화법과 언어 — 언어(문법) 3주 과정(품사 · 형태소와 단어 · 음운(정의와 체계 + 변동)).',
     weeks: [
       { week: 1, file: 'data/hw-hanti-dan-h2-hwaeon2-w1.json', label: '1주차 · 국어의 품사', area: '품사', status: 'active' },
       { week: 2, file: 'data/hw-hanti-dan-h2-hwaeon2-w2.json', label: '2주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h2-hwaeon2-w3.json', label: '3주차 · 음운의 정의와 체계', area: '음운의 체계', status: 'active' },
-      { week: 4, file: 'data/hw-hanti-dan-h2-hwaeon2-w4.json', label: '4주차 · 음운변동', area: '음운의 변동', status: 'active' }
+      { week: 3, file: 'data/hw-hanti-dan-h2-hwaeon2-w3.json', label: '3주차 · 음운의 정의와 체계 + 음운변동', area: '음운', status: 'active' }
     ]
   },
   {
