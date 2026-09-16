@@ -137,7 +137,7 @@ window.COURSE_LIST = [
       { week: 1, file: 'data/hw-hanti-dan-h2-suneung-w1.json', label: '1주차 · 교재+워크북 (현대소설·독서)', date: '8/30(일)', area: '수능 문학·독서', status: 'active' },
       { week: 2, file: 'data/hw-hanti-dan-h2-suneung-w2.json', label: '2주차 · 교재+워크북 (소설·독서)', date: '9/6(일)', area: '수능 소설·독서', status: 'active' },
       { week: 3, file: 'data/hw-hanti-dan-h2-suneung-w3.json', label: '3주차 · 교재 (문학·독서)', date: '9/13(일)', area: '수능 문학·독서', status: 'active' },
-      { week: 4, file: 'data/hw-hanti-dan-h2-suneung-w4.json', label: '4주차 · 교재+워크북 (문학·독서)', date: '', area: '수능 문학·독서', status: 'active' }
+      { week: 4, tag: '3주차 (2)', file: 'data/hw-hanti-dan-h2-suneung-w4.json', label: '3주차 워크북 (문학·독서)', date: '9/13(일)', area: '수능 문학·독서', status: 'active' }
     ]
   },
 
