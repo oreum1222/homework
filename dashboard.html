@@ -99,6 +99,8 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 .rep-search{margin-left:auto;background:var(--bg-dark);border:1px solid var(--border-line);color:var(--cream);font-size:0.85rem;padding:8px 14px;border-radius:18px;outline:none;width:170px}
 .rep-search:focus{border-color:var(--gold)}
 .repcard{background:var(--bg-card);border:1px solid var(--border-line);border-radius:8px;padding:30px 32px;margin-bottom:22px;position:relative;overflow:hidden}
+.repcard{content-visibility:auto;contain-intrinsic-size:auto 1400px}
+.repcard.cap-now,.cap-now .repcard{content-visibility:visible}
 .repcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);opacity:.7}
 .rc-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:1px solid var(--border-soft);margin-bottom:20px}
 .rc-name{font-family:'Noto Serif KR',serif;font-size:1.5rem;font-weight:700;color:var(--cream)}
@@ -760,6 +762,7 @@ function switchTab(t){
   const tn=document.getElementById('tabNl'); if(tn) tn.classList.toggle('on',t==='nl');
   if(t==='sms') smsInit();
   if(t==='nl') nlInit();
+  if(t==='report' && REP._dirty) renderReports();
 }
 
 // ════════════════════════ 가정통신문 작성 ════════════════════════
@@ -793,7 +796,7 @@ function obsLoad_(cb, force){
   hwFetch(SCRIPT_URL+'?action=observchecks&t='+Date.now()).then(function(r){return r.json();}).then(function(d){
     OBS.rows=Array.isArray(d)?d:[]; OBS.byStu={};
     OBS.rows.forEach(function(r){ var k=obsStuKey_(r.courseId,r.name); (OBS.byStu[k]=OBS.byStu[k]||{})[r.key]={kw:r.kw,cat:r.cat,week:r.week,ts:r.ts}; });
-    OBS.loaded=true; cb&&cb();
+    OBS.loaded=true; OBS.at=Date.now(); cb&&cb();
   }).catch(function(){ OBS.loaded=true; cb&&cb(); });
 }
 function obsSavedFor_(name){ return OBS.byStu[obsStuKey_(nlCidFor_(name),name)]||{}; }
@@ -856,7 +859,9 @@ function nlSelectStudent(name){
   var _pe=document.getElementById('nlPhoneEdit'); if(_pe) _pe.style.display=name?'':'none';
   if(!name) return;
   nlLoadPhones_(name);
-  obsLoad_(function(){ obsApplyToChecks_(name); nlRenderCards(); nlRenderChecklist(); nlAssemble(); }, true);   // 서버 누적 관찰 → 자동 복원(매번 최신 재조회 — 조교가 방금 체크한 것도 반영)
+  // 관찰 기록: 60초 안에 받은 게 있으면 재사용. 새로 받은 결과가 지금 체크와 같으면 다시 그리지 않는다(입력 중 화면이 튀지 않게)
+  var _stale=(Date.now()-(OBS.at||0))>60000;
+  obsLoad_(function(){ if(NLW.student!==name) return; var _b=JSON.stringify(NLW.checks); obsApplyToChecks_(name); if(JSON.stringify(NLW.checks)===_b) return; nlRenderCards(); nlRenderChecklist(); nlAssemble(); }, _stale);   // 서버 누적 관찰 → 자동 복원(매번 최신 재조회 — 조교가 방금 체크한 것도 반영)
   nlRenderData(); nlRenderCards(); nlRenderChecklist(); nlAssemble();
   // ver3 자동 초안 채우기(학생 바뀌면 새로)
   try{ var d=nlGatherV3_(name); if(d&&d.n){ var t=nlDrafts_(d);
@@ -1159,7 +1164,18 @@ function nlBuildPage2(name, comment){
     +'<div class="nlp-sec-t" style="margin-bottom:18px">'+esc(name)+' 학생 · 선생님 종합 의견</div>'
     +'<div class="nlp-comment">'+esc(comment||'')+'</div>'+sign+'</div></div>';
 }
-function nlCap_(node){ return html2canvas(node,{scale:2,backgroundColor:'#f7f4ec',useCORS:true,logging:false,windowWidth:node.scrollWidth,windowHeight:node.scrollHeight}); }
+// html2canvas는 캡처마다 문서 전체를 복제한다. 대상과 무관한 탭과 다른 리포트 카드는 복제에서 뺀다.
+const CAP_HEAVY_IDS_={listPane:1,reportPane:1,smsPane:1,nlPane:1};
+function capIgnore_(target){
+  return function(el){
+    if(!el || el.nodeType!==1 || !target) return false;
+    if(el===target || el.contains(target) || target.contains(el)) return false;
+    if(CAP_HEAVY_IDS_[el.id]) return true;
+    if(el.classList && el.classList.contains('repcard')) return true;
+    return false;
+  };
+}
+function nlCap_(node){ return html2canvas(node,{ignoreElements:capIgnore_(node),scale:2,backgroundColor:'#f7f4ec',useCORS:true,logging:false,windowWidth:node.scrollWidth,windowHeight:node.scrollHeight}); }
 // ════════ 가정통신문 ver3 (4면 · 실데이터) ════════
 function nlNavy_(r){ var t=Math.max(0,Math.min(1,(r-60)/40)),a=[176,190,216],b=[20,34,62]; return 'rgb('+a.map(function(v,i){return Math.round(v+(b[i]-v)*t);}).join(',')+')'; }
 function nlV3Line_(items){
@@ -2297,7 +2313,11 @@ function weekStatusPanel(master){
   const rn = SMS.loaded?'':' <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(명단 불러오는 중 — 미응답 곧 정확해짐)</span>';
   return '<details class="miss-panel" style="border-left-color:var(--gold);border-color:rgba(212,180,131,.3)"><summary class="miss-title" style="color:var(--gold);cursor:pointer;user-select:none">📋 주차별 과제 현황 펼치기 <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(반별 · 모든 반 표시 · 미응답=제출없음 · 미완료=해결 71%↓ · 완료=71%↑ · 이름 클릭=예외처리[보류·결석, 문자 제외])</span>'+rn+'</summary><div style="margin-top:10px">'+out+'</div></details>';
 }
+function repVisible_(){ const p=document.getElementById('reportPane'); return !!p && p.style.display!=='none'; }
 function renderReports(){
+  // 리포트 탭이 숨어 있으면 그리지 않고 표시만 해 둔다(탭을 열 때 그림) — 숨은 DOM 7만여 개 재생성이 다른 탭 입력을 멈추게 했음
+  if(!repVisible_()){ REP._dirty=true; try{ ensureReportData(); }catch(e){} return; }
+  REP._dirty=false;
   const root=document.getElementById('reportRoot'), note=document.getElementById('repNote');
   let master=REP.master;
   if(REP.course!=='all') master=master.filter(m=>m.courseId===REP.course);
@@ -2391,11 +2411,12 @@ function repLibsReady(){ return !!(window.html2canvas&&getJsPDF()); }
 async function repCapture(t){
   // 학부모 전송 PDF에는 '조교용 코멘트 영역'과 'PDF 버튼'을 빼고 캡처
   const light=PDF_LIGHT; if(light) t.classList.add('pdf-light');
+  t.classList.add('cap-now');
   const hidden=[].slice.call(t.querySelectorAll('.rc-cmt, .rpdf-btn'));
   const prev=hidden.map(e=>e.style.display); hidden.forEach(e=>e.style.display='none');
   let c;
-  try{ c=await html2canvas(t,{scale:2,backgroundColor:pdfCapBg('#1d242b'),useCORS:true,logging:false,windowWidth:t.scrollWidth}); }
-  finally{ hidden.forEach((e,i)=>e.style.display=prev[i]); if(light) t.classList.remove('pdf-light'); }
+  try{ c=await html2canvas(t,{ignoreElements:capIgnore_(t),scale:2,backgroundColor:pdfCapBg('#1d242b'),useCORS:true,logging:false,windowWidth:t.scrollWidth}); }
+  finally{ hidden.forEach((e,i)=>e.style.display=prev[i]); if(light) t.classList.remove('pdf-light'); t.classList.remove('cap-now'); }
   return c; }
 // A4 3쪽 분할 캡처: 1쪽(주차별 기록까지)·2쪽(영역별 정답률)·3쪽(나머지). data-page 없는 요소(머리·꼬리)는 매 쪽에 유지.
 async function repCapturePaged(t){
@@ -2409,7 +2430,7 @@ async function repCapturePaged(t){
     for(const p of pages){
       const prev=paged.map(e=>e.style.display);
       paged.forEach(function(e){ e.style.display=(e.getAttribute('data-page')===p)?'':'none'; });
-      const c=await html2canvas(t,{scale:2,backgroundColor:pdfCapBg('#1d242b'),useCORS:true,logging:false,windowWidth:t.scrollWidth});
+      const c=await html2canvas(t,{ignoreElements:capIgnore_(t),scale:2,backgroundColor:pdfCapBg('#1d242b'),useCORS:true,logging:false,windowWidth:t.scrollWidth});
       canvases.push(c);
       paged.forEach(function(e,i){ e.style.display=prev[i]; });
     }
@@ -2668,7 +2689,7 @@ function buildCoverHTML(title, sub, meta){
 async function nlCapture(node){
   const light=PDF_LIGHT; if(light) node.classList.add('pdf-light');
   let c;
-  try{ c=await html2canvas(node,{scale:2,backgroundColor:pdfCapBg('#13181d'),useCORS:true,logging:false,windowWidth:node.scrollWidth}); }
+  try{ c=await html2canvas(node,{ignoreElements:capIgnore_(node),scale:2,backgroundColor:pdfCapBg('#13181d'),useCORS:true,logging:false,windowWidth:node.scrollWidth}); }
   finally{ if(light) node.classList.remove('pdf-light'); }
   return c; }
 // 페이지 경계가 내용 중간이면 위쪽 '여백(빈 줄)'을 찾아 거기서 자름 → 박스가 두 장에 걸쳐 잘리지 않음
