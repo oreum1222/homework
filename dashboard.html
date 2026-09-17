@@ -639,9 +639,9 @@ function weekSubmitOverview(courseFilter){
       +(multi?'<div style="color:var(--cream);font-weight:500;font-size:.9rem;margin-bottom:4px">'+esc(COURSE_NAME[cid]||cid)+' <span style="color:var(--text-muted);font-weight:400;font-size:.8rem">· 반 '+total+'명</span></div>':'')
       +rows+'</div>';
   });
-  return '<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)">'
-    +'<div style="color:#9fd0ad;font-size:.9rem;font-weight:500;margin-bottom:2px">주차별 제출 현황 <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(반 전체 = 제출 이력 학생'+(SMS.loaded?'+명단':'')+' 기준 · 막대=제출 비율 · 행에 마우스=미제출자)</span></div>'
-    +blocks+'</div>';
+  return '<details class="wsub-toggle" style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)">'
+    +'<summary style="cursor:pointer;color:#9fd0ad;font-size:.9rem;font-weight:500;user-select:none">주차별 제출 현황 펼치기 <span style="color:var(--text-muted);font-weight:400;font-size:.78rem">(반 전체 대비 제출 비율 · 행에 마우스=미제출자)</span></summary>'
+    +'<div style="margin-top:8px">'+blocks+'</div></details>';
 }
 function renderStatsAndTable(){
   const course=document.getElementById('courseSelect').value;
@@ -2252,7 +2252,7 @@ function weekStatusPanel(master){
       part.sort((a,b)=>(a.dr||0)-(b.dr||0)); done.sort((a,b)=>(b.dr||0)-(a.dr||0));
       const respEx=resp.filter(x=>x.ov).length;
       cResp+=resp.length; cPart+=part.length; cDone+=done.length;
-      cHtml+='<details class="wk-acc"'+(wi===0?' open':'')+'><summary>'+esc(weekShort(w))
+      cHtml+='<details class="wk-acc"><summary>'+esc(weekShort(w))
         +' <span class="wk-cnt resp">미응답 '+resp.length+(respEx?' · 예외 '+respEx:'')+'</span><span class="wk-cnt part">미완료 '+part.length+'</span><span class="wk-cnt done">완료 '+done.length+'</span></summary>'
         +wkGrp_('미응답',resp,'resp',cid,w)+wkGrp_('미완료',part,'part',cid,w)+wkGrp_('완료',done,'done',cid,w)+'</details>';
     });
@@ -2261,7 +2261,7 @@ function weekStatusPanel(master){
   });
   if(!out) return '';
   const rn = SMS.loaded?'':' <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(명단 불러오는 중 — 미응답 곧 정확해짐)</span>';
-  return '<div class="miss-panel" style="border-left-color:var(--gold);border-color:rgba(212,180,131,.3)"><div class="miss-title" style="color:var(--gold)">📋 주차별 과제 현황 <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(반별 · 위 강좌 선택과 무관하게 모든 반 표시 · 미응답=제출없음 · 미완료=해결 71%↓ · 완료=71%↑ · 이름 클릭=예외처리[보류·결석, 문자 제외])</span>'+rn+'</div>'+out+'</div>';
+  return '<details class="miss-panel" style="border-left-color:var(--gold);border-color:rgba(212,180,131,.3)"><summary class="miss-title" style="color:var(--gold);cursor:pointer;user-select:none">📋 주차별 과제 현황 펼치기 <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(반별 · 모든 반 표시 · 미응답=제출없음 · 미완료=해결 71%↓ · 완료=71%↑ · 이름 클릭=예외처리[보류·결석, 문자 제외])</span>'+rn+'</summary><div style="margin-top:10px">'+out+'</div></details>';
 }
 function renderReports(){
   const root=document.getElementById('reportRoot'), note=document.getElementById('repNote');
