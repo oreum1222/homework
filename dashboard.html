@@ -499,7 +499,7 @@ tr:hover td{background:var(--bg-card-hover);color:var(--cream)}
 <script src="config.js"></script>
 <script src="data/courses.js?v=20260805c"></script>
 <script>
-let SCRIPT_URL=null, DASH_PASSWORD=null, BRAND='오름 국어 연구소', TEACHER='가경T', LOGO_URL='', LOGO_NAVY_URL='';
+let SCRIPT_URL=null, BRAND='오름 국어 연구소', TEACHER='가경T', LOGO_URL='', LOGO_NAVY_URL='';
 const COURSES = window.COURSE_LIST || [];
 const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 // 삭제된(과거) 반 — 제출 이력이 남아 있어 반명만 유지 (드롭다운·리포트에 raw ID 대신 표시)
@@ -527,23 +527,56 @@ let ALL_DATA = [];
 function loadConfig(){
   return new Promise(resolve=>{
     const c = window.OREUM_HW_CONFIG;
-    if(c){ SCRIPT_URL=c.SCRIPT_URL||null; DASH_PASSWORD=c.DASH_PASSWORD||null; BRAND=c.BRAND||BRAND; TEACHER=c.TEACHER||TEACHER; LOGO_URL=c.LOGO_URL||''; LOGO_NAVY_URL=c.LOGO_NAVY_URL||''; }
+    if(c){ SCRIPT_URL=c.SCRIPT_URL||null; BRAND=c.BRAND||BRAND; TEACHER=c.TEACHER||TEACHER; LOGO_URL=c.LOGO_URL||''; LOGO_NAVY_URL=c.LOGO_NAVY_URL||''; }
     document.getElementById('brandSub').textContent = TEACHER+' · '+BRAND;
     var _cl=document.querySelector('.corner-logo');
     if(_cl){ if(LOGO_URL) _cl.src=LOGO_URL; else _cl.style.display='none'; }
     resolve();
   });
 }
+// ── 서버 인증(2026-09-18 보안 수정) ──
+// 비밀번호는 Apps Script 스크립트 속성 DASH_PASSWORD에서만 확인한다. 입력값은 이 탭 sessionStorage에만 둔다.
+// 서버 호출은 모두 hwFetch를 거친다: 조회(GET)는 POST로 바꾸고, 모든 요청 본문에 auth를 붙인다(비밀값이 URL에 남지 않게).
+const HW_AUTH_KEY='oreum_hw_pw';
+function hwAuth_(){ try{ return sessionStorage.getItem(HW_AUTH_KEY)||''; }catch(e){ return ''; } }
+function hwFetch(url, opt){
+  opt = opt || {};
+  const base = SCRIPT_URL || '';
+  const u = String(url);
+  if(base && u.indexOf(base)===0){
+    const FORM = {'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'};
+    if(!opt.method || String(opt.method).toUpperCase()==='GET'){
+      const q = u.slice(base.length).replace(/^\?/,'');
+      const ps = new URLSearchParams(q); ps.delete('t'); ps.set('auth', hwAuth_());
+      return fetch(base, {method:'POST', headers:FORM, body:ps.toString()});
+    }
+    if(typeof opt.body==='string') opt = Object.assign({}, opt, {body: opt.body+'&auth='+encodeURIComponent(hwAuth_())});
+    else if(opt.body instanceof URLSearchParams) opt.body.set('auth', hwAuth_());
+  }
+  return fetch(url, opt);
+}
+function hwUnauthorized_(d){ return d && d.ok===false && d.error==='unauthorized'; }
 function checkPassword(){
   const pw=document.getElementById('pwInput').value, msg=document.getElementById('gateMsg'); msg.innerHTML='';
-  if(!DASH_PASSWORD){ msg.innerHTML='<div class="error">config.js에 DASH_PASSWORD가 설정되지 않았습니다.</div>'; return; }
-  if(pw===DASH_PASSWORD){
+  if(!SCRIPT_URL){ msg.innerHTML='<div class="error">config.js의 SCRIPT_URL이 설정되지 않았습니다.</div>'; return; }
+  if(!pw){ msg.innerHTML='<div class="error">비밀번호를 입력해 주세요.</div>'; return; }
+  try{ sessionStorage.setItem(HW_AUTH_KEY, pw); }catch(e){}
+  msg.innerHTML='<div class="empty">확인 중...</div>';
+  hwFetch(SCRIPT_URL+'?action=overrides').then(r=>r.json()).then(d=>{
+    if(!Array.isArray(d)){
+      try{ sessionStorage.removeItem(HW_AUTH_KEY); }catch(e){}
+      msg.innerHTML='<div class="error">비밀번호가 일치하지 않습니다.</div>'; return;
+    }
+    msg.innerHTML='';
     document.getElementById('gate').classList.add('hide');
     document.getElementById('main').classList.remove('hide');
-    sessionStorage.setItem('oreum_hw_auth','1'); loadData();
-  } else { msg.innerHTML='<div class="error">비밀번호가 일치하지 않습니다.</div>'; }
+    loadData();
+  }).catch(err=>{
+    try{ sessionStorage.removeItem(HW_AUTH_KEY); }catch(e){}
+    msg.innerHTML='<div class="error">서버에 연결하지 못했습니다: '+err.message+'</div>';
+  });
 }
-function logout(){ sessionStorage.removeItem('oreum_hw_auth'); document.getElementById('main').classList.add('hide'); document.getElementById('gate').classList.remove('hide'); document.getElementById('pwInput').value=''; }
+function logout(){ try{ sessionStorage.removeItem(HW_AUTH_KEY); sessionStorage.removeItem('oreum_hw_auth'); }catch(e){} document.getElementById('main').classList.add('hide'); document.getElementById('gate').classList.remove('hide'); document.getElementById('pwInput').value=''; }
 
 function loadData(){
   const msg=document.getElementById('loadMsg'), tableBox=document.getElementById('tableBox'); msg.innerHTML='';
@@ -553,7 +586,8 @@ function loadData(){
   }
   tableBox.innerHTML='<div class="empty">불러오는 중...</div>';
   populateSelectors();   // 데이터 오기 전에도 강좌 드롭다운을 레지스트리로 즉시 채움
-  fetch(SCRIPT_URL+'?action=list&t='+Date.now()).then(r=>r.json()).then(d=>{
+  hwFetch(SCRIPT_URL+'?action=list').then(r=>r.json()).then(d=>{
+    if(hwUnauthorized_(d)){ logout(); document.getElementById('gateMsg').innerHTML='<div class="error">다시 로그인해 주세요.</div>'; return; }
     ALL_DATA = Array.isArray(d)?d:(d.data||[]);
     buildWLAB();
     populateSelectors(); renderStatsAndTable(); buildReports();
@@ -756,7 +790,7 @@ function obsBuildKeymap_(){
 function obsLoad_(cb, force){
   if(OBS.loaded && !force){ cb&&cb(); return; }   // force=true면 서버에서 다시 불러옴(조교가 방금 체크한 것 반영)
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ OBS.loaded=true; cb&&cb(); return; }
-  fetch(SCRIPT_URL+'?action=observchecks&t='+Date.now()).then(function(r){return r.json();}).then(function(d){
+  hwFetch(SCRIPT_URL+'?action=observchecks&t='+Date.now()).then(function(r){return r.json();}).then(function(d){
     OBS.rows=Array.isArray(d)?d:[]; OBS.byStu={};
     OBS.rows.forEach(function(r){ var k=obsStuKey_(r.courseId,r.name); (OBS.byStu[k]=OBS.byStu[k]||{})[r.key]={kw:r.kw,cat:r.cat,week:r.week,ts:r.ts}; });
     OBS.loaded=true; cb&&cb();
@@ -783,7 +817,7 @@ function obsSave_(id, on){   // 체크/해제 시 서버 저장(낙관적)
   if(on) OBS.byStu[sk][key]={kw:meta.kw,cat:meta.cat,week:week,ts:'(방금)'}; else delete OBS.byStu[sk][key];
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')) return;
   var rows=JSON.stringify([{courseId:cid,name:NLW.student,key:key,kw:meta.kw||'',cat:meta.cat||'',week:week,on:on?1:0,by:'가경T'}]);
-  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:'action=observCheck&rows='+encodeURIComponent(rows)})
+  hwFetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:'action=observCheck&rows='+encodeURIComponent(rows)})
     .then(function(r){return r.json();}).catch(function(){});
 }
 function nlRefreshSelects_(){   // REP.master/SMS.roster 도착 후 강좌·학생 셀렉트 갱신
@@ -870,7 +904,7 @@ function nlSavePhones(){
   var cids={}; rows.forEach(function(r){ cids[String(r.courseId)]=1; });
   var payload=Object.keys(cids).map(function(cid){ var o={courseId:cid,name:name}; if(sp) o.studentPhone=sp; if(gp) o.guardianPhone=gp; return o; });
   if(me){ me.style.color='var(--text-muted)'; me.textContent='저장 중…'; }
-  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+  hwFetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
     body:'action=adminRoster&key='+encodeURIComponent(key)+'&rows='+encodeURIComponent(JSON.stringify(payload))})
     .then(function(r){return r.json();}).then(function(d){
       if(!d || d.ok===false){ var er=(d&&d.error)||'오류'; if(me){ me.style.color='#e08a8a'; me.textContent='실패: '+er; } if(/키/.test(er)) nlClearAdminKey_(); return; }
@@ -1388,7 +1422,7 @@ function nlEditServerSave(cid,nm,html,del){   // 편집 창에서 opener 통해 
   // 로고 data URI(대용량·반복)를 토큰으로 치환해 저장 → 셀 용량 절약(로드 시 복원)
   var slim = del ? '' : String(html||'').replace(/src="data:[^"]*"/g,'src="__LOGO__"');
   var body='action=gatonEditSave&courseId='+encodeURIComponent(cid||'')+'&name='+encodeURIComponent(nm)+(del?'&del=1':'&html='+encodeURIComponent(slim));
-  return fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body}).then(function(r){return r.json();});
+  return hwFetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body}).then(function(r){return r.json();});
 }
 function nlOpenEditor(){
   if(!NLW.student){ alert('학생을 먼저 선택하세요.'); return; }
@@ -1400,7 +1434,7 @@ function nlOpenEditor(){
   var w=window.open('','_blank','width=940,height=1000');
   if(!w){ alert('팝업이 차단되었습니다. 브라우저에서 이 사이트의 팝업을 허용한 뒤 다시 시도하세요.'); return; }
   try{ w.document.write('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;padding:40px;color:#666">가정통신문 불러오는 중…</body>'); w.document.close(); }catch(e){}
-  fetch(SCRIPT_URL+'?action=gatonEditLoad&course='+encodeURIComponent(cid)+'&name='+encodeURIComponent(c.name)+'&t='+Date.now())
+  hwFetch(SCRIPT_URL+'?action=gatonEditLoad&course='+encodeURIComponent(cid)+'&name='+encodeURIComponent(c.name)+'&t='+Date.now())
     .then(function(r){return r.json();}).catch(function(){return {html:''};})
     .then(function(saved){
       var hasSaved=!!(saved&&saved.html);
@@ -1492,7 +1526,7 @@ function smsReloadRoster(){
   const msg=document.getElementById('smsRosterMsg');
   if(!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR')){ msg.textContent='SCRIPT_URL 미설정 — 명단을 불러올 수 없습니다.'; SMS.roster=[]; SMS.loaded=true; smsClassifyRender(); return; }
   msg.textContent='명단 불러오는 중…';
-  fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{
+  hwFetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{
     SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true;
     const inactive=SMS.roster.filter(r=>!rosterActiveJS(r)).length;
     msg.textContent='명단 '+SMS.roster.length+'명'+(inactive?' (휴원·퇴원 '+inactive+'명 제외)':'');
@@ -1647,7 +1681,7 @@ function smsSend(){
   if(!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR')){ alert('실제 발송은 SCRIPT_URL 설정이 필요합니다.'); return; }
   const rbox=document.getElementById('smsResult'); rbox.innerHTML='<div class="empty">발송 중…</div>';
   const body='action=sendMessages&dryRun=0&messages='+encodeURIComponent(JSON.stringify(msgs));
-  fetch(SCRIPT_URL,{ method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body:body })
+  hwFetch(SCRIPT_URL,{ method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body:body })
     .then(r=>r.json()).then(d=>smsShowResult(d,msgs))
     .catch(e=>{ rbox.innerHTML='<div class="error">발송 요청 실패: '+esc(e.message)+'</div>'; });
 }
@@ -1891,9 +1925,9 @@ function jsesc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 function ensureReportData(){   // 미응답 분류용 명단 + 예외처리 1회 로드 후 재렌더
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ SMS.loaded=true; OVR.loaded=true; return; }
   if(!SMS.loaded && !SMS._loading){ SMS._loading=true;
-    fetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); if(ALL_DATA.length && document.getElementById('statsBox')) renderStatsAndTable(); if(typeof nlRefreshSelects_==='function' && document.getElementById('nlCourse')) nlRefreshSelects_(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; }); }
+    hwFetch(SCRIPT_URL+'?action=roster&t='+Date.now()).then(r=>r.json()).then(d=>{ SMS.roster=Array.isArray(d)?d:(d.data||[]); SMS.loaded=true; SMS._loading=false; renderReports(); if(ALL_DATA.length && document.getElementById('statsBox')) renderStatsAndTable(); if(typeof nlRefreshSelects_==='function' && document.getElementById('nlCourse')) nlRefreshSelects_(); }).catch(()=>{ SMS.loaded=true; SMS._loading=false; }); }
   if(!OVR.loaded && !OVR._loading){ OVR._loading=true;
-    fetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>{ setOVR_(Array.isArray(d)?d:[]); OVR._loading=false; renderReports(); }).catch(()=>{ OVR.loaded=true; OVR._loading=false; }); }
+    hwFetch(SCRIPT_URL+'?action=overrides&t='+Date.now()).then(r=>r.json()).then(d=>{ setOVR_(Array.isArray(d)?d:[]); OVR._loading=false; renderReports(); }).catch(()=>{ OVR.loaded=true; OVR._loading=false; }); }
 }
 function wkSetEx(cid, w, name, on){   // 강사 클릭 → 예외(보류·결석)처리 토글: 미응답 분류 유지 + 문자만 제외. 시트 저장.
   if(!SCRIPT_URL||SCRIPT_URL.includes('PASTE_YOUR')){ alert('SCRIPT_URL 미설정으로 저장할 수 없습니다.'); return; }
@@ -1901,7 +1935,7 @@ function wkSetEx(cid, w, name, on){   // 강사 클릭 → 예외(보류·결석
   if(on) OVR.set.add(key); else OVR.set.delete(key);   // 낙관적 반영
   renderReports();
   const body='action=markDone&courseId='+encodeURIComponent(cid)+'&week='+encodeURIComponent(w)+'&name='+encodeURIComponent(name)+'&on='+(on?'1':'0');
-  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body})
+  hwFetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:body})
     .then(r=>r.json()).then(d=>{ if(!d||!d.ok){ if(on)OVR.set.delete(key); else OVR.set.add(key); renderReports(); alert('예외 처리 저장 실패: '+((d&&d.error)||'')); } })
     .catch(e=>{ if(on)OVR.set.delete(key); else OVR.set.add(key); renderReports(); alert('예외 처리 저장 실패: '+e.message); });
 }
@@ -2723,7 +2757,8 @@ async function printNewsletterAll(){
 }
 
 loadConfig().then(()=>{
-  if(sessionStorage.getItem('oreum_hw_auth')==='1' && DASH_PASSWORD){
+  try{ sessionStorage.removeItem('oreum_hw_auth'); }catch(e){}   // 예전 방식의 통과 표시는 버린다
+  if(hwAuth_() && SCRIPT_URL){
     document.getElementById('gate').classList.add('hide');
     document.getElementById('main').classList.remove('hide');
     loadData();
