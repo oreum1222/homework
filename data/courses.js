@@ -141,35 +141,6 @@ window.COURSE_LIST = [
     ]
   },
 
-  // ═══ 약술형 논술 — 가천대 실전 모의고사 (시즌 → 회차) ═══
-  {
-    id: 'gachon-yaksul',
-    name: '가천대 약술 실전 모의고사',
-    academy: 'oreum',
-    grade: '고3',
-    desc: '시즌을 고르고 회차를 선택하세요. 국어는 소문항마다 틀린 칸을 체크하고 쓴 답을 적습니다.',
-    period: '2027학년도 대비',
-    months: [
-      { key: 'gachon-s1', month: '시즌1', status: 'active', desc: '가천대 약술형 논술 실전 모의고사 시즌1', weeks: [
-          { week: 11, file: 'data/hw-gachon-s1-1.json', label: '가천대 실전 모의고사 1-1회 (시즌1)', area: '약술형 논술', status: 'active' },
-          { week: 12, file: 'data/hw-gachon-s1-2.json', label: '가천대 실전 모의고사 1-2회 (시즌1)', area: '약술형 논술', status: 'active' },
-          { week: 13, file: 'data/hw-gachon-s1-3.json', label: '가천대 실전 모의고사 1-3회 (시즌1)', area: '약술형 논술', status: 'active' },
-          { week: 14, file: 'data/hw-gachon-s1-4.json', label: '가천대 실전 모의고사 1-4회 (시즌1)', area: '약술형 논술', status: 'active' },
-        ] },
-      { key: 'gachon-s2', month: '시즌2', status: 'active', desc: '가천대 약술형 논술 실전 모의고사 시즌2', weeks: [
-          { week: 21, file: 'data/hw-gachon-s2-1.json', label: '가천대 실전 모의고사 2-1회 (시즌2)', area: '약술형 논술', status: 'active' },
-          { week: 22, file: 'data/hw-gachon-s2-2.json', label: '가천대 실전 모의고사 2-2회 (시즌2)', area: '약술형 논술', status: 'active' },
-          { week: 24, file: 'data/hw-gachon-s2-4.json', label: '가천대 실전 모의고사 2-4회 (시즌2)', area: '약술형 논술', status: 'active' },
-        ] },
-      { key: 'gachon-s3', month: '시즌3', status: 'active', desc: '가천대 약술형 논술 실전 모의고사 시즌3', weeks: [
-          { week: 31, file: 'data/hw-gachon-s3-1.json', label: '가천대 실전 모의고사 3-1회 (시즌3)', area: '약술형 논술', status: 'active' },
-          { week: 32, file: 'data/hw-gachon-s3-2.json', label: '가천대 실전 모의고사 3-2회 (시즌3)', area: '약술형 논술', status: 'active' },
-          { week: 33, file: 'data/hw-gachon-s3-3.json', label: '가천대 실전 모의고사 3-3회 (시즌3)', area: '약술형 논술', status: 'active' },
-          { week: 34, file: 'data/hw-gachon-s3-4.json', label: '가천대 실전 모의고사 3-4회 (시즌3)', area: '약술형 논술', status: 'active' },
-        ] },
-    ]
-  },
-
   // ┌─ 새 수업 추가 예시 (주석 해제해서 사용) ─────────────────────────
   // {
   //   id: 'dokseo',
