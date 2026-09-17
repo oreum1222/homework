@@ -5,7 +5,7 @@
  *    아래 SCRIPT_URL 에는 숙제 전용으로 새로 배포한 웹앱 URL을 넣으세요.
  *    (AppsScript.gs 를 새 스프레드시트에 붙여넣고 '배포 → 웹앱'으로 받은 URL)
  *
- *  비밀번호를 바꾸려면 DASH_PASSWORD 값만 수정하세요.
+ *  대시보드 비밀번호는 여기 두지 않는다(공개 파일). Apps Script 스크립트 속성 DASH_PASSWORD에서 관리.
  */
 
 window.OREUM_HW_CONFIG = {
@@ -14,7 +14,6 @@ window.OREUM_HW_CONFIG = {
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwQ30abPMwhN8OPS9FfaSIPwd3FtH6VLljuELWifzBwY_gr20Vh4kursrj8VNY_kgb9EA/exec",
 
   // 강사 대시보드 비밀번호 — 본인만 알기 (필요 시 수정)
-  DASH_PASSWORD: "74527697",
 
   // 브랜드 표기 (학생 화면·리포트 푸터에 노출)
   BRAND: "김가경 국어 연구소",

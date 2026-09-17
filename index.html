@@ -1421,21 +1421,14 @@ function scoreCard(label, num, sub){
 function computeRank(){
   const rankEl = document.getElementById('rankLine'); if(!rankEl) return;
   if(!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR')){ rankEl.style.display='none'; return; }
-  fetch(SCRIPT_URL+'?action=list&t='+Date.now()).then(r=>r.json()).then(d=>{
-    const rows = Array.isArray(d)?d:(d.data||[]);
-    const my = String(STATE.student.name||'').trim();
-    const best = {};
-    rows.forEach(row=>{
-      if(String(row.courseId)!==String(STATE.courseId)) return;
-      if(String(row.week)!==String(STATE.week)) return;
-      const nm = String(row.name||'').trim(); if(!nm) return;
-      let rt = Number(row['맞은개수']); if(isNaN(rt)) rt=(Number(row['총문항'])||0)-(Number(row['틀린개수'])||0); if(isNaN(rt)) return;
-      if(best[nm]==null || rt>best[nm]) best[nm]=rt;
-    });
-    best[my] = STATE.result.correct;                    // 나(최신) 포함 — 맞은 개수(실질 정답률) 기준
-    const myRate = best[my]; let rank=1;
-    Object.keys(best).forEach(n=>{ if(best[n]>myRate) rank++; });
-    const N = Object.keys(best).length;
+  // 순위는 서버 rank 요청으로 계산한다: 다른 학생들의 최고 맞은 개수(이름 없음)만 받는다(2026-09-18, 전체 목록 6MB 다운로드 제거)
+  const q = 'action=rank&courseId='+encodeURIComponent(STATE.courseId)+'&week='+encodeURIComponent(STATE.week)+'&name='+encodeURIComponent(String(STATE.student.name||'').trim());
+  fetch(SCRIPT_URL+'?'+q).then(r=>r.json()).then(d=>{
+    if(!d || d.ok!==true){ rankEl.style.display='none'; return; }
+    const others = Array.isArray(d.others)?d.others:[];
+    const myRate = STATE.result.correct;                // 나(최신) 포함 — 맞은 개수(실질 정답률) 기준
+    let rank=1; others.forEach(v=>{ if(Number(v)>myRate) rank++; });
+    const N = others.length + 1;
     rankEl.innerHTML = '🏆 전체 <b>'+N+'명</b> 중 <b>'+rank+'등</b> <span class="rank-sub">(같은 과제 · 맞은 개수 기준 · 제출 누적)</span>';
   }).catch(()=>{ rankEl.style.display='none'; });
 }
