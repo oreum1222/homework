@@ -1,0 +1,805 @@
+{
+  "_doc": "고2 수능 대비반 3주차 (2) 워크북 — 우리들의 첫 수능 3주차 워크북(문학 8문항 + 독서 7세트 = 37문항). 틀린 문항만 체크.",
+  "courseId": "hanti-dan-h2-suneung",
+  "week": 4,
+  "weekMeta": {
+    "id": "hanti-dan-h2-suneung-w3-2",
+    "label": "3주차 (2) · 워크북 (문학·독서)",
+    "area": "수능 문학·독서",
+    "date": "9/13(일)",
+    "desc": "우리들의 첫 수능 3주차 워크북 — 문학 8문항(가려 풀기) + 독서 7세트(도식) 오답 체크",
+    "week": 4
+  },
+  "scoring": {
+    "passRate": 80
+  },
+  "completionByChecklist": true,
+  "sections": [
+    {
+      "key": "L01",
+      "title": "[워크북 문학 01] 현대소설 「겨울 뜸부기」(오정희), 2019 4월 고3 학평, 원 36번",
+      "range": "문학 01",
+      "questions": [
+        {
+          "no": 1,
+          "id": "S1",
+          "three": false,
+          "wr": null,
+          "area": "현대소설",
+          "type": "현대소설",
+          "coreElement": "「겨울 뜸부기」(오정희)",
+          "weakness1": "‘현대소설’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "인물의 심리와 태도 변화를 장면 단서로 확인하며 읽기",
+          "parentNote": "",
+          "note": "",
+          "label": "문항 01"
+        }
+      ]
+    },
+    {
+      "key": "L02",
+      "title": "[워크북 문학 02] 고전시가 「낙빈가」(작자 미상), 2020 4월 고3 학평, 원 43번",
+      "range": "문학 02",
+      "questions": [
+        {
+          "no": 2,
+          "id": "S2",
+          "three": false,
+          "wr": null,
+          "area": "고전시가",
+          "type": "고전시가",
+          "coreElement": "「낙빈가」(작자 미상)",
+          "weakness1": "‘고전시가’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "화자의 정서와 자연, 상황의 대응을 구절 근거로 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "문항 02"
+        }
+      ]
+    },
+    {
+      "key": "L03",
+      "title": "[워크북 문학 03] 고전시가 「강호연군가」(장경세), 2018 4월 고3 학평, 원 39번",
+      "range": "문학 03",
+      "questions": [
+        {
+          "no": 3,
+          "id": "S3",
+          "three": false,
+          "wr": null,
+          "area": "고전시가",
+          "type": "고전시가",
+          "coreElement": "「강호연군가」(장경세)",
+          "weakness1": "‘고전시가’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "화자의 정서와 자연, 상황의 대응을 구절 근거로 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "문항 03"
+        }
+      ]
+    },
+    {
+      "key": "L04",
+      "title": "[워크북 문학 04] 고전소설 「정을선전」(작자 미상), 2019 7월 고3 학평, 원 27번",
+      "range": "문학 04",
+      "questions": [
+        {
+          "no": 4,
+          "id": "S4",
+          "three": false,
+          "wr": null,
+          "area": "고전소설",
+          "type": "고전소설",
+          "coreElement": "「정을선전」(작자 미상)",
+          "weakness1": "‘고전소설’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+          "parentNote": "",
+          "note": "",
+          "label": "문항 04"
+        }
+      ]
+    },
+    {
+      "key": "L05",
+      "title": "[워크북 문학 05] 현대소설 「오래된 일기」(이승우), 2023 3월 고3 학평, 원 21번",
+      "range": "문학 05",
+      "questions": [
+        {
+          "no": 5,
+          "id": "S5",
+          "three": false,
+          "wr": null,
+          "area": "현대소설",
+          "type": "현대소설",
+          "coreElement": "「오래된 일기」(이승우)",
+          "weakness1": "‘현대소설’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "인물의 심리와 태도 변화를 장면 단서로 확인하며 읽기",
+          "parentNote": "",
+          "note": "",
+          "label": "문항 05"
+        }
+      ]
+    },
+    {
+      "key": "L06",
+      "title": "[워크북 문학 06] 고전소설 「숙영낭자전」(작자 미상), 2019 4월 고3 학평, 원 41번",
+      "range": "문학 06",
+      "questions": [
+        {
+          "no": 6,
+          "id": "S6",
+          "three": false,
+          "wr": null,
+          "area": "고전소설",
+          "type": "고전소설",
+          "coreElement": "「숙영낭자전」(작자 미상)",
+          "weakness1": "‘고전소설’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "인물 관계와 사건의 원인→결과를 순서대로 복원하며 읽기",
+          "parentNote": "",
+          "note": "",
+          "label": "문항 06"
+        }
+      ]
+    },
+    {
+      "key": "L07",
+      "title": "[워크북 문학 07] 갈래 복합 「나와 나타샤와 흰 당나귀」(백석) 외, 2017 10월 고3 학평, 원 41번",
+      "range": "문학 07",
+      "questions": [
+        {
+          "no": 7,
+          "id": "S7",
+          "three": false,
+          "wr": null,
+          "area": "갈래 복합",
+          "type": "갈래 복합",
+          "coreElement": "「나와 나타샤와 흰 당나귀」(백석) 외",
+          "weakness1": "‘갈래 복합’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "여러 작품의 공통 화제와 차이를 먼저 잡고 〈보기〉로 대응하기",
+          "parentNote": "",
+          "note": "",
+          "label": "문항 07"
+        }
+      ]
+    },
+    {
+      "key": "L08",
+      "title": "[워크북 문학 08] 갈래 복합 「성산별곡」(정철) 외, 2022 7월 고3 학평, 원 26번",
+      "range": "문학 08",
+      "questions": [
+        {
+          "no": 8,
+          "id": "S8",
+          "three": false,
+          "wr": null,
+          "area": "갈래 복합",
+          "type": "갈래 복합",
+          "coreElement": "「성산별곡」(정철) 외",
+          "weakness1": "‘갈래 복합’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "여러 작품의 공통 화제와 차이를 먼저 잡고 〈보기〉로 대응하기",
+          "parentNote": "",
+          "note": "",
+          "label": "문항 08"
+        }
+      ]
+    },
+    {
+      "key": "D01",
+      "title": "[워크북 독서 01] 과학, 도파민과 수의적 운동, 2026 3월 고3 학평 [10~13]",
+      "range": "독서 01 [10~13]",
+      "questions": [
+        {
+          "no": 9,
+          "id": "S9",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "도파민과 수의적 운동",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "10번"
+        },
+        {
+          "no": 10,
+          "id": "S10",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "도파민과 수의적 운동",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "11번"
+        },
+        {
+          "no": 11,
+          "id": "S11",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "도파민과 수의적 운동",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "12번"
+        },
+        {
+          "no": 12,
+          "id": "S12",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "도파민과 수의적 운동",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "13번"
+        }
+      ]
+    },
+    {
+      "key": "D02",
+      "title": "[워크북 독서 02] 과학, 혈압 조절 기전, 2025 3월 고3 학평 [14~17]",
+      "range": "독서 02 [14~17]",
+      "questions": [
+        {
+          "no": 13,
+          "id": "S13",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "혈압 조절 기전",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "14번"
+        },
+        {
+          "no": 14,
+          "id": "S14",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "혈압 조절 기전",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "15번"
+        },
+        {
+          "no": 15,
+          "id": "S15",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "혈압 조절 기전",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "16번"
+        },
+        {
+          "no": 16,
+          "id": "S16",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "혈압 조절 기전",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "17번"
+        }
+      ]
+    },
+    {
+      "key": "D03",
+      "title": "[워크북 독서 03] 기술, 디젤 엔진의 배기가스 저감, 2018 10월 고3 학평 [29~32]",
+      "range": "독서 03 [29~32]",
+      "questions": [
+        {
+          "no": 17,
+          "id": "S17",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "디젤 엔진의 배기가스 저감",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "29번"
+        },
+        {
+          "no": 18,
+          "id": "S18",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "디젤 엔진의 배기가스 저감",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "30번"
+        },
+        {
+          "no": 19,
+          "id": "S19",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "디젤 엔진의 배기가스 저감",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "31번"
+        },
+        {
+          "no": 20,
+          "id": "S20",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "디젤 엔진의 배기가스 저감",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        }
+      ]
+    },
+    {
+      "key": "D04",
+      "title": "[워크북 독서 04] 과학, 연소와 소화(消火), 2025 10월 고3 학평 [14~17]",
+      "range": "독서 04 [14~17]",
+      "questions": [
+        {
+          "no": 21,
+          "id": "S21",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "연소와 소화(消火)",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "14번"
+        },
+        {
+          "no": 22,
+          "id": "S22",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "연소와 소화(消火)",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "15번"
+        },
+        {
+          "no": 23,
+          "id": "S23",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "연소와 소화(消火)",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "16번"
+        },
+        {
+          "no": 24,
+          "id": "S24",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "연소와 소화(消火)",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "17번"
+        }
+      ]
+    },
+    {
+      "key": "D05",
+      "title": "[워크북 독서 05] 과학, 통증 신호의 전달과 억제, 2020 3월 고3 학평 [31~35]",
+      "range": "독서 05 [31~35]",
+      "questions": [
+        {
+          "no": 25,
+          "id": "S25",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "통증 신호의 전달과 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "31번"
+        },
+        {
+          "no": 26,
+          "id": "S26",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "통증 신호의 전달과 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        },
+        {
+          "no": 27,
+          "id": "S27",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "통증 신호의 전달과 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "33번"
+        },
+        {
+          "no": 28,
+          "id": "S28",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "통증 신호의 전달과 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "34번"
+        },
+        {
+          "no": 29,
+          "id": "S29",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "통증 신호의 전달과 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "35번"
+        }
+      ]
+    },
+    {
+      "key": "D06",
+      "title": "[워크북 독서 06] 기술, 초임계 유체를 쓰는 결정화 공정, 2023 3월 고3 학평 [14~17]",
+      "range": "독서 06 [14~17]",
+      "questions": [
+        {
+          "no": 30,
+          "id": "S30",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "초임계 유체를 쓰는 결정화 공정",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "14번"
+        },
+        {
+          "no": 31,
+          "id": "S31",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "초임계 유체를 쓰는 결정화 공정",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "15번"
+        },
+        {
+          "no": 32,
+          "id": "S32",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "초임계 유체를 쓰는 결정화 공정",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "16번"
+        },
+        {
+          "no": 33,
+          "id": "S33",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "초임계 유체를 쓰는 결정화 공정",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "17번"
+        }
+      ]
+    },
+    {
+      "key": "D07",
+      "title": "[워크북 독서 07] 기술, 객체 탐지와 비최댓값 억제, 2022 7월 고3 학평 [10~13]",
+      "range": "독서 07 [10~13]",
+      "questions": [
+        {
+          "no": 34,
+          "id": "S34",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "객체 탐지와 비최댓값 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "10번"
+        },
+        {
+          "no": 35,
+          "id": "S35",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "객체 탐지와 비최댓값 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "11번"
+        },
+        {
+          "no": 36,
+          "id": "S36",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "객체 탐지와 비최댓값 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "12번"
+        },
+        {
+          "no": 37,
+          "id": "S37",
+          "three": false,
+          "wr": null,
+          "area": "독서",
+          "type": "독서",
+          "coreElement": "객체 탐지와 비최댓값 억제",
+          "weakness1": "‘독서’ 독해에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "지문의 과정과 단계를 도식으로 옮겨 인과와 방향을 확인하기",
+          "parentNote": "",
+          "note": "",
+          "label": "13번"
+        }
+      ]
+    }
+  ],
+  "studyCheck": [
+    {
+      "num": 1,
+      "tag": "done",
+      "q": "이번 과제, 어디까지 했나요?",
+      "opts": [
+        "전부 끝냄",
+        "대부분(70% 이상)",
+        "절반쯤",
+        "조금만(30% 이하)",
+        "아직 시작 못 함"
+      ]
+    },
+    {
+      "num": 2,
+      "tag": "dueDate",
+      "type": "date",
+      "q": "남은 분량을 언제까지 끝낼 건가요? (완수 예정일)",
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    },
+    {
+      "num": 3,
+      "tag": "duePledge",
+      "q": "완수 약속",
+      "opts": [
+        "오늘 안에",
+        "내일까지",
+        "이번 주 안",
+        "다음 수업 전까지",
+        "솔직히 자신 없음"
+      ],
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    },
+    {
+      "num": 4,
+      "tag": "timeliness",
+      "q": "제출 시점은 마감 기준 어땠나요?",
+      "opts": [
+        "여유 있게 미리",
+        "마감 임박해서",
+        "마감 지나서(지각)",
+        "아직 미제출"
+      ]
+    },
+    {
+      "num": 5,
+      "tag": "review",
+      "q": "채점·오답 정리까지 했나요?",
+      "opts": [
+        "채점 + 오답 정리까지",
+        "채점만 함",
+        "풀기만 하고 채점 안 함"
+      ]
+    },
+    {
+      "num": 6,
+      "tag": "trend",
+      "q": "최근 과제들, 스스로 평가하면?",
+      "opts": [
+        "매번 빠짐없이 함",
+        "대체로 하는 편",
+        "자주 빠지거나 밀림",
+        "거의 못 따라감"
+      ]
+    },
+    {
+      "num": 7,
+      "tag": "reason",
+      "q": "(밀렸거나 못 했다면) 가장 큰 이유는?",
+      "opts": [
+        "시간이 없어서(다른 과목·학원)",
+        "너무 어려워서",
+        "깜빡/마감을 놓쳐서",
+        "의욕이 안 나서",
+        "양이 너무 많아서"
+      ],
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    }
+  ],
+  "studyDiagnosticCodes": {
+    "D_done": {
+      "label": "과제 완수",
+      "feedback": "이번 과제를 끝까지 완료했어요. 꾸준함이 실력으로 쌓이고 있습니다."
+    },
+    "D_partial": {
+      "label": "부분 완수",
+      "feedback": "아직 남은 분량이 있어요. 약속한 기한 안에 꼭 마무리합시다."
+    },
+    "D_undone": {
+      "label": "미완 — 완수 필요",
+      "feedback": "이번 과제를 거의 못 했어요. 약속한 날까지 반드시 끝내서 따라잡읍시다."
+    },
+    "D_ontime": {
+      "label": "여유 제출",
+      "feedback": "마감에 여유 있게 끝냈어요. 좋은 페이스입니다."
+    },
+    "D_rush": {
+      "label": "마감 임박형",
+      "feedback": "마감에 임박해서 끝내는 편이에요. 하루만 앞당겨도 훨씬 안정적입니다."
+    },
+    "D_late": {
+      "label": "지각 제출",
+      "feedback": "제출이 늦었어요. 다음 주엔 마감 안에 들어오는 걸 목표로 합시다."
+    },
+    "D_revfull": {
+      "label": "오답 정리까지",
+      "feedback": "채점·오답 정리까지 마쳤어요. 가장 중요한 부분을 잘 챙겼습니다."
+    },
+    "D_norev": {
+      "label": "오답 정리 부족",
+      "feedback": "채점·오답 정리가 빠졌어요. 틀린 문제를 다시 보는 게 실력 상승의 핵심이에요."
+    },
+    "D_lagging": {
+      "label": "최근 누적 부진",
+      "feedback": "최근 과제가 자주 밀리고 있어요. 분량·시간을 함께 점검해 봅시다."
+    }
+  }
+}
