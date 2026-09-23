@@ -1,5 +1,5 @@
 {
-  "_doc": "고2 수능 대비반 시즌2 1주차 — 현대시·갈래 복합 8세트(2021~2609 평가원, 30문항). 교재=지문·문제, 워크북=선지 분석. 오답만 마킹.",
+  "_doc": "고2 수능 대비반 시즌2 1주차 — 교재(평가원 8세트 30문항) + 워크북(학평 연계 8세트 30문항) = 60문항. 워크북은 교재 짝 기출과 연계된 다른 학평 기출. 오답만 마킹.",
   "courseId": "hanti-dan-h2-suneung",
   "week": 6,
   "weekMeta": {
@@ -7,7 +7,7 @@
     "label": "시즌2 1주차 · 교재+워크북 (현대시)",
     "area": "수능 문학",
     "date": "9/27(일)",
-    "desc": "우리들의 첫 수능 시즌2 1주차 — 현대시(갈래 복합) 8세트, 교재(문제)와 워크북(분석) 동일 기출",
+    "desc": "우리들의 첫 수능 시즌2 1주차 — 교재 평가원 8세트(위) + 워크북 학평 연계 8세트(아래), 현대시·갈래 복합",
     "week": 6
   },
   "scoring": {
@@ -16,8 +16,8 @@
   "completionByChecklist": true,
   "sections": [
     {
-      "key": "s01",
-      "title": "[세트 01] 현대시 · 「산상의 노래」 외 · 2021 6월 [22~24]",
+      "key": "g01",
+      "title": "[교재 1] 현대시 · 2021학년도 6월 [22~24]",
       "questions": [
         {
           "no": 1,
@@ -68,8 +68,8 @@
       "range": "22~24번"
     },
     {
-      "key": "s02",
-      "title": "[세트 02] 현대시 · 「사령」 「달나라의 장난」 · 2021 9월 [43~45]",
+      "key": "g02",
+      "title": "[교재 2] 현대시 · 김수영 「사령」 · 2021학년도 9월 [43~45]",
       "questions": [
         {
           "no": 4,
@@ -120,8 +120,8 @@
       "range": "43~45번"
     },
     {
-      "key": "s03",
-      "title": "[세트 03] 현대시 · 「연륜」 「금붕어」 「길」 · 2022 6월 [32~34]",
+      "key": "g03",
+      "title": "[교재 3] 현대시 · 김기림 「연륜」 · 2022학년도 6월 [32~34]",
       "questions": [
         {
           "no": 7,
@@ -172,8 +172,8 @@
       "range": "32~34번"
     },
     {
-      "key": "s04",
-      "title": "[세트 04] 현대시 · 「종가」 「노래와 이야기」 · 2022 9월 [28~31]",
+      "key": "g04",
+      "title": "[교재 4] 현대시 · 오장환 「종가」, 최두석 「노래와 이야기」 · 2022학년도 9월 [28~31]",
       "questions": [
         {
           "no": 10,
@@ -239,8 +239,8 @@
       "range": "28~31번"
     },
     {
-      "key": "s05",
-      "title": "[세트 05] 갈래 복합 · 「향아」 「전문가」 · 2023 6월 [32~34]",
+      "key": "g05",
+      "title": "[교재 5] 현대시 · 신동엽 「향아」, 기형도 「전문가」 · 2023학년도 6월 [32~34]",
       "questions": [
         {
           "no": 14,
@@ -248,9 +248,9 @@
           "three": false,
           "wr": null,
           "area": "문학",
-          "type": "갈래 복합",
-          "coreElement": "갈래 복합",
-          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
           "weakness2": "",
           "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
           "parentNote": "",
@@ -263,9 +263,9 @@
           "three": false,
           "wr": null,
           "area": "문학",
-          "type": "갈래 복합",
-          "coreElement": "갈래 복합",
-          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
           "weakness2": "",
           "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
           "parentNote": "",
@@ -278,9 +278,9 @@
           "three": false,
           "wr": null,
           "area": "문학",
-          "type": "갈래 복합",
-          "coreElement": "갈래 복합",
-          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
           "weakness2": "",
           "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
           "parentNote": "",
@@ -291,8 +291,8 @@
       "range": "32~34번"
     },
     {
-      "key": "s06",
-      "title": "[세트 06] 갈래 복합 · 「채전」 「음지의 꽃」 · 2023 수능 [31~34]",
+      "key": "g06",
+      "title": "[교재 6] 현대시 · 유치환 「채전」, 나희덕 「음지의 꽃」 · 2023학년도 수능 [31~34]",
       "questions": [
         {
           "no": 17,
@@ -300,9 +300,9 @@
           "three": false,
           "wr": null,
           "area": "문학",
-          "type": "갈래 복합",
-          "coreElement": "갈래 복합",
-          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
           "weakness2": "",
           "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
           "parentNote": "",
@@ -315,9 +315,9 @@
           "three": false,
           "wr": null,
           "area": "문학",
-          "type": "갈래 복합",
-          "coreElement": "갈래 복합",
-          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
           "weakness2": "",
           "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
           "parentNote": "",
@@ -330,9 +330,9 @@
           "three": false,
           "wr": null,
           "area": "문학",
-          "type": "갈래 복합",
-          "coreElement": "갈래 복합",
-          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
           "weakness2": "",
           "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
           "parentNote": "",
@@ -345,9 +345,9 @@
           "three": false,
           "wr": null,
           "area": "문학",
-          "type": "갈래 복합",
-          "coreElement": "갈래 복합",
-          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
           "weakness2": "",
           "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
           "parentNote": "",
@@ -358,8 +358,8 @@
       "range": "31~34번"
     },
     {
-      "key": "s07",
-      "title": "[세트 07] 현대시 · 「맹세」 「봄」 · 2024 6월 [31~34]",
+      "key": "g07",
+      "title": "[교재 7] 현대시 · 조지훈 「맹세」, 오규원 「봄」 · 2024학년도 6월 [31~34]",
       "questions": [
         {
           "no": 21,
@@ -425,8 +425,8 @@
       "range": "31~34번"
     },
     {
-      "key": "s08",
-      "title": "[세트 08] 갈래 복합 · 「가오리 날아오르다」 외 · 2609 9월 [22~27]",
+      "key": "g08",
+      "title": "[교재 8] 갈래 복합 · 장옥관 「가오리 날아오르다」 외, 박지원 「공작관문고 자서」 · 2027학년도 9월 [22~27]",
       "questions": [
         {
           "no": 25,
@@ -520,6 +520,512 @@
         }
       ],
       "range": "22~27번"
+    },
+    {
+      "key": "wb01",
+      "title": "[워크북 1] 현대시 · 「산상의 노래」 외 · 학평 [29~32]",
+      "questions": [
+        {
+          "no": 31,
+          "id": "S31",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "29번"
+        },
+        {
+          "no": 32,
+          "id": "S32",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "30번"
+        },
+        {
+          "no": 33,
+          "id": "S33",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "31번"
+        },
+        {
+          "no": 34,
+          "id": "S34",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        }
+      ],
+      "range": "29~32번"
+    },
+    {
+      "key": "wb02",
+      "title": "[워크북 2] 현대시 · 김수영 「달나라의 장난」, 복효근 「대숲에서 뉘우치다」 · 2024년 10월 학평 [24~26]",
+      "questions": [
+        {
+          "no": 35,
+          "id": "S35",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "24번"
+        },
+        {
+          "no": 36,
+          "id": "S36",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "25번"
+        },
+        {
+          "no": 37,
+          "id": "S37",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "26번"
+        }
+      ],
+      "range": "24~26번"
+    },
+    {
+      "key": "wb03",
+      "title": "[워크북 3] 현대시 · 김기림 「금붕어」, 정희성 「길」 · 2024년 7월 학평 [23~26]",
+      "questions": [
+        {
+          "no": 38,
+          "id": "S38",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "23번"
+        },
+        {
+          "no": 39,
+          "id": "S39",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "24번"
+        },
+        {
+          "no": 40,
+          "id": "S40",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "25번"
+        },
+        {
+          "no": 41,
+          "id": "S41",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "26번"
+        }
+      ],
+      "range": "23~26번"
+    },
+    {
+      "key": "wb04",
+      "title": "[워크북 4] 현대시 · 김광규 「나무처럼 젊은이들도」, 김혜순 「별을 굽다」 · 2023년 7월 학평 [32~34]",
+      "questions": [
+        {
+          "no": 42,
+          "id": "S42",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        },
+        {
+          "no": 43,
+          "id": "S43",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "33번"
+        },
+        {
+          "no": 44,
+          "id": "S44",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "34번"
+        }
+      ],
+      "range": "32~34번"
+    },
+    {
+      "key": "wb05",
+      "title": "[워크북 5] 현대시 · 김용호 「고향으로 간다」, 나희덕 「그 골목 잃어버리고」 · 2025년 5월 학평 [31~34]",
+      "questions": [
+        {
+          "no": 45,
+          "id": "S45",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "31번"
+        },
+        {
+          "no": 46,
+          "id": "S46",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        },
+        {
+          "no": 47,
+          "id": "S47",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "33번"
+        },
+        {
+          "no": 48,
+          "id": "S48",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "34번"
+        }
+      ],
+      "range": "31~34번"
+    },
+    {
+      "key": "wb06",
+      "title": "[워크북 6] 현대시 · 송수권 「대역사」, 고재종 「나무 속엔 물관이 있다」 · 2018년 10월 학평 [43~45]",
+      "questions": [
+        {
+          "no": 49,
+          "id": "S49",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "43번"
+        },
+        {
+          "no": 50,
+          "id": "S50",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "44번"
+        },
+        {
+          "no": 51,
+          "id": "S51",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "45번"
+        }
+      ],
+      "range": "43~45번"
+    },
+    {
+      "key": "wb07",
+      "title": "[워크북 7] 현대시 · 조지훈 「꿈 이야기」, 기형도 「나리 나리 개나리」 · 2022년 7월 학평 [27~30]",
+      "questions": [
+        {
+          "no": 52,
+          "id": "S52",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "27번"
+        },
+        {
+          "no": 53,
+          "id": "S53",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "28번"
+        },
+        {
+          "no": 54,
+          "id": "S54",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "29번"
+        },
+        {
+          "no": 55,
+          "id": "S55",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "30번"
+        }
+      ],
+      "range": "27~30번"
+    },
+    {
+      "key": "wb08",
+      "title": "[워크북 8] 갈래 복합 · 이성복 「서해」, 김기택 「어떻게 기억해 냈을까」, 유경종 「의원지」 · 2026년 3월 학평 [18~22]",
+      "questions": [
+        {
+          "no": 56,
+          "id": "S56",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "18번"
+        },
+        {
+          "no": 57,
+          "id": "S57",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "19번"
+        },
+        {
+          "no": 58,
+          "id": "S58",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "20번"
+        },
+        {
+          "no": 59,
+          "id": "S59",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "21번"
+        },
+        {
+          "no": 60,
+          "id": "S60",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "22번"
+        }
+      ],
+      "range": "18~22번"
     }
   ],
   "studyCheck": [
