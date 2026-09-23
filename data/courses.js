@@ -123,7 +123,8 @@ window.COURSE_LIST = [
     weeks: [
       { week: 1, file: 'data/hw-hanti-dan-h2-hwaeon2-w1.json', label: '1주차 · 국어의 품사', area: '품사', status: 'active' },
       { week: 2, file: 'data/hw-hanti-dan-h2-hwaeon2-w2.json', label: '2주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h2-hwaeon2-w3.json', label: '3주차 · 음운의 정의와 체계 + 음운변동', area: '음운', status: 'active' }
+      { week: 3, file: 'data/hw-hanti-dan-h2-hwaeon2-w3.json', label: '3주차 · 음운의 정의와 체계 + 음운변동', area: '음운', status: 'active' },
+      { week: 4, file: 'data/hw-hanti-dan-h2-hwaeon2-w4.json', label: '4주차 · 음운의 변동 워크북', area: '음운', status: 'active' }
     ]
   },
   {
