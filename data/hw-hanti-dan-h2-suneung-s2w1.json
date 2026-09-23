@@ -1,0 +1,651 @@
+{
+  "_doc": "고2 수능 대비반 시즌2 1주차 — 현대시·갈래 복합 8세트(2021~2609 평가원, 30문항). 교재=지문·문제, 워크북=선지 분석. 오답만 마킹.",
+  "courseId": "hanti-dan-h2-suneung",
+  "week": 6,
+  "weekMeta": {
+    "id": "hanti-dan-h2-suneung-s2w1",
+    "label": "시즌2 1주차 · 교재+워크북 (현대시)",
+    "area": "수능 문학",
+    "date": "9/27(일)",
+    "desc": "우리들의 첫 수능 시즌2 1주차 — 현대시(갈래 복합) 8세트, 교재(문제)와 워크북(분석) 동일 기출",
+    "week": 6
+  },
+  "scoring": {
+    "passRate": 80
+  },
+  "completionByChecklist": true,
+  "sections": [
+    {
+      "key": "s01",
+      "title": "[세트 01] 현대시 · 「산상의 노래」 외 · 2021 6월 [22~24]",
+      "questions": [
+        {
+          "no": 1,
+          "id": "S1",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "22번"
+        },
+        {
+          "no": 2,
+          "id": "S2",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "23번"
+        },
+        {
+          "no": 3,
+          "id": "S3",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "24번"
+        }
+      ],
+      "range": "22~24번"
+    },
+    {
+      "key": "s02",
+      "title": "[세트 02] 현대시 · 「사령」 「달나라의 장난」 · 2021 9월 [43~45]",
+      "questions": [
+        {
+          "no": 4,
+          "id": "S4",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "43번"
+        },
+        {
+          "no": 5,
+          "id": "S5",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "44번"
+        },
+        {
+          "no": 6,
+          "id": "S6",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "45번"
+        }
+      ],
+      "range": "43~45번"
+    },
+    {
+      "key": "s03",
+      "title": "[세트 03] 현대시 · 「연륜」 「금붕어」 「길」 · 2022 6월 [32~34]",
+      "questions": [
+        {
+          "no": 7,
+          "id": "S7",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        },
+        {
+          "no": 8,
+          "id": "S8",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "33번"
+        },
+        {
+          "no": 9,
+          "id": "S9",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "34번"
+        }
+      ],
+      "range": "32~34번"
+    },
+    {
+      "key": "s04",
+      "title": "[세트 04] 현대시 · 「종가」 「노래와 이야기」 · 2022 9월 [28~31]",
+      "questions": [
+        {
+          "no": 10,
+          "id": "S10",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "28번"
+        },
+        {
+          "no": 11,
+          "id": "S11",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "29번"
+        },
+        {
+          "no": 12,
+          "id": "S12",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "30번"
+        },
+        {
+          "no": 13,
+          "id": "S13",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "31번"
+        }
+      ],
+      "range": "28~31번"
+    },
+    {
+      "key": "s05",
+      "title": "[세트 05] 갈래 복합 · 「향아」 「전문가」 · 2023 6월 [32~34]",
+      "questions": [
+        {
+          "no": 14,
+          "id": "S14",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        },
+        {
+          "no": 15,
+          "id": "S15",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "33번"
+        },
+        {
+          "no": 16,
+          "id": "S16",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "34번"
+        }
+      ],
+      "range": "32~34번"
+    },
+    {
+      "key": "s06",
+      "title": "[세트 06] 갈래 복합 · 「채전」 「음지의 꽃」 · 2023 수능 [31~34]",
+      "questions": [
+        {
+          "no": 17,
+          "id": "S17",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "31번"
+        },
+        {
+          "no": 18,
+          "id": "S18",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        },
+        {
+          "no": 19,
+          "id": "S19",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "33번"
+        },
+        {
+          "no": 20,
+          "id": "S20",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "34번"
+        }
+      ],
+      "range": "31~34번"
+    },
+    {
+      "key": "s07",
+      "title": "[세트 07] 현대시 · 「맹세」 「봄」 · 2024 6월 [31~34]",
+      "questions": [
+        {
+          "no": 21,
+          "id": "S21",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "31번"
+        },
+        {
+          "no": 22,
+          "id": "S22",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "32번"
+        },
+        {
+          "no": 23,
+          "id": "S23",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "33번"
+        },
+        {
+          "no": 24,
+          "id": "S24",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "현대시",
+          "coreElement": "현대시",
+          "weakness1": "‘현대시’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "34번"
+        }
+      ],
+      "range": "31~34번"
+    },
+    {
+      "key": "s08",
+      "title": "[세트 08] 갈래 복합 · 「가오리 날아오르다」 외 · 2609 9월 [22~27]",
+      "questions": [
+        {
+          "no": 25,
+          "id": "S25",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "22번"
+        },
+        {
+          "no": 26,
+          "id": "S26",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "23번"
+        },
+        {
+          "no": 27,
+          "id": "S27",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "24번"
+        },
+        {
+          "no": 28,
+          "id": "S28",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "25번"
+        },
+        {
+          "no": 29,
+          "id": "S29",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "26번"
+        },
+        {
+          "no": 30,
+          "id": "S30",
+          "three": false,
+          "wr": null,
+          "area": "문학",
+          "type": "갈래 복합",
+          "coreElement": "갈래 복합",
+          "weakness1": "‘갈래 복합’ 시 감상에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "〈보기〉의 관점으로 화자의 태도와 시적 상황을 정리하며 감상하기",
+          "parentNote": "",
+          "note": "",
+          "label": "27번"
+        }
+      ],
+      "range": "22~27번"
+    }
+  ],
+  "studyCheck": [
+    {
+      "num": 1,
+      "tag": "done",
+      "q": "이번 과제, 어디까지 했나요?",
+      "opts": [
+        "전부 끝냄",
+        "대부분(70% 이상)",
+        "절반쯤",
+        "조금만(30% 이하)",
+        "아직 시작 못 함"
+      ]
+    },
+    {
+      "num": 2,
+      "tag": "dueDate",
+      "type": "date",
+      "q": "남은 분량을 언제까지 끝낼 건가요? (완수 예정일)",
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    },
+    {
+      "num": 3,
+      "tag": "duePledge",
+      "q": "완수 약속",
+      "opts": [
+        "오늘 안에",
+        "내일까지",
+        "이번 주 안",
+        "다음 수업 전까지",
+        "솔직히 자신 없음"
+      ],
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    },
+    {
+      "num": 4,
+      "tag": "timeliness",
+      "q": "제출 시점은 마감 기준 어땠나요?",
+      "opts": [
+        "여유 있게 미리",
+        "마감 임박해서",
+        "마감 지나서(지각)",
+        "아직 미제출"
+      ]
+    },
+    {
+      "num": 5,
+      "tag": "review",
+      "q": "채점·오답 정리까지 했나요?",
+      "opts": [
+        "채점 + 오답 정리까지",
+        "채점만 함",
+        "풀기만 하고 채점 안 함"
+      ]
+    },
+    {
+      "num": 6,
+      "tag": "trend",
+      "q": "최근 과제들, 스스로 평가하면?",
+      "opts": [
+        "매번 빠짐없이 함",
+        "대체로 하는 편",
+        "자주 빠지거나 밀림",
+        "거의 못 따라감"
+      ]
+    },
+    {
+      "num": 7,
+      "tag": "reason",
+      "q": "(밀렸거나 못 했다면) 가장 큰 이유는?",
+      "opts": [
+        "시간이 없어서(다른 과목·학원)",
+        "너무 어려워서",
+        "깜빡/마감을 놓쳐서",
+        "의욕이 안 나서",
+        "양이 너무 많아서"
+      ],
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    }
+  ],
+  "studyDiagnosticCodes": {
+    "D_done": {
+      "label": "과제 완수",
+      "feedback": "이번 과제를 끝까지 완료했어요. 꾸준함이 실력으로 쌓이고 있습니다."
+    },
+    "D_partial": {
+      "label": "부분 완수",
+      "feedback": "아직 남은 분량이 있어요. 약속한 기한 안에 꼭 마무리합시다."
+    },
+    "D_undone": {
+      "label": "미완 — 완수 필요",
+      "feedback": "이번 과제를 거의 못 했어요. 약속한 날까지 반드시 끝내서 따라잡읍시다."
+    },
+    "D_ontime": {
+      "label": "여유 제출",
+      "feedback": "마감에 여유 있게 끝냈어요. 좋은 페이스입니다."
+    },
+    "D_rush": {
+      "label": "마감 임박형",
+      "feedback": "마감에 임박해서 끝내는 편이에요. 하루만 앞당겨도 훨씬 안정적입니다."
+    },
+    "D_late": {
+      "label": "지각 제출",
+      "feedback": "제출이 늦었어요. 다음 주엔 마감 안에 들어오는 걸 목표로 합시다."
+    },
+    "D_revfull": {
+      "label": "오답 정리까지",
+      "feedback": "채점·오답 정리까지 마쳤어요. 가장 중요한 부분을 잘 챙겼습니다."
+    },
+    "D_norev": {
+      "label": "오답 정리 부족",
+      "feedback": "채점·오답 정리가 빠졌어요. 틀린 문제를 다시 보는 게 실력 상승의 핵심이에요."
+    },
+    "D_lagging": {
+      "label": "최근 누적 부진",
+      "feedback": "최근 과제가 자주 밀리고 있어요. 분량·시간을 함께 점검해 봅시다."
+    }
+  }
+}
