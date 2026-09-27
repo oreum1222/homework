@@ -572,7 +572,7 @@ function checkPassword(){
     msg.innerHTML='';
     document.getElementById('gate').classList.add('hide');
     document.getElementById('main').classList.remove('hide');
-    loadData();
+    loadEnrolledGo3_().then(loadData);
     loadGatonProfile_();
   }).catch(err=>{
     try{ sessionStorage.removeItem(HW_AUTH_KEY); }catch(e){}
@@ -1504,13 +1504,15 @@ function nlWriteEditorDoc_(w, name, cid, html, freshHtml, note){
 var SMS={ roster:[], loaded:false, course:'', week:null, groups:{missing:[],incomplete:[],done:[]}, offRoster:[] };
 // 현재 재원 고3 명단(원생목록 2026-07-11 기준) — go3 정규반은 이 명단에 없으면 자동 발송 제외
 function _enrNorm(s){ return String(s||'').replace(/\(.*?\)/g,'').replace(/[\[\]\s]/g,''); }
-const ENROLLED_GO3=new Set(['강예담','강지오','공두영','권오현','김가율','김경준','김나연(수외)','김누리','김도경','김도일','김민주','김보민','김영재','김은수','김제언','김주아','김현지','김효경','김효율','남규빈','노예진','문수영','문종혁','박다솜','박서희','박선유','박세은','박채원','배지윤','배진우','성현혜','손지유','손환희','신율','신지환','신지효','안신현','양도윤','오정현','유희진','윤영채','윤준서','윤하진','윤현경','윤혜상','이도경','이선경','이연우','이윤서','이준우','이지수','임서진','정다원','정서윤','정영준','조은나래','진세림','차신영','최다온','최재혁','최현서','한유주','한유주(안외)','허시은','홍지안','황선유'].map(_enrNorm));
-// ↑ 홍승아: 재원 명단엔 있으나 발송 제외 요청 → 화이트리스트에서 뺌
+// 명단 실명은 공개 파일에 두지 않는다(2026-09-27): 로그인 뒤 서버 action=enrolledGo3에서 받는다. 못 받으면 고3반 자동 발송을 막는다(안전 쪽).
+let ENROLLED_GO3=new Set(); let ENROLLED_GO3_READY=false;
+function loadEnrolledGo3_(){ if(!SCRIPT_URL||!hwAuth_()) return Promise.resolve(); return hwFetch(SCRIPT_URL+'?action=enrolledGo3').then(r=>r.json()).then(d=>{ if(Array.isArray(d)){ ENROLLED_GO3=new Set(d.map(_enrNorm)); ENROLLED_GO3_READY=true; } }).catch(()=>{}); }
+// ↑ 재원 명단에 있어도 발송 제외 요청이 있으면 서버 GO3_ENROLLED에서 뺀다
 // 기한부 제외(그 날짜까지 제외, 이후 자동 복귀) — 재원 명단에 있어도 한시적으로 뺄 때
-const SMS_EXCLUDE_UNTIL={ '임수아':'2026-08-02', '이서윤':'2026-08-02' };
+const SMS_EXCLUDE_UNTIL={}; // 예: { '이름':'YYYY-MM-DD' } — 실명은 배포 직전에만 넣고 지나면 비운다
 function smsExcluded_(name, courseId){ var n=normNameR(name);
   for(var k in SMS_EXCLUDE_UNTIL){ if(normNameR(k)===n){ try{ if(new Date()<=new Date(SMS_EXCLUDE_UNTIL[k]+'T23:59:59')) return true; }catch(e){ return true; } } }
-  if(String(courseId||'')==='go3-regular' && ENROLLED_GO3.size && !ENROLLED_GO3.has(_enrNorm(name))) return true;   // 재원 명단에 없는 고3
+  if(String(courseId||'')==='go3-regular' && (!ENROLLED_GO3_READY || !ENROLLED_GO3.has(_enrNorm(name)))) return true;   // 재원 명단에 없는 고3
   return false;
 }
 const SMS_TEMPLATES={
@@ -2785,7 +2787,8 @@ loadConfig().then(()=>{
   if(hwAuth_() && SCRIPT_URL){
     document.getElementById('gate').classList.add('hide');
     document.getElementById('main').classList.remove('hide');
-    loadData();
+    loadEnrolledGo3_().then(loadData);
+    loadGatonProfile_();
   }
 });
 </script>
