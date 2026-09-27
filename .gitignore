@@ -1,0 +1,5 @@
+
+# 학생 개인정보(2026-09-27): 가정통신문 프로필 등 실명 데이터는 비공개 GAS에만
+data/gaton-profile.json
+*.csv
+*.xlsx
