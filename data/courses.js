@@ -72,6 +72,15 @@ window.COURSE_LIST = [
           { week: 5, file: 'data/hw-go3-2609-w5.json', label: '5주차에 한 숙제 검사 · 온바탕 문학 미니 모의고사 7~10회(격일 9/26~10/2)', date: '10/2(목)~10/3(금)', area: '온바탕', status: 'active' }
         ]
       },
+      {
+        key: '2026-10', month: '10월', status: 'active', desc: '10월 이매진 8호 1~4주차 완주(10/3~10/22, 매일 1Day) + 매주 금·토 등원 사설 실전 모의고사(실모) 분석.',
+        weeks: [
+          { week: 1, file: 'data/hw-go3-2610-w1.json', label: '1주차에 한 숙제 검사 · 이매진 8호 1주차 + 실모 분석', date: '10/9(금)~10/10(토)', area: '이매진 8호', status: 'active' },
+          { week: 2, file: 'data/hw-go3-2610-w2.json', label: '2주차에 한 숙제 검사 · 이매진 8호 2주차 + 실모 분석', date: '10/16(금)~10/17(토)', area: '이매진 8호', status: 'active' },
+          { week: 3, file: 'data/hw-go3-2610-w3.json', label: '3주차에 한 숙제 검사 · 이매진 8호 3주차 + 실모 분석', date: '10/23(금)~10/24(토)', area: '이매진 8호', status: 'active' },
+          { week: 4, file: 'data/hw-go3-2610-w4.json', label: '4주차에 한 숙제 검사 · 이매진 8호 4주차(완주) + 실모 분석', date: '10/30(금)~10/31(토)', area: '이매진 8호', status: 'active' }
+        ]
+      },
       // (10월 등 다음 달은 여기에 months 항목 추가)
     ]
   },
