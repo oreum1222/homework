@@ -567,7 +567,7 @@ function renderWeeks(courseId, monthKey){
   // 마지막(가장 높은) active 주차만 '진행중', 그 앞의 active 주차는 '완료'로 표시
   const _activeWks = weeks.filter(w=>w.status==='active').map(w=>w.week);
   const _curWk = _activeWks.length ? Math.max.apply(null,_activeWks) : null;
-  weeks.forEach(w=>{
+  weeks.slice().reverse().forEach(w=>{   // 최근 검사일(높은 주차)이 위로
     const tentative = w.status==='tentative';
     const effStatus = (w.status==='active' && _curWk!=null && w.week!==_curWk) ? 'done' : w.status;
     const card = el('button',{class:'exam-card', onclick: tentative?(()=>alert('아직 준비 중인 주차입니다.')):(()=>loadWeek(courseId, monthKey||null, w.week))});
