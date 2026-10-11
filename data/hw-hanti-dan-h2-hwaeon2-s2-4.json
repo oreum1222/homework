@@ -1,0 +1,631 @@
+{
+  "_doc": "고2 화법과 언어 시즌2 4주차 — 문법 요소 ②. 피동·사동 32문항. 문항별 영역(피동/사동). 오답만 마킹.",
+  "courseId": "hanti-dan-h2-hwaeon2",
+  "week": 8,
+  "weekMeta": {
+    "id": "hanti-dan-h2-hwaeon2-s2-4",
+    "label": "시즌2 4주차 · 문법 요소 ② (피동·사동)",
+    "area": "문법 요소",
+    "date": "11/1(토)",
+    "desc": "기말 문장편 ④ 문법 요소 — 피동·사동 표현 32문항(피동·사동 혼재, 문항별 구분)",
+    "week": 8
+  },
+  "scoring": {
+    "passRate": 80
+  },
+  "sections": [
+    {
+      "key": "psd",
+      "title": "피동·사동 표현 (학평·모평 32문항)",
+      "questions": [
+        {
+          "no": 1,
+          "id": "S1",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동 표현(피동 접미사)의 예 찾기",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2013년 고1 6월 학평",
+          "label": "1번"
+        },
+        {
+          "no": 2,
+          "id": "S2",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "사동 접미사·-게 하다·-시키다 사동문 탐구(㉠~㉤)",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2013년 고1 9월 학평",
+          "label": "2번"
+        },
+        {
+          "no": 3,
+          "id": "S3",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "능동/피동 구분, 피동 표현의 예",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2014년 고1 3월 학평",
+          "label": "3번"
+        },
+        {
+          "no": 4,
+          "id": "S4",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "[A] 피동 접미사·-되다·이중피동 설명(㉠~㉤)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2018년 고1 11월 학평",
+          "label": "4번"
+        },
+        {
+          "no": 5,
+          "id": "S5",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동 접미사 결합 못하는 능동사 탐구",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2019년 고1 11월 학평",
+          "label": "5번"
+        },
+        {
+          "no": 6,
+          "id": "S6",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "어근 목록으로 피동문 만들기(풀-·읽-·안-·깎-·이용)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2020년 고1 11월 학평",
+          "label": "6번"
+        },
+        {
+          "no": 7,
+          "id": "S7",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "단형/장형·이중 피동 노트 이해(㉠~㉤)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2022년 고1 11월 학평",
+          "label": "7번"
+        },
+        {
+          "no": 8,
+          "id": "S8",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동 표현의 기능·효과(주체 은폐·객관성)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2024년 고1 6월 학평",
+          "label": "8번"
+        },
+        {
+          "no": 9,
+          "id": "S9",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "능동→피동 전환, 이중피동 탐구(ㄱ~ㄹ)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2024년 고1 6월 학평",
+          "label": "9번"
+        },
+        {
+          "no": 10,
+          "id": "S10",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동 접미사·-아지다·이중피동 탐구(㉠~㉤)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2025년 고1 6월 학평",
+          "label": "10번"
+        },
+        {
+          "no": 11,
+          "id": "S11",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "능동문→피동문 전환, 이중피동 유의(ㄱ~ㄷ)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2013년 고2 3월 학평 B형",
+          "label": "11번"
+        },
+        {
+          "no": 12,
+          "id": "S12",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "주동문→사동문, 사동 접미사·-시키다 특징",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2013년 고3 6월 모평 A·B형",
+          "label": "12번"
+        },
+        {
+          "no": 13,
+          "id": "S13",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동문·사동문 대조 이해(언니가 동생을 안았다)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2016년 고2 11월 학평",
+          "label": "13번"
+        },
+        {
+          "no": 14,
+          "id": "S14",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "파생적/통사적 피동문 구분, 피동사 파생 제약",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2018년 고2 3월 학평",
+          "label": "14번"
+        },
+        {
+          "no": 15,
+          "id": "S15",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "주동문-사동문 대응, 대응 주동문 없는 경우",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2018년 고2 11월 학평",
+          "label": "15번"
+        },
+        {
+          "no": 16,
+          "id": "S16",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "주동문 사동문 분류 순서도([A][B][C])",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2020년 고2 3월 학평",
+          "label": "16번"
+        },
+        {
+          "no": 17,
+          "id": "S17",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동문·사동문 서술어 자릿수 비교",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2020년 고2 11월 학평",
+          "label": "17번"
+        },
+        {
+          "no": 18,
+          "id": "S18",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "이중 피동 표현(잊혀진)의 예 찾기",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2021년 고2 6월 학평",
+          "label": "18번"
+        },
+        {
+          "no": 19,
+          "id": "S19",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동사 불규칙·-아지다·피동 파생 제약 이해",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2022년 고2 9월 학평",
+          "label": "19번"
+        },
+        {
+          "no": 20,
+          "id": "S20",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "접사 피동·선어말어미·과거시제(구겼지만·놓여·담갔다)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2023년 고2 9월 학평",
+          "label": "20번"
+        },
+        {
+          "no": 21,
+          "id": "S21",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "주동문·사동사/-게 하다 사동문 학습자료 분석",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2013년 고3 6월 모평 A형",
+          "label": "21번"
+        },
+        {
+          "no": 22,
+          "id": "S22",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동 접미사·-되다·-어지다로 피동 표현 만들기",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2014년 고3 3월 학평 A형",
+          "label": "22번"
+        },
+        {
+          "no": 23,
+          "id": "S23",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "접미사 -시키다의 올바른 사용(국어사전 참고)",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2014년 고3 10월 학평 B형",
+          "label": "23번"
+        },
+        {
+          "no": 24,
+          "id": "S24",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "능동문-피동문 대조 탐구(㉠~㉣)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2015년 고3 3월 학평 A·B형",
+          "label": "24번"
+        },
+        {
+          "no": 25,
+          "id": "S25",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "단형/장형 사동, 직접/간접 사동 의미(㉠~㉣)",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2017년 고3 10월 학평",
+          "label": "25번"
+        },
+        {
+          "no": 26,
+          "id": "S26",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "주동·사동/능동·피동 서술어 자릿수 비교",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2019년 고3 4월 학평",
+          "label": "26번"
+        },
+        {
+          "no": 27,
+          "id": "S27",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "'쓰이다' 피동/사동 겸용, 동음이의 학습활동",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2019년 고3 6월 모평",
+          "label": "27번"
+        },
+        {
+          "no": 28,
+          "id": "S28",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "파생적/통사적 사동, 직접·간접 사동(㉠~㉤)",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2019년 고3 7월 학평",
+          "label": "28번"
+        },
+        {
+          "no": 29,
+          "id": "S29",
+          "three": false,
+          "wr": null,
+          "area": "사동",
+          "type": "사동",
+          "coreElement": "파생적/통사적 사동, 사동 파생 제약(ㄱ~ㄹ)",
+          "weakness1": "‘사동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 사동, 직접·간접 사동, 사동 접미사·-게 하다를 정리하기",
+          "parentNote": "",
+          "note": "2020년 고3 10월 학평",
+          "label": "29번"
+        },
+        {
+          "no": 30,
+          "id": "S30",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동 접미사·접사교체·-아지다 피동문 예(㉠~㉤)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2022년 고3 6월 모평",
+          "label": "30번"
+        },
+        {
+          "no": 31,
+          "id": "S31",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "능동·피동/주동·사동에 높임·시간 복합 실현(ⓐ~ⓓ)",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2023년 고3 9월 모평",
+          "label": "31번"
+        },
+        {
+          "no": 32,
+          "id": "S32",
+          "three": false,
+          "wr": null,
+          "area": "피동",
+          "type": "피동",
+          "coreElement": "피동 접미사 피동사+안긴문장+본용언·보조용언 분석",
+          "weakness1": "‘피동 표현’에서 놓친 부분이 있어요.",
+          "weakness2": "",
+          "remediation": "파생적·통사적 피동과 이중 피동, 피동 접미사 결합 제약을 정리하기",
+          "parentNote": "",
+          "note": "2025년 고3 6월 모평",
+          "label": "32번"
+        }
+      ],
+      "range": "1~32번"
+    }
+  ],
+  "studyCheck": [
+    {
+      "num": 1,
+      "tag": "done",
+      "q": "이번 과제, 어디까지 했나요?",
+      "opts": [
+        "전부 끝냄",
+        "대부분(70% 이상)",
+        "절반쯤",
+        "조금만(30% 이하)",
+        "아직 시작 못 함"
+      ]
+    },
+    {
+      "num": 2,
+      "tag": "dueDate",
+      "type": "date",
+      "q": "남은 분량을 언제까지 끝낼 건가요? (완수 예정일)",
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    },
+    {
+      "num": 3,
+      "tag": "duePledge",
+      "q": "완수 약속",
+      "opts": [
+        "오늘 안에",
+        "내일까지",
+        "이번 주 안",
+        "다음 수업 전까지",
+        "솔직히 자신 없음"
+      ],
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    },
+    {
+      "num": 4,
+      "tag": "timeliness",
+      "q": "제출 시점은 마감 기준 어땠나요?",
+      "opts": [
+        "여유 있게 미리",
+        "마감 임박해서",
+        "마감 지나서(지각)",
+        "아직 미제출"
+      ]
+    },
+    {
+      "num": 5,
+      "tag": "review",
+      "q": "채점·오답 정리까지 했나요?",
+      "opts": [
+        "채점 + 오답 정리까지",
+        "채점만 함",
+        "풀기만 하고 채점 안 함"
+      ]
+    },
+    {
+      "num": 6,
+      "tag": "trend",
+      "q": "최근 과제들, 스스로 평가하면?",
+      "opts": [
+        "매번 빠짐없이 함",
+        "대체로 하는 편",
+        "자주 빠지거나 밀림",
+        "거의 못 따라감"
+      ]
+    },
+    {
+      "num": 7,
+      "tag": "reason",
+      "q": "(밀렸거나 못 했다면) 가장 큰 이유는?",
+      "opts": [
+        "시간이 없어서(다른 과목·학원)",
+        "너무 어려워서",
+        "깜빡/마감을 놓쳐서",
+        "의욕이 안 나서",
+        "양이 너무 많아서"
+      ],
+      "showIf": {
+        "q": 1,
+        "minIndex": 1
+      }
+    }
+  ],
+  "studyDiagnosticCodes": {
+    "D_done": {
+      "label": "과제 완수",
+      "feedback": "이번 과제를 끝까지 완료했어요. 꾸준함이 실력으로 쌓이고 있습니다."
+    },
+    "D_partial": {
+      "label": "부분 완수",
+      "feedback": "아직 남은 분량이 있어요. 약속한 기한 안에 꼭 마무리합시다."
+    },
+    "D_undone": {
+      "label": "미완 — 완수 필요",
+      "feedback": "이번 과제를 거의 못 했어요. 약속한 날까지 반드시 끝내서 따라잡읍시다."
+    },
+    "D_ontime": {
+      "label": "여유 제출",
+      "feedback": "마감에 여유 있게 끝냈어요. 좋은 페이스입니다."
+    },
+    "D_rush": {
+      "label": "마감 임박형",
+      "feedback": "마감에 임박해서 끝내는 편이에요. 하루만 앞당겨도 훨씬 안정적입니다."
+    },
+    "D_late": {
+      "label": "지각 제출",
+      "feedback": "제출이 늦었어요. 다음 주엔 마감 안에 들어오는 걸 목표로 합시다."
+    },
+    "D_revfull": {
+      "label": "오답 정리까지",
+      "feedback": "채점·오답 정리까지 마쳤어요. 가장 중요한 부분을 잘 챙겼습니다."
+    },
+    "D_norev": {
+      "label": "오답 정리 부족",
+      "feedback": "채점·오답 정리가 빠졌어요. 틀린 문제를 다시 보는 게 실력 상승의 핵심이에요."
+    },
+    "D_lagging": {
+      "label": "최근 누적 부진",
+      "feedback": "최근 과제가 자주 밀리고 있어요. 분량·시간을 함께 점검해 봅시다."
+    }
+  }
+}
