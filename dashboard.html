@@ -1595,7 +1595,7 @@ function smsClassify(){
   });
   // 명단 쪽 기본이름 중복(동명이인: 한유주/한유주(안외) 등)은 기본이름 매칭 금지
   const baseDup={};
-  (function(){ const seen={}; SMS.roster.forEach(r=>{ if(String(r.courseId)!==cid) return; const bb=baseNameJS(r.name); if(seen[bb]) baseDup[bb]=1; seen[bb]=1; }); })();
+  (function(){ const seen={}; SMS.roster.forEach(r=>{ if(String(r.courseId)!==cid || !rosterActiveJS(r)) return; const bb=baseNameJS(r.name); if(seen[bb]) baseDup[bb]=1; seen[bb]=1; }); })();
   // ② 명단(재원생) 기준 분류
   const seen={}, consumed={};
   SMS.roster.forEach(r=>{
