@@ -555,6 +555,9 @@ function renderWeeks(courseId, monthKey){
     STATE.monthKey = null; STATE.monthLabel = null;
     weeks = course.weeks||[]; backFn = ()=>renderCourses();
   }
+  // releaseDate가 미래인 주차는 학생에게 숨김(백엔드엔 존재, 날짜가 되면 자동 노출)
+  { const _todayStr = new Date().toISOString().slice(0,10);
+    weeks = (weeks||[]).filter(w=> !w.releaseDate || String(w.releaseDate) <= _todayStr); }
   clear(root);
   root.appendChild(el('div',{class:'back-bar'}, el('button',{class:'back-link',onclick:backFn}, month?'← 월 선택으로':'← 수업 선택으로')));
   root.appendChild(el('div',{class:'diag-header'},
