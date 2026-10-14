@@ -213,6 +213,10 @@ body.landing .corner-logo{display:none}
 .q-detail-weak{color:var(--text-secondary);font-size:0.86rem;line-height:1.78;margin-bottom:8px}
 .q-detail-rem{color:var(--text-secondary);font-size:0.86rem;line-height:1.78;padding:10px 14px;background:rgba(244,237,224,0.03);border-radius:3px;border-left:2px solid var(--green-deep)}
 .q-detail-rem::before{content:'보완 방향';display:block;font-family:'Inter','Noto Sans KR',sans-serif;font-size:0.68rem;color:var(--ok);letter-spacing:2px;margin-bottom:5px;font-weight:500}
+.q-detail-answer{font-size:0.72rem;font-weight:700;color:var(--on-accent);background:var(--accent);padding:2px 9px;border-radius:8px;letter-spacing:0.5px}
+.q-detail-balmun{color:var(--text-secondary);font-size:0.88rem;line-height:1.7;margin-bottom:10px;padding-left:12px;border-left:2px solid var(--border-soft)}
+.q-detail-haesul{color:var(--text-secondary);font-size:0.86rem;line-height:1.82;white-space:pre-line;padding:14px 16px;background:rgba(246,246,244,0.035);border:1px solid var(--border-line);border-radius:5px;margin-bottom:10px;word-break:keep-all}
+.q-detail-haesul::before{content:'해설';display:block;font-family:'Inter','Noto Sans KR',sans-serif;font-size:0.68rem;color:var(--accent);letter-spacing:2.5px;margin-bottom:8px;font-weight:700}
 .empty-msg{text-align:center;color:var(--text-muted);padding:32px 0;font-size:0.9rem;font-style:italic}
 
 /* ─── Submit feedback ─── */
@@ -1392,14 +1396,18 @@ function renderStep4(){
       const head = el('div',{class:'q-detail-head'},
         el('span',{class:'q-detail-num'}, q.label || (q.no+'번')),
         q.type ? el('span',{class:'q-detail-area'}, q.type) : (q.area?el('span',{class:'q-detail-area'},q.area):null),
+        q.answer ? el('span',{class:'q-detail-answer'}, '정답 '+q.answer) : null,
         q.source ? el('span',{class:'q-detail-source'}, q.source) : null,
         q.three ? el('span',{class:'q-detail-three'},'3점') : null,
         (q.wr!=null) ? el('span',{class:'q-detail-wr'}, '오답률 '+q.wr+'%') : null
       );
       const block = el('div',{class:'q-detail'}, head);
-      if(q.coreElement) block.appendChild(el('div',{class:'q-detail-core'}, q.coreElement));
+      if(q.balmun) block.appendChild(el('div',{class:'q-detail-balmun'}, q.balmun));
+      // coreElement는 영역(head)과 중복되지 않을 때만 노출
+      if(q.coreElement && q.coreElement!==q.type && q.coreElement!==q.area) block.appendChild(el('div',{class:'q-detail-core'}, q.coreElement));
       if(q.weakness1) block.appendChild(el('div',{class:'q-detail-weak'}, q.weakness1));
       if(q.weakness2) block.appendChild(el('div',{class:'q-detail-weak'}, q.weakness2));
+      if(q.haesul) block.appendChild(el('div',{class:'q-detail-haesul'}, q.haesul));
       if(q.remediation) block.appendChild(el('div',{class:'q-detail-rem'}, q.remediation));
       // parentNote(학부모 코멘트)는 학생 화면 비노출 — 시트에만 저장되어 대시보드에서 확인
       wBlock.appendChild(block);
@@ -1499,7 +1507,8 @@ function submitResult(isManual){
     wrongDetailsJson: JSON.stringify(r.wrongDetails.map(q=>({
       no:q.no, area:q.area||'', type:q.type||'', source:q.source||'', three:!!q.three, wr:q.wr||null,
       coreElement:q.coreElement||'', weakness1:q.weakness1||'', weakness2:q.weakness2||'',
-      remediation:q.remediation||'', parentNote:q.parentNote||''
+      remediation:q.remediation||'', parentNote:q.parentNote||'',
+      answer:q.answer||'', balmun:q.balmun||'', haesul:q.haesul||''
     }))),
     studyDiagJson: JSON.stringify(r.studyDiag),
     yaksulJson: (isYaksul() ? JSON.stringify(r.yaksul) : ''),
