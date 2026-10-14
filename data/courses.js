@@ -20,7 +20,7 @@
 /* ▣ 학원 목록 — 학생은 [학원 선택 → 수업 선택 → 주차] 순으로 들어갑니다.
  *    각 강좌의 academy 값이 아래 id와 연결됩니다. (academy 없으면 'oreum'으로 간주) */
 window.ACADEMY_LIST = [
-  { id: 'oreum', name: '[오름] 국어학원', desc: '고3 정규반과 문법 강좌' },
+  { id: 'oreum', name: '[오름] 국어학원', desc: '고3 정규반' },
   { id: 'hanti', name: 'MEXX 학원', desc: '종합반과 단과 강좌' }
 ];
 
@@ -84,41 +84,6 @@ window.COURSE_LIST = [
       // (10월 등 다음 달은 여기에 months 항목 추가)
     ]
   },
-
-  // ═══ [오름] 국어 문법 반 — 주차 데이터는 교재 확정 후 채웁니다(지금은 '준비 중'으로 표시) ═══
-  {
-    id: 'oreum-hyeonbeop',
-    academy: 'oreum',
-    name: '[오름] 국어 현대문법',
-    grade: '전체',
-    period: '오름 문법',
-    desc: '현대문법 — 품사, 문장성분, 형태소와 단어. 틀린 문항을 교재 번호 그대로 체크하세요.',
-    // 1~3주차 과제는 MEXX 단과 고2 화법과 언어 1~3주차와 동일(복사본)
-    weeks: [
-      { week: 1, file: 'data/hw-oreum-hyeonbeop-w1.json', label: '1주차 · 품사', area: '품사', status: 'active' },
-      { week: 2, file: 'data/hw-oreum-hyeonbeop-w2.json', label: '2주차 · 문장성분', area: '문장성분', status: 'active' },
-      { week: 3, file: 'data/hw-oreum-hyeonbeop-w3.json', label: '3주차 · 형태소와 단어', area: '형태소와 단어', status: 'active' },
-      // 4주차 = MEXX 화법과 언어 4주차(음운의 체계) + 5주차(음운의 변동) 합본
-      { week: 4, file: 'data/hw-oreum-hyeonbeop-w4.json', label: '4주차 · 음운의 체계와 변동', area: '음운', status: 'active' }
-    ]
-  },
-  {
-    id: 'oreum-gojeonbeop',
-    academy: 'oreum',
-    name: '[오름] 국어 고전문법',
-    grade: '전체',
-    period: '오름 문법',
-    desc: '고전문법 — 훈민정음, 표기법, 문법 요소 등. 틀린 문항을 교재 번호 그대로 체크하세요.',
-    // MEXX 고전문법과 '문법 교재 과제'만 동일(문학 제외). 4주 과정 = 교재 1~92 + 수능 기출 12
-    weeks: [
-      { week: 1, file: 'data/hw-oreum-gojeonbeop-w1.json', label: '1주차 · 1~26', area: '고전 문법', status: 'active' },
-      { week: 2, file: 'data/hw-oreum-gojeonbeop-w2.json', label: '2주차 · 27~52', area: '고전 문법', status: 'active' },
-      { week: 5, tag: '2주차 (2)', file: 'data/hw-oreum-gojeonbeop-w5.json', label: '교재 53~70 + 내신형 워크북 1~50', area: '고전 문법', status: 'active' },
-      { week: 3, file: 'data/hw-oreum-gojeonbeop-w3.json', label: '3주차 · 53~78', area: '고전 문법', status: 'active' },
-      { week: 4, file: 'data/hw-oreum-gojeonbeop-w4.json', label: '4주차 · 79~92 + 수능 기출', area: '고전 문법', status: 'active' }
-    ]
-  },
-
 
   // ═══ MEXX 2학기 단과 (고2) ═══
   {
