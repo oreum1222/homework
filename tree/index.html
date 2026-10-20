@@ -99,7 +99,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelate
 <script>
 // ───────── 학생 본인 기록(과제 검사 서버 action=tree: 회차별 푼 문항·맞힌 문항 수) ─────────
 var Q=new URLSearchParams(location.search),NAME=(Q.get('n')||'').trim(),COURSE=Q.get('c')||'',SCHOOL=Q.get('s')||'';
-var SCRIPT_URL=(window.OREUM_HW_CONFIG||{}).SCRIPT_URL||'';
+var SCRIPT_URL=((window.OREUM_HW_CONFIG||window.OREUM_CONFIG)||{}).SCRIPT_URL||'';   // 과제 검사·모고 진단 공용
+var KIND=Q.get('k')==='mock'?'mock':'hw';
 function goBack(){if(history.length>1)history.back();else location.href='../';}
 function shortWeek(lbl,i){return (i+1)+'회차';}   // 주차 이름은 반마다 겹칠 수 있어 제출 순서대로 회차 번호를 붙인다
 var P={sky:'#6fd6dc',sky2:'#8fe2e6',cloud:'#ffffff',cloudS:'#bfeef2',
@@ -391,11 +392,12 @@ function start(data){buildTree(data);timeline();
 function boot(){
   document.getElementById('who').textContent=NAME||'나';
   var nt=document.getElementById('notice');
-  if(!NAME||!COURSE||!SCHOOL||!SCRIPT_URL){nt.textContent='숙제를 제출한 뒤 결과 화면의 버튼으로 들어와 주세요.';return;}
-  fetch(SCRIPT_URL+'?action=tree&courseId='+encodeURIComponent(COURSE)+'&name='+encodeURIComponent(NAME)+'&school='+encodeURIComponent(SCHOOL))
+  if(KIND==='mock'){document.title='나의 모의고사 나무';document.querySelector('.title').childNodes[1].textContent='의 모의고사 나무';}
+  if(!NAME||!SCHOOL||!SCRIPT_URL||(KIND==='hw'&&!COURSE)){nt.textContent='제출한 뒤 결과 화면의 버튼으로 들어와 주세요.';return;}
+  fetch(SCRIPT_URL+'?action=tree'+(COURSE?'&courseId='+encodeURIComponent(COURSE):'')+'&name='+encodeURIComponent(NAME)+'&school='+encodeURIComponent(SCHOOL))
     .then(function(r){return r.json();}).then(function(d){
       var ws=(d&&d.weeks)||[];
-      if(!ws.length){nt.textContent='아직 나무에 쌓인 기록이 없어요. 숙제를 제출하면 첫 잎이 돋아납니다.';return;}
+      if(!ws.length){nt.textContent='아직 나무에 쌓인 기록이 없어요. 제출하면 첫 잎이 돋아납니다.';return;}
       start(ws.map(function(w,i){return {w:shortWeek(w.label,i),t:+w.t||0,c:+w.c||0};}));
     }).catch(function(){nt.textContent='나무를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.';});
 }
