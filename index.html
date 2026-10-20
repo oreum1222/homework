@@ -223,6 +223,10 @@ body.landing .corner-logo{display:none}
 /* ─── Submit feedback ─── */
 .submit-msg{text-align:center;padding:24px;border-radius:5px;margin-top:24px;font-size:0.92rem}
 .submit-ok{background:rgba(165,174,240,0.1);border:1px solid var(--ok);color:var(--cream)}
+.tree-btn{display:flex;flex-direction:column;align-items:center;gap:4px;margin:14px auto 0;max-width:420px;padding:14px 18px;background:#e8473f;color:#fff;text-decoration:none;border:3px solid #5a1410;box-shadow:inset -3px -3px 0 #a92a24,inset 3px 3px 0 #ff8a7a,3px 3px 0 #000;font-weight:700}
+.tree-btn:hover{filter:brightness(1.08)}
+.tree-btn-k{font-size:1.05rem}
+.tree-btn-s{font-size:.78rem;font-weight:400;opacity:.92}
 .submit-err{background:rgba(198,102,102,0.1);border:1px solid var(--danger);color:var(--cream)}
 
 /* ─── Mobile ─── */
@@ -1540,6 +1544,11 @@ function submitResult(isManual){
     if(fb){
       fb.innerHTML='';
       fb.appendChild(el('div',{class:'submit-msg submit-ok'},'결과가 학원 시트에 저장되었습니다. '+TEACHER+'가 확인 후 피드백 드립니다. (전송이 안 된 것 같으면 위 버튼으로 다시 보낼 수 있어요.)'));
+      // 숙제 나무: 지금까지 낸 숙제가 잎과 열매로 자란 나무 보러 가기(문항이 있는 과제만)
+      if(!isYaksul() && r.total>0){
+        const url='tree/?c='+encodeURIComponent(STATE.courseId)+'&n='+encodeURIComponent(String(s.name||'').trim())+'&s='+encodeURIComponent(String(s.school||'').trim());
+        fb.appendChild(el('a',{class:'tree-btn',href:url}, el('span',{class:'tree-btn-k'},'지금까지 낸 숙제 보러 가기'), el('span',{class:'tree-btn-s'},'나의 숙제 나무 · 푼 문항은 잎으로, 맞힌 문항은 열매로')));
+      }
     }
     setTimeout(()=>{ try{ document.body.removeChild(form); document.body.removeChild(iframe);}catch(e){} }, 2000);
   }, 1200);

@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나의 숙제 나무</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.39.6/dist/galmuri.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"DungGeunMo";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff") format("woff");font-display:swap}
+:root{--page:#0f1a33;--panel:#16223f;--ink:#f3f1e8;--muted:#9aa6c4;--gold:#ffd84a;--leaf:#6fd36a;--fruit:#ff5a5a;--line:#34446e}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--ink)}
+body{font-family:"Galmuri11","DungGeunMo",monospace;min-height:100vh;display:flex;justify-content:center;padding:20px 16px 40px}
+.wrap{width:100%;max-width:880px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;gap:12px;flex-wrap:wrap}
+.title{font-size:24px;letter-spacing:1px}
+.title small{display:block;font-size:12px;color:var(--muted);margin-top:5px;letter-spacing:0}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap}
+select,button{font-family:inherit;font-size:13px;background:var(--panel);color:var(--ink);border:2px solid var(--line);padding:7px 10px;cursor:pointer}
+button:hover,select:hover{border-color:var(--gold)}
+.stage{position:relative;width:100%;aspect-ratio:320/224;border:4px solid #000;box-shadow:0 0 0 4px var(--line);background:#000;overflow:hidden;user-select:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+.hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:1.4% 2.4%;font-family:"DungGeunMo",monospace;color:#fff;text-shadow:2px 2px 0 #123a22,-1px -1px 0 #123a22;pointer-events:none;font-size:clamp(13px,2.7vw,22px)}
+.hud .l,.hud .r{display:flex;align-items:center;gap:.5em}
+.hud .lbl{font-family:"Galmuri11",monospace;font-size:.62em}
+.float{position:absolute;font-family:"DungGeunMo",monospace;color:#fff;text-shadow:2px 2px 0 #145c3a,-1px -1px 0 #145c3a;font-size:clamp(12px,2.4vw,19px);pointer-events:none;transform:translate(-50%,-50%);white-space:nowrap;transition:transform 1.1s steps(11),opacity 1.1s steps(6)}
+.float.fruit{color:#fff1a8;text-shadow:2px 2px 0 #8a2a1e,-1px -1px 0 #8a2a1e}
+.float.boom{font-family:"Galmuri11",monospace;font-size:clamp(26px,6vw,52px);color:#fff;text-shadow:3px 3px 0 #b8322b,-2px -2px 0 #b8322b,3px -2px 0 #b8322b,-2px 3px 0 #b8322b;transition:transform .9s steps(8),opacity .9s steps(5)}
+.banner{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%) scale(0);background:#fff;color:#1c2c52;border:3px solid #1c2c52;box-shadow:4px 4px 0 #1c2c52;padding:.55em .9em;font-size:clamp(12px,2.3vw,18px);text-align:center;line-height:1.5;white-space:nowrap;transition:transform .35s steps(5);pointer-events:none}
+.banner.on{transform:translate(-50%,-50%) scale(1)}
+.banner b{color:#d6453b}
+.pick{position:absolute;right:2.4%;bottom:3%;font-family:"Galmuri11",monospace;font-size:clamp(12px,2.3vw,17px);background:#e8473f;color:#fff;border:3px solid #5a1410;box-shadow:inset -3px -3px 0 #a92a24,inset 3px 3px 0 #ff8a7a,3px 3px 0 #000;padding:.45em .9em;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .3s steps(3)}
+.pick.on{opacity:1;pointer-events:auto;animation:nudge 1.6s steps(2) infinite}
+.pick:hover{filter:brightness(1.1)}
+.pick.empty{background:#7a8aa8;border-color:#2b3550;box-shadow:inset -3px -3px 0 #5d6b86,inset 3px 3px 0 #a3b0c8,3px 3px 0 #000;cursor:default;animation:none}
+@keyframes nudge{0%,80%{transform:translateY(0)}90%{transform:translateY(-3px)}}
+.say{position:absolute;left:50%;top:7%;width:min(78%,560px);transform:translateX(-50%) scale(0);transform-origin:50% 100%;background:#fffdf4;color:#1c2c52;border:4px solid #1c2c52;box-shadow:5px 5px 0 rgba(0,0,0,.45);padding:1em 1.15em .9em;font-size:clamp(13px,2.3vw,17px);line-height:1.75;transition:transform .3s steps(4)}
+.say.on{transform:translateX(-50%) scale(1)}
+.say::after{content:"";position:absolute;left:50%;bottom:-16px;margin-left:-8px;border:8px solid transparent;border-top-color:#1c2c52}
+.sheet{display:flex;border:2px solid #c8463c;background:#fff}
+.sheet-l{flex:none;width:4.2em;display:flex;align-items:center;justify-content:center;text-align:center;font-family:"Galmuri11",monospace;font-size:.8em;line-height:1.35;color:#c8463c;border-right:2px solid #c8463c;background:#fdeceb;padding:.4em}
+.sheet-r{flex:1;padding:.55em .9em;min-height:3.2em;display:flex;align-items:center;background:repeating-linear-gradient(transparent 0 1.85em,#f2c4c0 1.85em calc(1.85em + 1px))}
+.pen{font-family:"Nanum Pen Script",cursive;font-size:1.75em;line-height:1.05;color:#1a2a55;letter-spacing:1px}
+.pen::after{content:"";display:inline-block;width:2px;height:.9em;background:#1a2a55;margin-left:2px;vertical-align:-2px;animation:blink .8s steps(1) infinite}
+.pen.done::after{display:none}
+@keyframes blink{50%{opacity:0}}
+.say .src{margin-top:.55em;font-size:.72em;color:#6b7280;text-align:right}
+.say .row{display:flex;justify-content:flex-end;margin-top:.5em}
+.say button{font-size:.8em;background:#1c2c52;color:#fff;border:2px solid #1c2c52;padding:.35em .8em}
+.notice{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:1em;background:rgba(15,26,51,.82);color:#fff;font-size:clamp(13px,2.6vw,17px);line-height:1.7}
+.notice.off{display:none}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.stat{background:var(--panel);border:2px solid var(--line);padding:10px 12px}
+.stat .n{font-family:"DungGeunMo",monospace;font-size:26px}
+.stat .k{font-size:12px;color:var(--muted);margin-top:2px}
+.stat .harv{display:block;font-family:"Galmuri11",monospace;font-size:12px;color:var(--gold);margin-top:2px}
+.stat.leaf .n{color:var(--leaf)} .stat.fruit .n{color:var(--fruit)} .stat.rate .n{color:var(--gold)}
+.weeks{margin-top:12px;background:var(--panel);border:2px solid var(--line);padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.9}
+.weeks span{display:inline-block;margin-right:14px;color:var(--ink)}
+@media (max-width:520px){body{padding:14px 10px 30px}.title{font-size:20px}.stats{grid-template-columns:1fr 1fr;gap:8px}.stat.rate{grid-column:span 2}.stat .n{font-size:22px}.say{width:94%;top:4%}.pen{font-size:1.45em}.weeks span{display:block;margin:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="title"><span id="who"></span>의 숙제 나무<small>푼 문항만큼 잎이 나고, 맞힌 문항만큼 열매가 열립니다</small></div>
+    <div class="ctrl"><button onclick="goBack()">← 결과로 돌아가기</button></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <canvas id="cv" width="320" height="224"></canvas>
+    <div class="notice" id="notice">나무를 불러오는 중…</div>
+    <div class="hud">
+      <div class="l"><span class="lbl">회차</span><span id="hWeek">×00</span></div>
+      <div class="r"><span class="lbl">열매</span><span id="hFruit">0000000</span></div>
+    </div>
+    <div class="banner" id="banner"></div>
+    <button class="pick" id="pick" onclick="pickFruit()">열매 따기</button>
+    <div class="say" id="say">
+      <div class="sheet">
+        <div class="sheet-l">필적<br>확인란</div>
+        <div class="sheet-r"><div class="pen" id="sayMsg"></div></div>
+      </div>
+      <div class="src" id="saySrc"></div>
+      <div class="row"><button onclick="closeGift()">간직하기</button></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat leaf"><div class="n" id="sLeaf">0</div><div class="k">나뭇잎 · 지금까지 푼 문항</div></div>
+    <div class="stat fruit"><div class="n"><span id="sFruit">0</span><span class="harv" id="sHarvest"></span></div><div class="k">열매 · 지금까지 맞힌 문항</div></div>
+    <div class="stat rate"><div class="n" id="sRate">0%</div><div class="k">누적 정답률</div></div>
+  </div>
+  <div class="weeks" id="weeks"></div>
+</div>
+
+<script src="../config.js"></script>
+<script>
+// ───────── 학생 본인 기록(과제 검사 서버 action=tree: 회차별 푼 문항·맞힌 문항 수) ─────────
+var Q=new URLSearchParams(location.search),NAME=(Q.get('n')||'').trim(),COURSE=Q.get('c')||'',SCHOOL=Q.get('s')||'';
+var SCRIPT_URL=(window.OREUM_HW_CONFIG||{}).SCRIPT_URL||'';
+function goBack(){if(history.length>1)history.back();else location.href='../';}
+function shortWeek(lbl,i){return (i+1)+'회차';}   // 주차 이름은 반마다 겹칠 수 있어 제출 순서대로 회차 번호를 붙인다
+var P={sky:'#6fd6dc',sky2:'#8fe2e6',cloud:'#ffffff',cloudS:'#bfeef2',
+  hillF:'#9edcae',hillF2:'#8fd3a0',hillN:'#6cc07c',hillN2:'#5bb06c',
+  grass:'#4cb648',grassL:'#8be06a',grassD:'#2f8a3a',dirt:'#9a6a3c',dirtD:'#7b5230',dirtL:'#b88452',stone:'#c9b08a',
+  bark:'#8a5a33',barkD:'#5e3a1f',barkL:'#b07a48',barkO:'#3a2212',
+  cOut:'#154a25',cD:'#2a7a3a',cM:'#3e9f4a',cL:'#5cc463',cS:'#2f8a3e',
+  leaf:['#7fd86a','#9be37d','#b8ee8c','#6cc85c'],leafSh:'#2c7f3a',
+  fruit:'#e83b3b',fruitD:'#9c1f2a',fruitL:'#ffd1c4',gold:'#ffd84a',white:'#ffffff',bubbleD:'#7fc9d6'};
+
+var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+var W=320,H=224,GY=211;
+ctx.imageSmoothingEnabled=false;
+function px(x,y,c,w,h){ctx.fillStyle=c;ctx.fillRect(x|0,y|0,w||1,h||1);}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function ease(x){return x<0?0:x>1?1:1-Math.pow(1-x,3);}
+function off(w,h){var c=document.createElement('canvas');c.width=w;c.height=h;var g=c.getContext('2d');g.imageSmoothingEnabled=false;return [c,g];}
+function fromMap(map,col){var h=map.length,w=map[0].length,o=off(w,h);for(var y=0;y<h;y++)for(var x=0;x<w;x++){var k=map[y][x];if(col[k]){o[1].fillStyle=col[k];o[1].fillRect(x,y,1,1);}}return o[0];}
+
+// ───────── 햄스터 스프라이트(힉스필드 생성 이미지 → 도트 변환, 24×26 칸) ─────────
+var HAM=new Image();HAM.src='hamsters.png';var HW=24,HH=26;
+
+// ───────── 큰 열매 · 선물 상자 스프라이트(16×16 도트) ─────────
+var BIGAPPLE=(function(){var o=off(16,16),g=o[1];
+  for(var y=0;y<16;y++)for(var x=0;x<16;x++){var dx=(x-7.5)/7.3,dy=(y-9)/6.6;var inn=dx*dx+dy*dy<=1&&!(y<4&&Math.abs(x-7.5)<1.6);
+    if(!inn)continue;var c=P.fruit;if(dx+dy>0.55)c=P.fruitD;if(dx<-0.25&&dy<-0.1)c='#ff6a5c';if((x===4||x===5)&&(y===5||y===6))c=P.fruitL;if(x===4&&y===7)c=P.white;
+    g.fillStyle=c;g.fillRect(x,y,1,1);}
+  var d=g.getImageData(0,0,16,16).data,ol=off(16,16);
+  for(var y2=0;y2<16;y2++)for(var x2=0;x2<16;x2++){if(d[(y2*16+x2)*4+3])continue;
+    var nb=[[1,0],[-1,0],[0,1],[0,-1]].some(function(n){var X=x2+n[0],Y=y2+n[1];return X>=0&&Y>=0&&X<16&&Y<16&&d[(Y*16+X)*4+3];});
+    if(nb){ol[1].fillStyle='#5a1014';ol[1].fillRect(x2,y2,1,1);}}
+  ol[1].drawImage(o[0],0,0);
+  var s=ol[1];s.fillStyle='#5e3a1f';s.fillRect(7,0,2,4);s.fillStyle='#3e9f4a';s.fillRect(9,1,3,2);s.fillRect(10,0,3,1);s.fillStyle='#8be06a';s.fillRect(10,1,1,1);
+  return ol[0];})();
+var GIFT=fromMap([
+ '....oo....oo....',
+ '...oyyo..oyyo...',
+ '...oyYyooyYyo...',
+ '....oyyyyyyo....',
+ 'oooooooyyooooooo',
+ 'orrrrrryyrrrrrro',
+ 'oRRRRRRyyRRRRRRo',
+ 'oooooooyyooooooo',
+ '.orhrrryyrrrrro.',
+ '.orhrrryyrrrrro.',
+ '.orrrrryyrrrrro.',
+ '.orrrrryyrrrrro.',
+ '.oRrrrryyrrrrRo.',
+ '.oRRRRRyyRRRRRo.',
+ '.oooooooooooooo.',
+ '................'],{o:'#3a1020',y:'#ffd84a',Y:'#d9a520',r:'#ef4b5a',R:'#b52c42',h:'#ff9aa5'});
+
+// ───────── 이파리 스프라이트: 각도 8종 × 색 5종, 잎맥·외곽선·꼭지가 있는 진짜 잎 모양 ─────────
+var LPAL={top:{l:'#6fc65f',m:'#4ea94a',r:'#3a8b3f',h:'#98dc7c',o:'#1b5229'},mid:{l:'#53ad4d',m:'#3d9443',r:'#2e7d38',h:'#73c562',o:'#164a24'},
+  dark:{l:'#3c9342',m:'#2c7b37',r:'#22662d',h:'#4fa94b',o:'#113a1d'},
+  new1:{l:'#a6e878',m:'#78cc5e',r:'#4f9e45',h:'#dcf7b0',o:'#245f2e'},new2:{l:'#c9ee7e',m:'#9bd65a',r:'#6aa840',h:'#f0fbc0',o:'#3a6626'}};
+var LANG=[-60,-40,-20,20,40,60,120,140,160,200,220,240],LS=13,LSPR={};
+(function(){Object.keys(LPAL).forEach(function(k){var pal=LPAL[k];LSPR[k]=[];
+  LANG.forEach(function(deg){var ang=deg*Math.PI/180,o=off(LS,LS),g=o[1],c=(LS-1)/2,Lh=5.6,Wd=2.5,fill=new Uint8Array(LS*LS);
+    for(var y=0;y<LS;y++)for(var x=0;x<LS;x++){var dx=x-c,dy=y-c,u=dx*Math.cos(ang)+dy*Math.sin(ang),v=-dx*Math.sin(ang)+dy*Math.cos(ang);
+      if(Math.abs(u)>Lh)continue;var w=Wd*(1-(u/Lh)*(u/Lh));if(Math.abs(v)>w+0.15)continue;fill[y*LS+x]=1;
+      var col=v<-0.5?pal.l:pal.m;if(Math.abs(v)<=0.5&&u<Lh-1.2)col=pal.r;if(v<-0.5&&u>Lh*0.15&&u<Lh*0.6&&Math.abs(v)>w*0.45)col=pal.h;
+      g.fillStyle=col;g.fillRect(x,y,1,1);}
+    for(var y2=0;y2<LS;y2++)for(var x2=0;x2<LS;x2++){if(fill[y2*LS+x2])continue;
+      if((x2>0&&fill[y2*LS+x2-1])||(x2<LS-1&&fill[y2*LS+x2+1])||(y2>0&&fill[(y2-1)*LS+x2])||(y2<LS-1&&fill[(y2+1)*LS+x2])){g.fillStyle=pal.o;g.fillRect(x2,y2,1,1);}}
+    var sx=Math.round(c-Math.cos(ang)*(Lh+1)),sy=Math.round(c-Math.sin(ang)*(Lh+1));g.fillStyle=pal.o;g.fillRect(sx,sy,1,1);
+    LSPR[k].push(o[0]);});});})();
+
+// ───────── 배경(언덕·땅) 미리 그리기 ─────────
+var BG=(function(){var o=off(W,H),g=o[1];
+  function p(x,y,c,w,h){g.fillStyle=c;g.fillRect(x,y,w||1,h||1);}
+  for(var x=0;x<W;x++){var hy=Math.round(150+9*Math.sin(x/41)+5*Math.sin(x/13+2));p(x,hy,P.hillF,1,GY-hy);if((x+hy)%2)p(x,hy,P.hillF2,1,1);}
+  for(var x2=0;x2<W;x2++){var ny=Math.round(168+7*Math.sin(x2/27+1)+3*Math.sin(x2/9));p(x2,ny,P.hillN,1,GY-ny);if(x2%3===0)p(x2,ny+2,P.hillN2,1,1);}
+  [[22,160],[60,154],[268,158],[300,163],[240,166]].forEach(function(t){p(t[0]-1,t[1],P.barkD,2,8);p(t[0]-5,t[1]-9,P.hillN2,10,9);p(t[0]-4,t[1]-12,P.hillN,8,4);p(t[0]-2,t[1]-14,P.hillN,4,2);});
+  p(0,GY,P.grass,W,4);p(0,GY,P.grassL,W,1);
+  var R=rng(7);
+  for(var x3=0;x3<W;x3+=2){if(R()<0.35)p(x3,GY-2,P.grass,1,2);if(R()<0.2)p(x3+1,GY-3,P.grassL,1,3);}
+  p(0,GY+4,P.dirt,W,H-GY-4);p(0,GY+4,P.grassD,W,1);
+  for(var i=0;i<120;i++){var sx=(R()*W)|0,sy=GY+6+((R()*(H-GY-7))|0);p(sx,sy,R()<0.5?P.dirtD:P.dirtL,2,1);}
+  for(var j=0;j<14;j++){var tx=(R()*W)|0,ty=GY+9+((R()*(H-GY-12))|0);p(tx,ty,P.stone,3,2);p(tx,ty+2,P.dirtD,3,1);}
+  return o[0];})();
+var CLOUDS=[{x:20,y:30,s:1},{x:150,y:14,s:0},{x:250,y:40,s:1},{x:100,y:60,s:0}];
+var CLOUD_SPR=[['..1111......','.111111.11..','11111111111.','111111111111','.22222222221'],['...111...','.1111111.','111111111','.2222222.']];
+function drawCloud(x,y,k){var s=CLOUD_SPR[k];for(var r=0;r<s.length;r++)for(var c=0;c<s[r].length;c++){var ch=s[r][c];if(ch==='1')px(x+c*2,y+r*2,P.cloud,2,2);else if(ch==='2')px(x+c*2,y+r*2,P.cloudS,2,2);}}
+
+// ───────── 거대 나무 만들기 ─────────
+var T=null;
+// 나무 그림(힉스필드 생성 도트 나무)과 잎 뭉치 스프라이트
+var TREE=new Image();TREE.src='tree.png';var SPRIG=new Image();SPRIG.src='sprigs.png';var SPN=24,SPS=11;
+var CANOPY=null;   // 나무 그림에서 '잎 부분' 좌표만 뽑은 목록
+function canopyPoints(){if(CANOPY)return CANOPY;var o=off(TREE.width,TREE.height);o[1].drawImage(TREE,0,0);
+  var d=o[1].getImageData(0,0,TREE.width,TREE.height).data,pts=[],sx=0,sy=0;
+  for(var y=3;y<TREE.height-3;y+=3)for(var x=3;x<TREE.width-3;x+=3){var i=(y*TREE.width+x)*4;if(d[i+3]<200)continue;var r=d[i],g=d[i+1],b=d[i+2];
+    if(g>r+18&&g>b+18){pts.push({x:x,y:y});sx+=x;sy+=y;}}
+  var cx=sx/pts.length,cy=sy/pts.length;CANOPY={pts:pts,cx:cx,cy:cy};return CANOPY;}
+function buildTree(data){
+  var leaves=0,fruits=0;data.forEach(function(d){leaves+=d.t;fruits+=d.c;});
+  var R=rng(20261021),C=canopyPoints(),U=+(document.getElementById('unit')||{value:5}).value;
+  var cand=C.pts.map(function(p){var dx=p.x-C.cx,dy=(p.y-C.cy)*1.2;return {x:p.x,y:p.y,d:Math.sqrt(dx*dx+dy*dy)+R()*40};}).sort(function(p,q){return p.d-q.d;});
+  // 잎 뭉치: 회차마다 푼 문항 수만큼(열매와 같은 단위로 묶어 그림), 안쪽부터 바깥으로
+  var L=[],carry=0,nL=0;data.forEach(function(d){var tot=d.t+carry,n=Math.floor(tot/U);carry=tot-n*U;nL+=n;});
+  var k=0;carry=0;
+  data.forEach(function(d,wi){var tot=d.t+carry,n=Math.floor(tot/U);carry=tot-n*U;
+    for(var i=0;i<n;i++){var c=cand[Math.min(cand.length-1,Math.floor(k*cand.length/Math.max(1,nL)))];k++;L.push({x:c.x+((R()*3)|0)-1,y:c.y+((R()*3)|0)-1,w:wi,sp:(R()*SPN)|0,ph:R()*6.28,sway:R()<0.5});}});
+  var F=[],c2=0,start=0,cand2=cand.slice().sort(function(){return R()-0.5;});
+  var byW=[];data.forEach(function(){byW.push([]);});L.forEach(function(l){byW[l.w].push(l);});
+  data.forEach(function(d,wi){var tot=d.c+c2,n=Math.floor(tot/U);c2=tot-n*U;var src=byW[wi].length?byW[wi]:L;
+    for(var i=0;i<n;i++){var lf=src[Math.floor((i+0.5)*src.length/Math.max(1,n))%src.length];F.push({x:lf.x+((R()*5)|0)-2,y:lf.y+((R()*5)|0)-1,w:wi,big:U>1,picked:false});}});
+  var sf=Math.min(1,Math.max(0.62,0.62+leaves/1100));
+  T={data:data,leaves:L,fruits:F,cx:160,sf:sf,leafN:leaves,fruitN:fruits,unit:U};
+}
+// 줄기: 아래로 갈수록 넓게 퍼지는 거대 줄기 + 뿌리 + 나무 구멍 + 굵은 가지
+function drawTrunk(g){
+  var topY=Math.round(T.cy+T.bot*0.55),full=GY-topY,h=Math.round(full*g);
+  for(var y=GY-h;y<GY;y++){
+    var dy=GY-y,f=dy/full;var w=Math.round(40-f*14+(dy<20?Math.pow((20-dy)/20,2)*34:0));
+    var xL=T.cx-(w>>1);
+    px(xL-1,y,P.barkO,w+2,1);px(xL,y,P.bark,w,1);px(xL,y,P.barkL,4,1);px(xL+w-7,y,P.barkD,7,1);
+    for(var k=0;k<5;k++){var gx=Math.round(xL+(k+1)*w/6+Math.sin(y/9+k*1.7)*1.5);px(gx,y,P.barkD,1,1);}
+    if(dy%23===0)px(xL+6,y,P.barkD,w-14,1);
+  }
+  if(g>0.6){px(T.cx+5,GY-46,P.barkO,7,9);px(T.cx+6,GY-45,'#24130a',5,7);px(T.cx+6,GY-46,P.barkD,5,1);}
+  if(g>0.85){[[-1],[1]].forEach(function(b){var sx=T.cx+b[0]*10,sy=topY+8;for(var i=0;i<34;i++){var x=sx+b[0]*i,y=sy-Math.round(i*0.55);px(x,y-2,P.barkO,2,6);px(x,y-1,P.bark,2,4);px(x,y-1,P.barkL,2,1);}});}
+}
+
+// ───────── 햄스터 두 마리 ─────────
+var HAMS=[];
+function resetHams(){HAMS=[{row:0,x:70,dir:1,sp:0.5,state:'walk',tm:0,jump:0},{row:1,x:250,dir:-1,sp:0.45,state:'walk',tm:90,jump:0}];}
+function updateHams(){HAMS.forEach(function(h){h.tm++;
+  if(h.state==='walk'){h.x+=h.dir*h.sp;if(h.x<14){h.x=14;h.dir=1;}if(h.x>W-38){h.x=W-38;h.dir=-1;}
+    if(h.tm>260&&Math.random()<0.006){h.state='sit';h.tm=0;}}
+  else if(h.state==='sit'&&h.tm>150){h.state='walk';h.tm=0;if(Math.random()<0.5)h.dir*=-1;}
+  else if(h.state==='cheer'){h.jump=Math.abs(Math.sin(h.tm/6))*7;if(h.tm>90){h.state='walk';h.tm=0;h.jump=0;}}});}
+function drawHams(){if(!HAM.complete||!HAM.naturalWidth)return;HAMS.forEach(function(h){
+  var col=h.state==='walk'?((h.tm>>3)%3):(h.state==='sit'?3:(h.tm>>2)%3);
+  var bob=h.state==='walk'&&((h.tm>>3)%2)?1:0,x=Math.round(h.x),y=Math.round(GY-HH+1-bob-h.jump);
+  px(x+4,GY,'rgba(0,0,0,.18)',16,1);
+  ctx.save();if(h.dir<0){ctx.translate(x+HW,y);ctx.scale(-1,1);ctx.drawImage(HAM,col*HW,h.row*HH,HW,HH,0,0,HW,HH);}else ctx.drawImage(HAM,col*HW,h.row*HH,HW,HH,x,y,HW,HH);ctx.restore();});}
+
+// ───────── 연출 상태 ─────────
+var t0=0,leafShown=0,fruitShown=0,parts=[],bubbles=[],TIM={},raf=0,banShown=false,lastWeekShown=-1,fruitWeekShown=-1,shake=0,G=null;
+function timeline(){var n=T.data.length,per=Math.max(520,Math.min(950,4200/n));
+  TIM={trunk:300,trunkEnd:1500,leaf:1400,per:per};TIM.leafEnd=TIM.leaf+n*per;TIM.fruit=TIM.leafEnd+200;TIM.fruitEnd=TIM.fruit+1900;TIM.done=TIM.fruitEnd+150;}
+function floatText(txt,x,y,cls){var st=document.getElementById('stage'),el=document.createElement('div');el.className='float '+(cls||'');el.textContent=txt;
+  el.style.left=(x/W*100)+'%';el.style.top=(y/H*100)+'%';st.appendChild(el);
+  requestAnimationFrame(function(){requestAnimationFrame(function(){el.style.transform='translate(-50%,-170%)';el.style.opacity='0';});});setTimeout(function(){el.remove();},1300);}
+function pad(n,l){n=String(n);while(n.length<l)n='0'+n;return n;}
+function canScale(){var tt=performance.now()-t0,g=ease((tt-TIM.trunk)/(TIM.trunkEnd-TIM.trunk));
+  var lf=T.leafN?leafShown/T.leafN:1;return T.sf*(0.12+0.28*g+0.6*ease(lf));}
+function toScreen(p){var s=canScale();return {x:Math.round(T.cx+(p.x-TREE.width/2)*s),y:Math.round(GY+2-(TREE.height-p.y)*s)};}
+function wobble(){return G&&G.stage==='shake'?((G.tm>>1)%2?1:-1):0;}
+
+function frame(now){
+  if(!t0)t0=now;var t=now-t0;
+  ctx.save();if(shake>0){shake--;ctx.translate(((Math.random()*4)|0)-2,((Math.random()*3)|0)-1);}
+  px(0,0,P.sky,W,H);for(var yy=110;yy<170;yy+=3)px(0,yy,P.sky2,W,1);
+  CLOUDS.forEach(function(c,i){var x=((c.x+t*0.006*(i%2?1:0.6))%(W+40))-30;drawCloud(x,c.y,c.s);});
+  ctx.drawImage(BG,0,0);
+  
+  var want=0;
+  if(t>TIM.leaf){var wk=Math.min(T.data.length,(t-TIM.leaf)/TIM.per),wi=Math.floor(wk),fr=wk-wi;
+    for(var i=0;i<wi;i++)want+=T.data[i].t;if(wi<T.data.length)want+=Math.floor(T.data[wi].t*ease(fr*1.25));
+    if(wi!==lastWeekShown&&wi<T.data.length){lastWeekShown=wi;floatText(T.data[wi].w+' +'+T.data[wi].t,T.cx+(wi%2?72:-72),78);}}
+  leafShown=Math.min(T.leafN,want);
+  var gx=wobble();
+  if(t>TIM.trunk){var s=canScale(),tw=Math.round(TREE.width*s),th=Math.round(TREE.height*s);
+    ctx.drawImage(TREE,Math.round(T.cx-tw/2)+gx,GY+2-th,tw,th);
+    var nl=Math.round(T.leaves.length*(T.leafN?leafShown/T.leafN:0));
+    for(var j=0;j<nl;j++){var L=T.leaves[j],q=toScreen(L),bob=L.sway?Math.round(Math.sin(t/500+L.ph)*0.6):0,fresh=(j>nl-6&&t<TIM.leafEnd);
+      var sz=fresh?SPS+2:SPS;ctx.drawImage(SPRIG,L.sp*SPS,0,SPS,SPS,q.x-(sz>>1)+gx,q.y-(sz>>1)+bob,sz,sz);}}
+  if(t>TIM.fruit){var fp=ease((t-TIM.fruit)/(TIM.fruitEnd-TIM.fruit)),fw=Math.floor(T.fruits.length*fp);
+    if(fw>fruitShown){var nf=T.fruits[fw-1];if(nf&&nf.w!==fruitWeekShown){fruitWeekShown=nf.w;var sp=toScreen(nf);floatText('+'+T.data[nf.w].c,sp.x,sp.y-8,'fruit');}
+      for(var qq=fruitShown;qq<fw;qq+=Math.max(1,Math.floor((fw-fruitShown)/3))){var p2=toScreen(T.fruits[qq]);parts.push({x:p2.x,y:p2.y,life:9,kind:'spark'});}}
+    fruitShown=fw;}
+  for(var f=0;f<fruitShown;f++){var F=T.fruits[f];if(F.picked)continue;var q2=toScreen(F),X=q2.x+gx,Y=q2.y;
+    if(F.big){px(X+1,Y-1,P.barkD,1,1);px(X+2,Y-1,'#8be06a',2,1);px(X,Y+1,P.fruitD,5,3);px(X+1,Y,P.fruitD,3,5);px(X,Y+1,P.fruit,4,2);px(X+1,Y,P.fruit,2,4);px(X+1,Y+1,P.fruitL,1,1);}
+    else{px(X+1,Y+1,P.fruitD,2,2);px(X,Y,P.fruit,2,2);px(X,Y,P.fruitL,1,1);}}
+  if(t>TIM.trunkEnd){updateHams();drawHams();drawCritters(t);}
+  if(G)stepGift();
+  if(t>TIM.done&&Math.random()<0.025)bubbles.push({x:20+Math.random()*(W-40),y:GY-4,r:3+((Math.random()*3)|0),ph:Math.random()*6});
+  bubbles.forEach(function(b){b.y-=0.35;ring(Math.round(b.x+Math.sin(b.y/9+b.ph)*3),Math.round(b.y),b.r);});bubbles=bubbles.filter(function(b){return b.y>20;});
+  if(t>TIM.leafEnd&&Math.random()<0.06&&leafShown){var s2=toScreen(T.leaves[(Math.random()*T.leaves.length)|0]);parts.push({x:s2.x,y:s2.y,life:300,kind:'leaf',col:P.leaf[(Math.random()*4)|0],ph:Math.random()*6});}
+  parts.forEach(function(p){p.life--;if(p.kind==='spark'){var c=p.life>4?P.white:P.gold;px(p.x+1,p.y-3,c,1,2);px(p.x+1,p.y+3,c,1,2);px(p.x-2,p.y,c,2,1);px(p.x+3,p.y,c,2,1);}
+    else if(p.kind==='dust'){p.x+=p.vx;p.y+=p.vy;p.vy+=0.05;px(p.x,p.y,p.life>10?'#f3e2c4':'#d2bb94',2,2);}
+    else{p.y+=0.45;var lx=Math.round(p.x+Math.sin(p.y/6+p.ph)*4);if(p.y<GY-1)px(lx,Math.round(p.y),p.col,2,1);else p.life=0;}});
+  parts=parts.filter(function(p){return p.life>0;});
+  ctx.restore();
+  var wkNow=t<TIM.leaf?0:Math.min(T.data.length,Math.floor((t-TIM.leaf)/TIM.per)+1);
+  var realFruit=Math.round(T.fruitN*(T.fruits.length?fruitShown/T.fruits.length:0));
+  document.getElementById('hWeek').textContent='×'+pad(wkNow,2);
+  document.getElementById('hFruit').textContent=pad(realFruit,7);
+  document.getElementById('sLeaf').textContent=leafShown;document.getElementById('sFruit').textContent=realFruit;
+  document.getElementById('sRate').textContent=(leafShown?Math.round(realFruit/leafShown*100):0)+'%';
+  if(t>TIM.done&&!banShown){banShown=true;var last=T.data[T.data.length-1],b=document.getElementById('banner');
+    b.innerHTML='이번 '+last.w+' 잎 <b>+'+last.t+'</b> · 열매 <b>+'+last.c+'</b><br>나무가 또 자랐어요!';b.classList.add('on');
+    setTimeout(function(){b.classList.remove('on');updateHarvest();if(!G)document.getElementById('pick').classList.add('on');},3400);}
+  raf=requestAnimationFrame(frame);
+}
+var BIRDS=[];
+function drawCritters(t){
+  // 나비 두 마리: 나무 주변을 팔랑팔랑
+  [{ph:0,cx:92,cy:150,c:'#ff9ad5',c2:'#ffd84a'},{ph:2.3,cx:236,cy:138,c:'#9ad7ff',c2:'#ffffff'}].forEach(function(b){
+    var x=Math.round(b.cx+Math.sin(t/1300+b.ph)*44+Math.sin(t/310+b.ph)*4),y=Math.round(b.cy+Math.sin(t/800+b.ph*1.3)*20+Math.sin(t/170)*2);
+    var up=((t/110)|0)%2;px(x,y,'#3a2a2a',1,3);
+    if(up){px(x-3,y-2,b.c,3,2);px(x+1,y-2,b.c,3,2);px(x-2,y,b.c2,2,1);px(x+1,y,b.c2,2,1);}
+    else{px(x-2,y,b.c,2,2);px(x+1,y,b.c,2,2);}});
+  // 새: 가끔 하늘을 가로질러 날아간다
+  if(Math.random()<0.004&&BIRDS.length<2)BIRDS.push({x:-8,y:22+Math.random()*40,v:0.6+Math.random()*0.4});
+  BIRDS.forEach(function(b){b.x+=b.v;var x=Math.round(b.x),y=Math.round(b.y+Math.sin(b.x/14)*3),up=((t/140)|0)%2;
+    px(x,y,'#2b3550',1,1);if(up){px(x-2,y-1,'#2b3550',2,1);px(x+1,y-1,'#2b3550',2,1);}else{px(x-2,y+1,'#2b3550',2,1);px(x+1,y+1,'#2b3550',2,1);}});
+  BIRDS=BIRDS.filter(function(b){return b.x<W+10;});
+}
+function ring(x,y,r){for(var a=0;a<24;a++){var an=a/24*6.283;px(x+Math.round(Math.cos(an)*r),y+Math.round(Math.sin(an)*r),P.bubbleD);}px(x-r+2,y-r+2,P.white,1,1);}
+
+// ───────── 열매 따기: 흔들림 → 거대 열매 낙하 '푹!' → 선물 상자 → 말풍선 ─────────
+var MSG_I=0,typer=0;
+function harvKey(){return 'hwtree-harvest|'+COURSE+'|'+NAME+'|'+T.unit;}
+function loadHarvest(){var ids=[];try{ids=JSON.parse(localStorage.getItem(harvKey())||'[]');}catch(e){}T.fruits.forEach(function(f,i){f.picked=ids.indexOf(i)>=0;});}
+function saveHarvest(){var ids=[];T.fruits.forEach(function(f,i){if(f.picked)ids.push(i);});try{localStorage.setItem(harvKey(),JSON.stringify(ids));}catch(e){}}
+function harvestCount(){return T.fruits.filter(function(f){return f.picked;}).length;}
+function updateHarvest(){var h=harvestCount(),left=T.fruits.length-h,btn=document.getElementById('pick');
+  document.getElementById('sHarvest').textContent='수확 '+h+'개 · 남은 열매 '+left+'개';
+  if(left<=0){btn.textContent='열매를 모두 땄어요';btn.classList.add('empty');}else{btn.textContent='열매 따기';btn.classList.remove('empty');}}
+function resetHarvest(){T.fruits.forEach(function(f){f.picked=false;});saveHarvest();updateHarvest();}
+// ───────── 역대 수능 필적 확인 문구(직접 채워 넣기) ─────────
+// 2006~2026학년도 수능 필적 확인 문구(최신순). 열매를 딸 때마다 하나씩 차례로 뜬다.
+var PILJEOK=[
+  {year:'2026학년도',text:'초록 물결이 톡톡 튀는 젊음처럼',poet:'안규례',poem:'아침 산책'},
+  {year:'2025학년도',text:'저 넓은 세상에서 큰 꿈을 펼쳐라',poet:'곽의영',poem:'하나뿐인 예쁜 딸아'},
+  {year:'2024학년도',text:'가장 넓은 길은 언제나 내 마음속에',poet:'양광모',poem:'가장 넓은 길'},
+  {year:'2023학년도',text:'나의 꿈은 맑은 바람이 되어서',poet:'한용운',poem:'나의 꿈'},
+  {year:'2022학년도',text:'넓은 하늘로의 비상을 꿈꾸며',poet:'이해인',poem:'작은 노래 2'},
+  {year:'2021학년도',text:'많고 많은 사람 중에 그대 한 사람',poet:'나태주',poem:'들길을 걸으며'},
+  {year:'2020학년도',text:'너무 맑고 초롱한 그 중 하나 별이여',poet:'박두진',poem:'별밭에 누워'},
+  {year:'2019학년도',text:'그대만큼 사랑스러운 사람을 본 일이 없다',poet:'김남조',poem:'편지'},
+  {year:'2018학년도',text:'큰 바다 넓은 하늘을 우리는 가졌노라',poet:'김영랑',poem:'바다로 가자'},
+  {year:'2017학년도',text:'흙에서 자란 내 마음 파아란 하늘빛',poet:'정지용',poem:'향수'},
+  {year:'2016학년도',text:'넓음과 깊음을 가슴에 채우며',poet:'주요한',poem:'청년이여 노래하라'},
+  {year:'2015학년도',text:'햇살도 둥글둥글하게 뭉치는 맑은 날',poet:'문태준',poem:'돌의 배'},
+  {year:'2014학년도',text:'꽃초롱 불 밝히듯 눈을 밝힐까',poet:'박정만',poem:'작은 연가'},
+  {year:'2013학년도',text:'맑은 햇빛으로 반짝반짝 물들으며',poet:'정한모',poem:'가을에'},
+  {year:'2012학년도',text:'진실로 내가 그대를 사랑하는 까닭은',poet:'황동규',poem:'즐거운 편지'},
+  {year:'2011학년도',text:'날마다 새로우며, 깊어지며, 넓어진다',poet:'정채봉',poem:'첫 마음'},
+  {year:'2010학년도',text:'맑은 강물처럼 조용하고 은근하며',poet:'유안진',poem:'지란지교를 꿈꾸며'},
+  {year:'2009학년도',text:'이 많은 별빛이 내린 언덕 위에',poet:'윤동주',poem:'별 헤는 밤'},
+  {year:'2008학년도',text:'손금에 맑은 강물이 흐르고',poet:'윤동주',poem:'소년'},
+  {year:'2007학년도',text:'넓은 벌 동쪽 끝으로 옛이야기',poet:'정지용',poem:'향수'},
+  {year:'2006학년도',text:'흙에서 자란 내 마음 파란 하늘빛',poet:'정지용',poem:'향수'}
+];
+function pickFruit(){
+  if(G)return;var cand=T.fruits.filter(function(f,i){return !f.picked&&i<fruitShown;});
+  if(!cand.length){floatText('다음 숙제를 내면 새 열매가 열려요',W/2,GY-70,'fruit');return;}
+  var f=cand[(Math.random()*cand.length)|0];f.picked=true;saveHarvest();updateHarvest();var p=toScreen(f);
+  document.getElementById('pick').classList.remove('on');
+  G={stage:'shake',tm:0,x:p.x,y:p.y,vy:0,sc:0.25};
+  for(var i=0;i<14;i++){var s=toScreen(T.leaves[(Math.random()*T.leaves.length)|0]);parts.push({x:s.x,y:s.y,life:260,kind:'leaf',col:P.leaf[(Math.random()*4)|0],ph:Math.random()*6});}
+}
+function stepGift(){G.tm++;var S=3,sz2=16*S;
+  if(G.stage==='shake'){if(G.tm>26){G.stage='fall';G.tm=0;}return;}
+  if(G.stage==='fall'){G.vy+=0.32;G.y+=G.vy;G.sc=Math.min(1,G.sc+0.035);var sz=sz2*G.sc;
+    ctx.drawImage(BIGAPPLE,Math.round(G.x-sz/2),Math.round(G.y-sz),Math.round(sz),Math.round(sz));
+    if(G.y>=GY+1){G.y=GY+1;G.stage='thud';G.tm=0;shake=14;floatText('푹!',G.x,GY-56,'boom');
+      for(var i=0;i<18;i++)parts.push({x:G.x+(Math.random()*30-15),y:GY-2,vx:(Math.random()-0.5)*2.2,vy:-Math.random()*1.8,life:24,kind:'dust'});
+      HAMS.forEach(function(h){h.state='cheer';h.tm=0;h.dir=h.x<G.x?1:-1;});}
+    return;}
+  if(G.stage==='thud'){var sq=G.tm<8?[1.3,0.68]:G.tm<14?[0.9,1.12]:[1,1];
+    var w=Math.round(sz2*sq[0]),h=Math.round(sz2*sq[1]);ctx.drawImage(BIGAPPLE,Math.round(G.x-w/2),GY+1-h,w,h);
+    if(G.tm>40){G.stage='flash';G.tm=0;}return;}
+  if(G.stage==='flash'){var on=(G.tm>>2)%2;ctx.drawImage(on?GIFT:BIGAPPLE,Math.round(G.x-sz2/2),GY+1-sz2,sz2,sz2);
+    if(G.tm%4===0)parts.push({x:G.x+(Math.random()*40-20),y:GY-sz2*Math.random(),life:9,kind:'spark'});
+    if(G.tm>34){G.stage='rise';G.tm=0;G.by=GY+1-sz2;}return;}
+  if(G.stage==='rise'||G.stage==='open'){G.by+=(112-G.by)*0.08;var bob=Math.round(Math.sin(G.tm/10)*2);
+    var bx=Math.round(Math.max(60,Math.min(W-60,G.x))-sz2/2);ctx.drawImage(GIFT,bx,Math.round(G.by)+bob,sz2,sz2);
+    if(G.tm%6===0)parts.push({x:bx+Math.random()*sz2,y:G.by+Math.random()*sz2,life:9,kind:'spark'});
+    if(G.stage==='rise'&&G.tm>50){G.stage='open';showSay();}return;}
+  if(G.stage==='bye'){G.sc2=(G.sc2||1)-0.08;if(G.sc2<=0){G=null;updateHarvest();document.getElementById('pick').classList.add('on');return;}
+    var s3=Math.round(sz2*G.sc2);ctx.drawImage(GIFT,Math.round(Math.max(60,Math.min(W-60,G.x))-s3/2),Math.round(G.by+sz2/2-s3/2),s3,s3);}
+}
+function showSay(){var p=PILJEOK[MSG_I%PILJEOK.length];MSG_I++;
+  document.getElementById('saySrc').textContent=p.year+' 수능 필적 확인 문구 · '+p.poet+', 「'+p.poem+'」';
+  var say=document.getElementById('say'),el=document.getElementById('sayMsg');el.textContent='';el.className='pen';say.classList.add('on');
+  var i=0;clearInterval(typer);typer=setInterval(function(){i++;el.textContent=p.text.slice(0,i);if(i>=p.text.length){clearInterval(typer);el.className='pen done';}},140);}
+function closeGift(){clearInterval(typer);document.getElementById('say').classList.remove('on');if(G)G.stage='bye';}
+
+function start(data){buildTree(data);timeline();
+  document.getElementById('who').textContent=NAME;
+  document.getElementById('weeks').innerHTML='회차 기록　'+T.data.map(function(d){return '<span>'+d.w+' 잎 '+d.t+' · 열매 '+d.c+'</span>';}).join('');
+  document.getElementById('notice').classList.add('off');replay();}
+function boot(){
+  document.getElementById('who').textContent=NAME||'나';
+  var nt=document.getElementById('notice');
+  if(!NAME||!COURSE||!SCHOOL||!SCRIPT_URL){nt.textContent='숙제를 제출한 뒤 결과 화면의 버튼으로 들어와 주세요.';return;}
+  fetch(SCRIPT_URL+'?action=tree&courseId='+encodeURIComponent(COURSE)+'&name='+encodeURIComponent(NAME)+'&school='+encodeURIComponent(SCHOOL))
+    .then(function(r){return r.json();}).then(function(d){
+      var ws=(d&&d.weeks)||[];
+      if(!ws.length){nt.textContent='아직 나무에 쌓인 기록이 없어요. 숙제를 제출하면 첫 잎이 돋아납니다.';return;}
+      start(ws.map(function(w,i){return {w:shortWeek(w.label,i),t:+w.t||0,c:+w.c||0};}));
+    }).catch(function(){nt.textContent='나무를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.';});
+}
+function replay(){cancelAnimationFrame(raf);t0=0;leafShown=0;fruitShown=0;parts=[];bubbles=[];lastWeekShown=-1;fruitWeekShown=-1;banShown=false;G=null;
+  loadHarvest();updateHarvest();resetHams();clearInterval(typer);
+  document.querySelectorAll('.float').forEach(function(e){e.remove();});['banner','say'].forEach(function(id){document.getElementById(id).classList.remove('on');});
+  document.getElementById('pick').classList.remove('on');raf=requestAnimationFrame(frame);}
+var _ld=0;[TREE,SPRIG,HAM].forEach(function(im){if(im.complete&&im.naturalWidth)_ld++;else im.onload=function(){if(++_ld===3)boot();};});if(_ld===3)boot();
+</script>
+</body>
+</html>
