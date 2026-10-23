@@ -223,6 +223,7 @@ body.landing .corner-logo{display:none}
 .q-detail-weak{color:var(--text-secondary);font-size:0.86rem;line-height:1.78;margin-bottom:8px}
 .q-detail-rem{color:var(--text-secondary);font-size:0.86rem;line-height:1.78;padding:10px 14px;background:rgba(244,237,224,0.03);border-radius:3px;border-left:2px solid var(--green-deep)}
 .q-detail-rem::before{content:'보완 방향';display:block;font-family:'Pretendard',sans-serif;font-size:0.68rem;color:var(--ok);letter-spacing:2px;margin-bottom:5px;font-weight:500}
+.q-detail-pick{font-size:0.72rem;font-weight:700;color:#241a0c;background:#d6b06a;padding:2px 9px;border-radius:8px;letter-spacing:0.5px}
 .q-detail-answer{font-size:0.72rem;font-weight:700;color:var(--on-accent);background:var(--accent);padding:2px 9px;border-radius:8px;letter-spacing:0.5px}
 .q-detail-balmun{color:var(--text-secondary);font-size:0.88rem;line-height:1.7;margin-bottom:10px;padding-left:12px;border-left:2px solid var(--border-soft)}
 .q-detail-haesul{color:var(--text-secondary);font-size:0.86rem;line-height:1.82;white-space:pre-line;padding:14px 16px;background:rgba(246,246,244,0.035);border:1px solid var(--border-line);border-radius:5px;margin-bottom:10px;word-break:keep-all}
@@ -269,6 +270,19 @@ body.landing .corner-logo{display:none}
 .hw-btn.on{background:var(--gold,#a5aef0);color:#0b0c15;border-color:var(--gold,#a5aef0)}
 .hw-btn.undone.on{background:#d6a96a;color:#241a0c;border-color:#d6a96a}
 .hw-btn.forgot.on{background:#cbab6a;color:#241f0c;border-color:#cbab6a}
+.hw-btn.great{flex-basis:100%;display:flex;flex-direction:column;align-items:center;gap:5px;padding:18px 14px;border-color:rgba(165,174,240,.45);background:rgba(165,174,240,.07);color:var(--cream)}
+.hw-btn.great .great-k{font-size:1.08rem}
+.hw-btn.great .great-s{font-size:.8rem;font-weight:500;color:var(--gold)}
+.hw-btn.great.on{background:var(--gold);color:#0b0c15}.hw-btn.great.on .great-s{color:#2a2f5c}
+.pick-panel{margin-top:6px}
+.pick-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--border-line);border-radius:10px;margin:6px 0;background:rgba(246,246,244,.02)}
+.pick-row.need{border-color:#d98a8a}
+.pick-q{min-width:92px;font-weight:700;color:var(--cream);font-size:.92rem}
+.pick-q small{display:block;font-weight:400;color:var(--text-muted);font-size:.72rem}
+.pick-opts{display:flex;gap:6px;flex-wrap:wrap}
+.pick-opt{min-width:38px;padding:7px 10px;border-radius:8px;border:1px solid var(--border-soft);background:transparent;color:var(--text-secondary);font-size:.95rem;cursor:pointer;font-family:inherit}
+.pick-opt.on{background:var(--gold);border-color:var(--gold);color:#0b0c15;font-weight:700}
+.pick-empty{color:var(--text-muted);font-size:.88rem;padding:8px 2px}
 /* 완료 체크리스트 */
 .chk-group{padding:16px 18px}
 .chk-date{font-family:'Pretendard',sans-serif;font-weight:700;color:var(--gold,#a5aef0);font-size:0.95rem;margin-bottom:10px;letter-spacing:0.5px}
@@ -622,7 +636,7 @@ function loadWeek(courseId, monthKey, week){
     STATE.data = d;
     STATE.week = monthKey ? weekUid : (d.week!=null ? d.week : week);
     STATE.step = 1; STATE.wrong = new Set(); STATE.checked = new Set(); STATE.notSolved = new Set(); STATE.solvedTotal = null; STATE.solvedBySec = {}; STATE.checkedSecs = new Set(); STATE.studyAns = {}; STATE.result = null;
-    STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null; STATE.oathMethod = null;
+    STATE.autoSubmitted = false; STATE.teacherView = false; STATE.didHw = null; STATE.oathMethod = null; STATE.pick = {};
     // 학년 기본값 = 선택한 코스의 학년(예: 중3 코스 → '중3'). 예전에 중3 옵션이 없어 다른 학년을 고르던 문제 방지. (명단 매칭은 이름 기준이라 학년값은 표시용)
     var _c = COURSES.find(function(c){ return c.id===STATE.courseId; });
     if(_c && ['중3','고1','고2','고3','N수'].indexOf(_c.grade)>=0) STATE.student.grade = _c.grade;
@@ -724,7 +738,11 @@ function renderStep1(){
     el('button',{type:'button', class:'hw-btn undone'+(STATE.didHw==='undone'?' on':''), onclick:()=>{STATE.didHw='undone'; nextFromStep1();}}, '숙제를 안 하였습니다'),
     el('button',{type:'button', class:'hw-btn forgot'+(STATE.didHw==='forgot'?' on':''), onclick:()=>{STATE.didHw='forgot'; nextFromStep1();}}, '숙제를 안 가져왔습니다')
   );
+  // 아주 열심히(조금 특별한 숙제 검사): 오답 마킹 때 고른 답까지 받아 오답을 더 자세히 분석한다
+  const great = el('button',{type:'button', class:'hw-btn great'+(STATE.didHw==='great'?' on':''), onclick:()=>{STATE.didHw='great'; nextFromStep1();}},
+    el('span',{class:'great-k'},'숙제를 아주 열심히 하였습니다'), el('span',{class:'great-s'},'*조금 특별한 숙제 검사 · 틀린 문항마다 내가 고른 답도 적어요'));
   hwRow.appendChild(choice);
+  hwRow.appendChild(el('div',{class:'hw-choice', style:'margin-top:12px'}, great));
   hwRow.appendChild(el('div',{class:'hint'}, '선택하면 바로 다음 단계로 넘어갑니다. (이름·학교를 먼저 입력해 주세요)'));
   form.appendChild(hwRow);
   root.appendChild(form);
@@ -751,6 +769,7 @@ function nextFromStep1(){
   if(STATE.didHw==='undone' || STATE.didHw==='forgot'){ STATE.step='oath'; renderDiag(); return; }
   STATE.step=2; renderDiag();
 }
+function isGreat_(){ return STATE.didHw==='great'; }
 function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function dueRange(){ const t=new Date(); t.setHours(0,0,0,0); const m=new Date(t); m.setDate(m.getDate()+7); const f=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); return {min:f(t), max:f(m)}; }
 function fmtKDate(v){ if(!v) return ''; const d=new Date(v+'T00:00:00'); if(isNaN(d.getTime())) return ''; const days=['일','월','화','수','목','금','토']; return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+days[d.getDay()]+'요일'; }
@@ -950,6 +969,7 @@ function renderStep2(){
         root.appendChild(el('div',{class:'subject-divider'}, sec.group)); }
       root.appendChild(areaBlock(sec, si));
     });
+    if(isGreat_()){ STATE.pick=STATE.pick||{}; const pp=el('div',{class:'section pick-panel', id:'pickPanel'}); root.appendChild(pp); renderPickPanel_(); }
   }
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
@@ -960,9 +980,27 @@ function renderStep2(){
         try{ inp.focus(); }catch(e){}
         return;
       }
+      if(isGreat_()){ const miss=Array.from(STATE.wrong).filter(k=>!(STATE.pick||{})[k]); if(miss.length){ renderPickPanel_(true); const pp=document.getElementById('pickPanel'); if(pp) pp.scrollIntoView({behavior:'smooth',block:'center'}); return; } }
       STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();
     }}, STATE.data.checklist?'다음 → 일일학습 체크':'다음 단계 →')
   ));
+}
+// 아주 열심히: 틀린 문항마다 내가 고른 답(①~⑤, 모름)
+function allQuestions_(){ const out=[]; (STATE.data.sections||[]).forEach(s=>(s.questions||[]).forEach(q=>out.push({q, sec:s}))); return out; }
+function renderPickPanel_(showNeed){
+  const pp=document.getElementById('pickPanel'); if(!pp) return; clear(pp); STATE.pick=STATE.pick||{};
+  pp.appendChild(el('h2',{class:'section-title'},'틀린 문항, 어떤 답을 골랐나요?'));
+  pp.appendChild(el('p',{class:'section-desc', html:'조금 특별한 숙제 검사입니다. 틀린 문항마다 <strong>내가 실제로 고른 답</strong>을 눌러 주세요. 어떤 함정에 걸렸는지 더 자세히 분석해 드립니다. 기억나지 않으면 「모름」을 누르세요.'}));
+  const wrongs=allQuestions_().filter(x=>STATE.wrong.has(String(x.q.no)));
+  Object.keys(STATE.pick).forEach(k=>{ if(!STATE.wrong.has(k)) delete STATE.pick[k]; });
+  if(!wrongs.length){ pp.appendChild(el('div',{class:'pick-empty'},'위에서 틀린 문항을 누르면 여기에 문항이 나타납니다.')); return; }
+  wrongs.forEach(({q,sec})=>{
+    const k=String(q.no), row=el('div',{class:'pick-row'+(showNeed&&!STATE.pick[k]?' need':'')});
+    row.appendChild(el('div',{class:'pick-q'}, q.label||(q.no+'번'), el('small',{}, String(sec.title||'').replace(/^\[[^\]]*\]\s*/,'').slice(0,22))));
+    const opts=el('div',{class:'pick-opts'});
+    ['①','②','③','④','⑤','모름'].forEach(o=>{ const b=el('button',{type:'button', class:'pick-opt'+(STATE.pick[k]===o?' on':''), onclick:()=>{ STATE.pick[k]=o; row.classList.remove('need'); opts.querySelectorAll('.pick-opt').forEach(x=>x.classList.toggle('on', x===b)); }}, o); opts.appendChild(b); });
+    row.appendChild(opts); pp.appendChild(row);
+  });
 }
 function secKeyOf(sec, i){ return String((sec&&sec.key) || (sec&&sec.title) || i); }
 function areaBlock(sec, si){
@@ -984,6 +1022,7 @@ function areaBlock(sec, si){
     item.onclick = ()=>{
       if(STATE.wrong.has(key)) STATE.wrong.delete(key); else STATE.wrong.add(key);
       item.classList.toggle('wrong');
+      if(isGreat_()) renderPickPanel_();
     };
     grid.appendChild(item);
   });
@@ -1404,6 +1443,7 @@ function renderStep4(){
         el('span',{class:'q-detail-num'}, q.label || (q.no+'번')),
         q.type ? el('span',{class:'q-detail-area'}, q.type) : (q.area?el('span',{class:'q-detail-area'},q.area):null),
         q.answer ? el('span',{class:'q-detail-answer'}, '정답 '+q.answer) : null,
+        (STATE.pick&&STATE.pick[String(q.no)]) ? el('span',{class:'q-detail-pick'}, '내가 고른 답 '+STATE.pick[String(q.no)]) : null,
         q.source ? el('span',{class:'q-detail-source'}, q.source) : null,
         q.three ? el('span',{class:'q-detail-three'},'3점') : null,
         (q.wr!=null) ? el('span',{class:'q-detail-wr'}, '오답률 '+q.wr+'%') : null
@@ -1508,6 +1548,8 @@ function submitResult(isManual){
     미완사유: r.completion?r.completion.reason:'',
     성실도: (r.diligence!=null?r.diligence:''),
     제출방식: isManual?'재전송(수동)':'자동',
+    숙제자기평가: STATE.didHw==='great' ? '아주 열심히(조금 특별한 숙제 검사)' : '',
+    선택선지: STATE.didHw==='great' ? r.wrongDetails.map(q=>(q.label||(q.no+'번'))+'['+q.no+']:'+((STATE.pick||{})[String(q.no)]||'모름')).join(', ') : '',
     patternsJson: JSON.stringify(r.patterns.map(p=>({code:p.code,name:p.name,diag:p.diag||'',action:p.action||'',hits:p.evidence||[]}))),
     strengthsJson: JSON.stringify(r.strengths),
     areaStatJson: JSON.stringify(r.areaStat),
@@ -1515,7 +1557,7 @@ function submitResult(isManual){
       no:q.no, area:q.area||'', type:q.type||'', source:q.source||'', three:!!q.three, wr:q.wr||null,
       coreElement:q.coreElement||'', weakness1:q.weakness1||'', weakness2:q.weakness2||'',
       remediation:q.remediation||'', parentNote:q.parentNote||'',
-      answer:q.answer||'', balmun:q.balmun||'', haesul:q.haesul||''
+      answer:q.answer||'', balmun:q.balmun||'', haesul:q.haesul||'', pick:(STATE.pick||{})[String(q.no)]||''
     }))),
     studyDiagJson: JSON.stringify(r.studyDiag),
     yaksulJson: (isYaksul() ? JSON.stringify(r.yaksul) : ''),
