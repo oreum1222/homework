@@ -224,6 +224,15 @@ body.landing .corner-logo{display:none}
 .q-detail-rem{color:var(--text-secondary);font-size:0.86rem;line-height:1.78;padding:10px 14px;background:rgba(244,237,224,0.03);border-radius:3px;border-left:2px solid var(--green-deep)}
 .q-detail-rem::before{content:'보완 방향';display:block;font-family:'Pretendard',sans-serif;font-size:0.68rem;color:var(--ok);letter-spacing:2px;margin-bottom:5px;font-weight:500}
 .q-detail-pick{font-size:0.72rem;font-weight:700;color:#241a0c;background:#d6b06a;padding:2px 9px;border-radius:8px;letter-spacing:0.5px}
+.q-detail-mypick{margin:0 0 10px;padding:12px 14px;border-radius:5px;background:rgba(214,176,106,0.08);border:1px solid rgba(214,176,106,0.35)}
+.mp-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:0.84rem;font-weight:700;color:#d6b06a;margin-bottom:6px}
+.mp-trap{font-size:0.72rem;font-weight:700;color:#241a0c;background:#d6b06a;padding:2px 9px;border-radius:8px}
+.mp-line{color:var(--text-secondary);font-size:0.86rem;line-height:1.75;word-break:keep-all}
+.mp-act{margin-top:6px;color:var(--cream)}
+.trap-lead{color:var(--text-secondary);font-size:0.9rem;line-height:1.7;margin-bottom:12px;word-break:keep-all}
+.pattern.trap.top{box-shadow:0 0 0 1px rgba(214,176,106,0.5)}
+.trap-items{font-size:0.8rem;color:var(--text-muted);margin:4px 0 6px}
+.trap-note{color:var(--text-secondary);font-size:0.84rem;line-height:1.7;margin-top:10px;word-break:keep-all}
 .q-detail-answer{font-size:0.72rem;font-weight:700;color:var(--on-accent);background:var(--accent);padding:2px 9px;border-radius:8px;letter-spacing:0.5px}
 .q-detail-balmun{color:var(--text-secondary);font-size:0.88rem;line-height:1.7;margin-bottom:10px;padding-left:12px;border-left:2px solid var(--border-soft)}
 .q-detail-haesul{color:var(--text-secondary);font-size:0.86rem;line-height:1.82;white-space:pre-line;padding:14px 16px;background:rgba(246,246,244,0.035);border:1px solid var(--border-line);border-radius:5px;margin-bottom:10px;word-break:keep-all}
@@ -1192,6 +1201,7 @@ function computeResult(){
   const rawPts   = (solved>=weekTotal) ? (fullPts - lostPts) : correct*2;
 
   const patterns = matchPatterns(STATE.wrong, STATE.data.patternRules||[]);
+  const trapStat = computeTrapStat(wrongDetails);
   // noDiag: 모의고사·수능 기출처럼 별도(모고) 진단을 쓰는 주차 → 영역별 강약점 집계 안 함
   const areaStat = STATE.data.noDiag ? {} : computeAreaStat(qs);
   let strengths = matchStrengths(STATE.wrong, STATE.data.strengthRules||[]);
@@ -1218,9 +1228,48 @@ function computeResult(){
   const notSolvedTitles = undoneCount ? ['미완 '+undoneCount+'문항'] : [];
 
   const result = { totalPts, rawPts, total, correct, wrongN, rate, wrongDetails, patterns, strengths, areaStat, studyDiag, diligence, completion,
-    solveRate, notSolvedTitles, weekTotal, solved, undoneCount };
+    solveRate, notSolvedTitles, weekTotal, solved, undoneCount, trapStat };
   if(cl) result.checklist = computeChecklistData();   // 문항 채점 + 일일학습 체크 조합: 일일학습 완수율도 함께
   return result;
+}
+// '아주 열심히' 학생이 고른 답 → 그리드의 선지별 함정 태그(q.traps)와 trapCatalog로 집계
+function computeTrapStat(wrongDetails){
+  const pick = STATE.pick||{};
+  if(!Object.keys(pick).length) return null;
+  const cat = STATE.data.trapCatalog||{}, secOf = sectionTagMap_();
+  const by = {}, unknown = [], sameAsAnswer = [];
+  wrongDetails.forEach(q=>{
+    const p = pick[String(q.no)]; if(!p) return;
+    const where = (secOf[q.no] ? secOf[q.no]+' ' : '') + (q.label||q.no+'번');
+    if(p==='모름'){ unknown.push(where); return; }
+    if(q.answer && p===q.answer){ sameAsAnswer.push(where); return; }
+    const t = (q.traps||{})[p];
+    if(!t || !cat[t]) return;
+    (by[t] = by[t] || {code:t, name:cat[t].name, desc:cat[t].desc, action:cat[t].action, items:[]}).items.push(where+' '+p);
+  });
+  const list = Object.values(by).sort((a,b)=>b.items.length-a.items.length);
+  return { list, unknown, sameAsAnswer, hasCatalog: Object.keys(cat).length>0 };
+}
+// 문항 no → 세트 표시('교재 2', '워크북 1')
+function sectionTagMap_(){
+  const m = {};
+  (STATE.data.sections||[]).forEach(s=>{
+    const t = (/^\[([^\]]+)\]/.exec(s.title||'')||[])[1]||'';
+    (s.questions||[]).forEach(q=>{ m[q.no]=t; });
+  });
+  return m;
+}
+// 틀린 문항 상세의 '내가 고른 답' 상자 — 고른 선지의 함정 이름과 그 선지의 오답풀이
+function pickBox_(q, pk){
+  const box = el('div',{class:'q-detail-mypick'});
+  if(pk==='모름'){ box.appendChild(el('div',{class:'mp-line'},'답을 고르지 못한 문항이에요. 아래 해설의 정답 근거부터 읽어 보세요.')); return box; }
+  if(q.answer && pk===q.answer){ box.appendChild(el('div',{class:'mp-line'},'정답과 같은 번호('+pk+')를 골랐는데 틀렸다고 표시했어요. 채점을 다시 확인해 보세요.')); return box; }
+  const c = (STATE.data.trapCatalog||{})[(q.traps||{})[pk]];
+  if(c) box.appendChild(el('div',{class:'mp-head'}, el('span',{},'걸린 함정'), el('span',{class:'mp-trap'}, c.name)));
+  const why = (q.odapByOpt||{})[pk];
+  if(why) box.appendChild(el('div',{class:'mp-line'}, (q.polarity==='-' ? '이 선지는 작품에 맞는 설명이에요. ' : '이 선지가 틀린 까닭: ') + why));
+  if(c) box.appendChild(el('div',{class:'mp-line mp-act'}, '다음엔 이렇게: '+c.action));
+  return box.childNodes.length ? box : null;   // 선지별 자료가 없는 주차는 상자 생략
 }
 // 영역(area)/유형(type)별 정오 집계 — 대시보드·강약점 분석용
 function computeAreaStat(qs){
@@ -1416,6 +1465,31 @@ function renderStep4(){
     });
   }
   root.appendChild(pBlock);
+
+  // 고른 답으로 본 함정 진단 ('아주 열심히' 학생 — 오답 선지별 함정 태그 집계)
+  const ts = r.trapStat;
+  if(ts){
+    const tb = el('div',{class:'diag-section'}, el('div',{class:'diag-section-title'},'고른 답으로 본 함정 진단'));
+    if(!ts.hasCatalog){
+      tb.appendChild(el('p',{class:'empty-msg'},'이번 주차는 선지별 함정 분석을 준비하고 있어요. 고른 답은 기록되었고, 분석이 준비되면 이 기록으로 다시 진단합니다.'));
+    } else if(!ts.list.length){
+      tb.appendChild(el('p',{class:'empty-msg'},'선지별로 분석할 수 있는 답이 없었어요.'));
+    } else {
+      const top = ts.list[0];
+      tb.appendChild(el('p',{class:'trap-lead'}, top.items.length>=2
+        ? '이번 숙제에서는 ‘'+top.name+'’ 함정에 가장 많이 걸렸어요. 아래 방법으로 다음 숙제에서 먼저 확인해 보세요.'
+        : '틀린 문항마다 어떤 함정에 걸렸는지 정리했어요.'));
+      ts.list.forEach((x,i)=> tb.appendChild(el('div',{class:'pattern trap'+(i===0&&x.items.length>=2?' top':'')},
+        el('div',{class:'pattern-name'}, x.name, el('span',{class:'hits'},'— '+x.items.length+'문항')),
+        el('div',{class:'trap-items'}, x.items.join(', ')),
+        el('div',{class:'pattern-diag'}, x.desc),
+        el('div',{class:'pattern-action'}, x.action)
+      )));
+    }
+    if(ts.unknown.length) tb.appendChild(el('p',{class:'trap-note'}, '‘모름’으로 남긴 문항 '+ts.unknown.length+'개('+ts.unknown.join(', ')+')는 해설의 정답 근거부터 읽어 보세요.'));
+    if(ts.sameAsAnswer.length) tb.appendChild(el('p',{class:'trap-note'}, '정답과 같은 번호를 고르고 틀렸다고 표시한 문항 '+ts.sameAsAnswer.length+'개('+ts.sameAsAnswer.join(', ')+')는 채점을 다시 확인해 보세요.'));
+    root.appendChild(tb);
+  }
   } // end if(!noItems) — 강점·약점
 
   // 과제 성실도 · 완수 (항상 표시)
@@ -1450,6 +1524,9 @@ function renderStep4(){
       );
       const block = el('div',{class:'q-detail'}, head);
       if(q.balmun) block.appendChild(el('div',{class:'q-detail-balmun'}, q.balmun));
+      const pk=(STATE.pick||{})[String(q.no)];
+      const pb = pk ? pickBox_(q, pk) : null;
+      if(pb) block.appendChild(pb);
       // coreElement는 영역(head)과 중복되지 않을 때만 노출
       if(q.coreElement && q.coreElement!==q.type && q.coreElement!==q.area) block.appendChild(el('div',{class:'q-detail-core'}, q.coreElement));
       if(q.weakness1) block.appendChild(el('div',{class:'q-detail-weak'}, q.weakness1));
@@ -1550,6 +1627,7 @@ function submitResult(isManual){
     제출방식: isManual?'재전송(수동)':'자동',
     숙제자기평가: STATE.didHw==='great' ? '아주 열심히(조금 특별한 숙제 검사)' : '',
     선택선지: STATE.didHw==='great' ? r.wrongDetails.map(q=>(q.label||(q.no+'번'))+'['+q.no+']:'+((STATE.pick||{})[String(q.no)]||'모름')).join(', ') : '',
+    함정진단: (r.trapStat && r.trapStat.list.length) ? r.trapStat.list.map(x=>x.name+' '+x.items.length).join(', ') : '',
     patternsJson: JSON.stringify(r.patterns.map(p=>({code:p.code,name:p.name,diag:p.diag||'',action:p.action||'',hits:p.evidence||[]}))),
     strengthsJson: JSON.stringify(r.strengths),
     areaStatJson: JSON.stringify(r.areaStat),
@@ -1557,7 +1635,8 @@ function submitResult(isManual){
       no:q.no, area:q.area||'', type:q.type||'', source:q.source||'', three:!!q.three, wr:q.wr||null,
       coreElement:q.coreElement||'', weakness1:q.weakness1||'', weakness2:q.weakness2||'',
       remediation:q.remediation||'', parentNote:q.parentNote||'',
-      answer:q.answer||'', balmun:q.balmun||'', haesul:q.haesul||'', pick:(STATE.pick||{})[String(q.no)]||''
+      answer:q.answer||'', balmun:q.balmun||'', haesul:q.haesul||'', pick:(STATE.pick||{})[String(q.no)]||'',
+      trap:(q.traps||{})[(STATE.pick||{})[String(q.no)]]||''
     }))),
     studyDiagJson: JSON.stringify(r.studyDiag),
     yaksulJson: (isYaksul() ? JSON.stringify(r.yaksul) : ''),
@@ -1803,6 +1882,9 @@ function teacherReplay(courseId, params){
     STATE.wrong = new Set((params.get('wrong')||'').split(',').map(s=>s.trim()).filter(Boolean));
     STATE.solvedTotal = params.has('solved') ? (parseInt(params.get('solved'),10)||0) : null;
     try{ STATE.studyAns = JSON.parse(params.get('study')||'{}'); }catch(e){ STATE.studyAns={}; }
+    // pick=no:④,no:② 또는 시트 '선택선지' 값(23번[2]:④, ...) 그대로
+    STATE.pick = {};
+    (params.get('pick')||'').split(',').forEach(s=>{ const m=/(?:\[(\d+)\]|^\s*(\d+))\s*:\s*(\S+)/.exec(s); if(m) STATE.pick[m[1]||m[2]]=m[3]; });
     STATE.result = computeResult();
     STATE.step=4; STATE.teacherView=true; STATE.autoSubmitted=true;
     renderDiag();
