@@ -289,9 +289,9 @@ function frame(now){
   parts=parts.filter(function(p){return p.life>0;});
   ctx.restore();
   var wkNow=t<TIM.leaf?0:Math.min(T.data.length,Math.floor((t-TIM.leaf)/TIM.per)+1);
-  var realFruit=Math.round(T.fruitN*(T.fruits.length?fruitShown/T.fruits.length:0));
+  var realFruit=Math.round(T.fruitN*(T.fruits.length?fruitShown/T.fruits.length:0)),leftFruit=fruitLeft(realFruit);
   document.getElementById('hWeek').textContent='×'+pad(wkNow,2);
-  document.getElementById('hFruit').textContent=pad(realFruit,7);
+  document.getElementById('hFruit').textContent=pad(leftFruit,7);   // 위 계기판은 딴 만큼 줄어든 '남은 열매'
   document.getElementById('sLeaf').textContent=leafShown;document.getElementById('sFruit').textContent=realFruit;
   document.getElementById('sRate').textContent=(leafShown?Math.round(realFruit/leafShown*100):0)+'%';
   if(t>TIM.done&&!banShown){banShown=true;var last=T.data[T.data.length-1],b=document.getElementById('banner');
@@ -321,8 +321,11 @@ function harvKey(){return 'hwtree-harvest|'+COURSE+'|'+NAME+'|'+T.unit;}
 function loadHarvest(){var ids=[];try{ids=JSON.parse(localStorage.getItem(harvKey())||'[]');}catch(e){}T.fruits.forEach(function(f,i){f.picked=ids.indexOf(i)>=0;});}
 function saveHarvest(){var ids=[];T.fruits.forEach(function(f,i){if(f.picked)ids.push(i);});try{localStorage.setItem(harvKey(),JSON.stringify(ids));}catch(e){}}
 function harvestCount(){return T.fruits.filter(function(f){return f.picked;}).length;}
+// 열매 그림 하나 = 맞힌 문항 T.unit개. 딴 열매는 문항 수로 환산해 남은 열매에서 뺀다(다 따면 0)
+function harvestValue(){var h=harvestCount();return h>=T.fruits.length?T.fruitN:Math.min(T.fruitN,h*T.unit);}
+function fruitLeft(real){return Math.max(0,(real==null?T.fruitN:real)-harvestValue());}
 function updateHarvest(){var h=harvestCount(),left=T.fruits.length-h,btn=document.getElementById('pick');
-  document.getElementById('sHarvest').textContent='수확 '+h+'개 · 남은 열매 '+left+'개';
+  document.getElementById('sHarvest').textContent='딴 열매 '+harvestValue()+'개 · 남은 열매 '+fruitLeft()+'개';
   if(left<=0){btn.textContent='열매를 모두 땄어요';btn.classList.add('empty');}else{btn.textContent='열매 따기';btn.classList.remove('empty');}}
 function resetHarvest(){T.fruits.forEach(function(f){f.picked=false;});saveHarvest();updateHarvest();}
 // ───────── 역대 수능 필적 확인 문구(직접 채워 넣기) ─────────
@@ -354,6 +357,7 @@ function pickFruit(){
   if(G)return;var cand=T.fruits.filter(function(f,i){return !f.picked&&i<fruitShown;});
   if(!cand.length){floatText('다음 숙제를 내면 새 열매가 열려요',W/2,GY-70,'fruit');return;}
   var f=cand[(Math.random()*cand.length)|0];f.picked=true;saveHarvest();updateHarvest();var p=toScreen(f);
+  floatText('열매 −'+T.unit,W-40,22,'fruit');
   document.getElementById('pick').classList.remove('on');
   G={stage:'shake',tm:0,x:p.x,y:p.y,vy:0,sc:0.25};
   for(var i=0;i<14;i++){var s=toScreen(T.leaves[(Math.random()*T.leaves.length)|0]);parts.push({x:s.x,y:s.y,life:260,kind:'leaf',col:P.leaf[(Math.random()*4)|0],ph:Math.random()*6});}
