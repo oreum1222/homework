@@ -1267,7 +1267,7 @@ function pickBox_(q, pk){
   const c = (STATE.data.trapCatalog||{})[(q.traps||{})[pk]];
   if(c) box.appendChild(el('div',{class:'mp-head'}, el('span',{},'걸린 함정'), el('span',{class:'mp-trap'}, c.name)));
   const why = (q.odapByOpt||{})[pk];
-  if(why) box.appendChild(el('div',{class:'mp-line'}, (q.polarity==='-' ? '이 선지는 작품에 맞는 설명이에요. ' : '이 선지가 틀린 까닭: ') + why));
+  if(why) box.appendChild(el('div',{class:'mp-line'}, (q.polarity==='-' ? '이 선지는 '+(STATE.data.passageWord||'작품')+'에 맞는 설명이에요. ' :'이 선지가 틀린 까닭: ') + why));
   if(c) box.appendChild(el('div',{class:'mp-line mp-act'}, '다음엔 이렇게: '+c.action));
   return box.childNodes.length ? box : null;   // 선지별 자료가 없는 주차는 상자 생략
 }
