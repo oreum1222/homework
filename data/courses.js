@@ -101,8 +101,8 @@ window.COURSE_LIST = [
       { week: 4, file: 'data/hw-hanti-dan-h2-hwaeon2-w4.json', label: '4주차 · 음운의 변동 워크북', area: '음운', status: 'active' },
       { week: 5, file: 'data/hw-hanti-dan-h2-hwaeon2-s2-1.json', label: '시즌2 1주차 · 문장 성분', date: '10/18(일)', releaseDate: '2026-10-11', area: '문장 성분', status: 'active' },
       { week: 6, file: 'data/hw-hanti-dan-h2-hwaeon2-s2-2.json', label: '시즌2 2주차 · 문장의 짜임새', date: '10/25(일)', releaseDate: '2026-10-18', area: '문장의 짜임새', status: 'active' },
-      { week: 7, file: 'data/hw-hanti-dan-h2-hwaeon2-s2-3.json', label: '시즌2 3주차 · 문법 요소 ① (높임·시간·인용·부정)', date: '11/1(일)', releaseDate: '2026-10-25', area: '문법 요소', status: 'active' },
-      { week: 8, file: 'data/hw-hanti-dan-h2-hwaeon2-s2-4.json', label: '시즌2 4주차 · 문법 요소 ② (피동·사동)', date: '11/8(일)', releaseDate: '2026-11-01', area: '문법 요소', status: 'active' }
+      { week: 7, file: 'data/hw-hanti-dan-h2-hwaeon2-s2-3.json', label: '시즌2 3주차 · 문법 요소 ① (높임·시간)', date: '11/1(일)', releaseDate: '2026-10-25', area: '문법 요소', status: 'active' },
+      { week: 8, file: 'data/hw-hanti-dan-h2-hwaeon2-s2-4.json', label: '시즌2 4주차 · 문법 요소 ② (피동·사동·인용·부정)', date: '11/8(일)', releaseDate: '2026-11-01', area: '문법 요소', status: 'active' }
     ]
   },
   {
