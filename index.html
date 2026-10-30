@@ -286,6 +286,7 @@ body.landing .corner-logo{display:none}
 .pick-panel{margin-top:6px}
 .pick-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--border-line);border-radius:10px;margin:6px 0;background:rgba(246,246,244,.02)}
 .pick-row.need{border-color:#d98a8a}
+.pick-inline{grid-column:1/-1;margin:0;border-color:rgba(217,138,138,.45)}
 .pick-q{min-width:92px;font-weight:700;color:var(--cream);font-size:.92rem}
 .pick-q small{display:block;font-weight:400;color:var(--text-muted);font-size:.72rem}
 .pick-opts{display:flex;gap:6px;flex-wrap:wrap}
@@ -978,7 +979,6 @@ function renderStep2(){
         root.appendChild(el('div',{class:'subject-divider'}, sec.group)); }
       root.appendChild(areaBlock(sec, si));
     });
-    if(isGreat_()){ STATE.pick=STATE.pick||{}; const pp=el('div',{class:'section pick-panel', id:'pickPanel'}); root.appendChild(pp); renderPickPanel_(); }
   }
   root.appendChild(el('div',{class:'btn-row'},
     el('button',{class:'btn btn-ghost', onclick:()=>{STATE.step=1; renderDiag();}},'← 이전'),
@@ -989,27 +989,24 @@ function renderStep2(){
         try{ inp.focus(); }catch(e){}
         return;
       }
-      if(isGreat_()){ const miss=Array.from(STATE.wrong).filter(k=>!(STATE.pick||{})[k]); if(miss.length){ renderPickPanel_(true); const pp=document.getElementById('pickPanel'); if(pp) pp.scrollIntoView({behavior:'smooth',block:'center'}); return; } }
+      if(isGreat_()){ const miss=Array.from(STATE.wrong).filter(k=>!(STATE.pick||{})[k]); if(miss.length){
+        const rows=miss.map(k=>document.querySelector('.pick-inline[data-no="'+k+'"]')).filter(Boolean);
+        rows.forEach(r=>r.classList.add('need'));
+        if(rows[0]) rows[0].scrollIntoView({behavior:'smooth',block:'center'});
+        return; } }
       STATE.step=(STATE.data.checklist?'imagine':3); renderDiag();
     }}, STATE.data.checklist?'다음 → 일일학습 체크':'다음 단계 →')
   ));
 }
-// 아주 열심히: 틀린 문항마다 내가 고른 답(①~⑤, 모름)
-function allQuestions_(){ const out=[]; (STATE.data.sections||[]).forEach(s=>(s.questions||[]).forEach(q=>out.push({q, sec:s}))); return out; }
-function renderPickPanel_(showNeed){
-  const pp=document.getElementById('pickPanel'); if(!pp) return; clear(pp); STATE.pick=STATE.pick||{};
-  pp.appendChild(el('h2',{class:'section-title'},'틀린 문항, 어떤 답을 골랐나요?'));
-  pp.appendChild(el('p',{class:'section-desc', html:'조금 특별한 숙제 검사입니다. 틀린 문항마다 <strong>내가 실제로 고른 답</strong>을 눌러 주세요. 어떤 함정에 걸렸는지 더 자세히 분석해 드립니다. 기억나지 않으면 「모름」을 누르세요.'}));
-  const wrongs=allQuestions_().filter(x=>STATE.wrong.has(String(x.q.no)));
-  Object.keys(STATE.pick).forEach(k=>{ if(!STATE.wrong.has(k)) delete STATE.pick[k]; });
-  if(!wrongs.length){ pp.appendChild(el('div',{class:'pick-empty'},'위에서 틀린 문항을 누르면 여기에 문항이 나타납니다.')); return; }
-  wrongs.forEach(({q,sec})=>{
-    const k=String(q.no), row=el('div',{class:'pick-row'+(showNeed&&!STATE.pick[k]?' need':'')});
-    row.appendChild(el('div',{class:'pick-q'}, q.label||(q.no+'번'), el('small',{}, String(sec.title||'').replace(/^\[[^\]]*\]\s*/,'').slice(0,22))));
-    const opts=el('div',{class:'pick-opts'});
-    ['①','②','③','④','⑤','모름'].forEach(o=>{ const b=el('button',{type:'button', class:'pick-opt'+(STATE.pick[k]===o?' on':''), onclick:()=>{ STATE.pick[k]=o; row.classList.remove('need'); opts.querySelectorAll('.pick-opt').forEach(x=>x.classList.toggle('on', x===b)); }}, o); opts.appendChild(b); });
-    row.appendChild(opts); pp.appendChild(row);
-  });
+function inlinePickRow_(q){
+  STATE.pick=STATE.pick||{};
+  const k=String(q.no), row=el('div',{class:'pick-row pick-inline', 'data-no':k});
+  row.style.display = STATE.wrong.has(k) ? '' : 'none';
+  row.appendChild(el('div',{class:'pick-q'}, (q.label||(q.no+'번'))+'에서 고른 답'));
+  const opts=el('div',{class:'pick-opts'});
+  ['①','②','③','④','⑤','모름'].forEach(o=>{ const b=el('button',{type:'button', class:'pick-opt'+(STATE.pick[k]===o?' on':''), onclick:(ev)=>{ ev.stopPropagation(); STATE.pick[k]=o; row.classList.remove('need'); opts.querySelectorAll('.pick-opt').forEach(x=>x.classList.toggle('on', x===b)); }}, o); opts.appendChild(b); });
+  row.appendChild(opts);
+  return row;
 }
 function secKeyOf(sec, i){ return String((sec&&sec.key) || (sec&&sec.title) || i); }
 function areaBlock(sec, si){
@@ -1028,12 +1025,16 @@ function areaBlock(sec, si){
       q.three ? el('span',{class:'q-three'},'3점') : null,
       (q.wr!=null) ? el('span',{class:'q-wr'}, q.wr+'%') : ((q.type||q.area) ? el('span',{class:'q-cc'}, q.type||q.area) : null)
     );
+    // 아주 열심히: 틀린 문항 바로 아래에 고른 답 칸(장을 넘기며 체크하는 흐름을 끊지 않게)
+    const pickRow = isGreat_() ? inlinePickRow_(q) : null;
     item.onclick = ()=>{
-      if(STATE.wrong.has(key)) STATE.wrong.delete(key); else STATE.wrong.add(key);
+      if(STATE.wrong.has(key)){ STATE.wrong.delete(key); if(STATE.pick) delete STATE.pick[key]; } else STATE.wrong.add(key);
       item.classList.toggle('wrong');
-      if(isGreat_()) renderPickPanel_();
+      if(pickRow){ const on=STATE.wrong.has(key); pickRow.style.display=on?'':'none'; pickRow.classList.remove('need');
+        pickRow.querySelectorAll('.pick-opt').forEach(x=>x.classList.toggle('on', on && STATE.pick[key]===x.textContent)); }
     };
     grid.appendChild(item);
+    if(pickRow) grid.appendChild(pickRow);
   });
   block.appendChild(grid);
   return block;
