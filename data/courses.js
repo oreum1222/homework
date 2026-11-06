@@ -81,7 +81,13 @@ window.COURSE_LIST = [
           { week: 4, file: 'data/hw-go3-2610-w4.json', label: '4주차에 한 숙제 검사 · 이매진 8호 4주차(완주) + 실모 분석', date: '10/30(금)~10/31(토)', area: '이매진 8호', status: 'active' }
         ]
       },
-      // (10월 등 다음 달은 여기에 months 항목 추가)
+      {
+        key: '2026-11', month: '11월', status: 'active', desc: '11월 수능 직전 — 매주 금·토에 받은 자료(EBS 작품 분석, 실모 연계 분석)를 다음 주 금·토에 검사합니다.',
+        weeks: [
+          { week: 1, file: 'data/hw-go3-2611-w1.json', label: '1주차에 한 숙제 검사 · EBS 고전소설 작품 분석 8편 + 바탕 8회 연계 분석', date: '11/6(금)~11/7(토)', area: 'EBS 고전소설', status: 'active' }
+        ]
+      },
+      // (다음 달은 여기에 months 항목 추가)
     ]
   },
 
