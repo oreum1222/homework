@@ -82,9 +82,11 @@ window.COURSE_LIST = [
         ]
       },
       {
-        key: '2026-11', month: '11월', status: 'active', desc: '11월 수능 직전 — 매주 금·토에 받은 자료(EBS 작품 분석, 실모 연계 분석)를 다음 주 금·토에 검사합니다.',
+        key: '2026-11', month: '11월', status: 'active', desc: '11월 수능 직전 — 칠기모(7일의 기적 모의고사) 1~7일차를 11/7~11/17에 풀고 분석합니다. 1~4일차는 풀이 다음 날 분석, 5~7일차는 하루에 풀이와 분석.',
         weeks: [
-          { week: 1, file: 'data/hw-go3-2611-w1.json', label: '1주차에 한 숙제 검사 · EBS 고전소설 작품 분석 8편 + 바탕 8회 연계 분석', date: '11/6(금)~11/7(토)', area: 'EBS 고전소설', status: 'active' }
+          { week: 1, file: 'data/hw-go3-2611-w1.json', label: '1주차에 한 숙제 검사 · EBS 고전소설 작품 분석 8편 + 바탕 8회 연계 분석', date: '11/6(금)~11/7(토)', area: 'EBS 고전소설', status: 'active' },
+          { week: 2, file: 'data/hw-go3-2611-w2.json', label: '2주차에 한 숙제 검사 · 칠기모 1~3일차 (11/7~11/12)', date: '11/13(금)~11/14(토)', area: '칠기모', status: 'active' },
+          { week: 3, file: 'data/hw-go3-2611-w3.json', label: '수능 전 마무리 체크 · 칠기모 4~7일차 (11/13~11/18)', date: '11/18(수)까지 스스로 체크', area: '칠기모', status: 'active' }
         ]
       },
       // (다음 달은 여기에 months 항목 추가)
