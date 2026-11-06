@@ -121,7 +121,8 @@ window.COURSE_LIST = [
       { week: 6, file: 'data/hw-hanti-dan-h2-suneung-s2w1.json', label: '5주차 · 교재+워크북 (현대시)', date: '9/27(일)', area: '수능 문학', status: 'active' },
       { week: 7, file: 'data/hw-hanti-dan-h2-suneung-s2-1.json', label: '시즌2 1주차 · 교재+워크북 (법·사회 독서)', date: '10/18(일)', releaseDate: '2026-10-11', area: '수능 독서(법)', status: 'active' },
       { week: 8, file: 'data/hw-hanti-dan-h2-suneung-s2-2.json', label: '시즌2 2주차 · 교재+워크북 (고전 문학)', date: '10/25(일)', releaseDate: '2026-10-18', area: '수능 고전 문학', status: 'active' },
-      { week: 9, file: 'data/hw-hanti-dan-h2-suneung-s2-3.json', label: '시즌2 3주차 · 교재+워크북 (경제 독서)', date: '11/1(일)', releaseDate: '2026-10-25', area: '수능 독서(경제)', status: 'active' }
+      { week: 9, file: 'data/hw-hanti-dan-h2-suneung-s2-3.json', label: '시즌2 3주차 · 교재+워크북 (경제 독서)', date: '11/1(일)', releaseDate: '2026-10-25', area: '수능 독서(경제)', status: 'active' },
+      { week: 10, file: 'data/hw-hanti-dan-h2-suneung-s3-1.json', label: '시즌3 1주차 · 교재+워크북 (고전 소설)', date: '11/8(일)', releaseDate: '2026-11-01', area: '수능 고전 소설', status: 'active' }
     ]
   },
 
