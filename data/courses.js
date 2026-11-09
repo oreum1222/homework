@@ -113,20 +113,6 @@ window.COURSE_LIST = [
       { week: 8, file: 'data/hw-hanti-dan-h2-hwaeon2-s2-4.json', label: '시즌2 4주차 · 문법 요소 ② (피동·사동·인용·부정)', date: '11/8(일)', releaseDate: '2026-11-01', area: '문법 요소', status: 'active' }
     ]
   },
-  // 화언반 복습 시험(수업 중 20문항, 표식 그리기형) — 학생 데이터 축적용(가경T 2026-11-09). 숙제 회차와 섞지 않으려고 반을 따로 둠.
-  {
-    id: 'hanti-dan-h2-hwaeon2-review',
-    academy: 'hanti',
-    name: '화법과언어(연합반) 복습 시험',
-    grade: '고2',
-    period: '연합반',
-    desc: '고2 화법과 언어 수업 중 복습 시험 — 문장의 짜임새, 높임과 시간, 피동과 사동(각 20문항).',
-    weeks: [
-      { week: 1, file: 'data/hw-hanti-dan-h2-hwaeon2-review-jjaim.json', label: '복습 시험 1 · 문장의 짜임새', date: '10/25(일)', area: '문장의 짜임새', status: 'active' },
-      { week: 2, file: 'data/hw-hanti-dan-h2-hwaeon2-review-nopi.json', label: '복습 시험 2 · 높임 표현과 시간 표현', date: '11/1(일)', area: '문법 요소', status: 'active' },
-      { week: 3, file: 'data/hw-hanti-dan-h2-hwaeon2-review-pasa.json', label: '복습 시험 3 · 피동 표현과 사동 표현', date: '11/8(일)', area: '문법 요소', status: 'active' }
-    ]
-  },
   {
     id: 'hanti-dan-h2-suneung',
     academy: 'hanti',

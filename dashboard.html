@@ -505,7 +505,7 @@ let SCRIPT_URL=null, BRAND='오름 국어 연구소', TEACHER='가경T', LOGO_UR
 const COURSES = window.COURSE_LIST || [];
 const COURSE_NAME = {}; COURSES.forEach(c=>COURSE_NAME[c.id]=c.name);
 // 삭제된(과거) 반 — 제출 이력이 남아 있어 반명만 유지 (드롭다운·리포트에 raw ID 대신 표시)
-const LEGACY_COURSE_NAME = { 'summer-grammar':'현대문법 (썸머) [종강]', 'hanti-dan-h1-gojeonmunhak':'단과 고1 고전 영역(문학) [종강]', 'hanti-dan-h1-gojeonbeop':'단과 고1 고전 영역(문법) [종강]',
+const LEGACY_COURSE_NAME = { 'hanti-dan-h2-hwaeon2-review':'화법과언어(연합반) 복습 시험 [점수 기록]', 'summer-grammar':'현대문법 (썸머) [종강]', 'hanti-dan-h1-gojeonmunhak':'단과 고1 고전 영역(문학) [종강]', 'hanti-dan-h1-gojeonbeop':'단과 고1 고전 영역(문법) [종강]',
   'hanti-jong-m3-hyeonbeop':'MEXX 종합반 중3 현대문법 [종강]', 'hanti-jong-h1-gojeonbeop':'MEXX 종합반 고1 고전문법 [종강]', 'hanti-dan-h1-gojeon':'MEXX 단과 고1 고전 영역 [종강]', 'hanti-dan-h2-hwaeon':'MEXX 단과 고2 화법과 언어 (여름) [종강]' };   // 종강 강좌 — 학생 화면엔 없지만 대시보드 이력 이름 보존
 Object.keys(LEGACY_COURSE_NAME).forEach(k=>{ if(!COURSE_NAME[k]) COURSE_NAME[k]=LEGACY_COURSE_NAME[k]; });
 // 대시보드에서 '숨길' 반만 지정(블록리스트). 나머지는 전부 표시 →
